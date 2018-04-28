@@ -19,6 +19,8 @@ class CreateUserDetailsTable extends Migration
             $table->string('email')->unique();
             $table->string('gender');
             $table->integer('role');
+            $table->integer('securityQuestion');
+            $table->string('securityAnswer');
             $table->timestamps();
         });
     }
