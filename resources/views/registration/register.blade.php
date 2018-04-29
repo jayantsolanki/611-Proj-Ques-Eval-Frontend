@@ -23,7 +23,7 @@
 			<p class="suggestive">Create new Account</p>
 			<div class="row">
 			<div class="col-md-offset-6 col-md-6 text-right" style="padding-right:30px;">
-				Already have account?<a href="{{ route('login') }}"><span class="text text-primary"> Sign In </span></a>
+				Already have an account?<a href="{{ route('login') }}"><span class="text text-primary"> Sign In </span></a>
 			</div>
 		</div>
 	        <div class="form-group input-group">

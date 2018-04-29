@@ -1,15 +1,15 @@
-@extends('layouts.members.master')
-@section('title', 'Dashboard')
+@extends('layouts.admin.master')
+@section('title', 'Edit Profile')
 @section('styles')
 @stop
 
 @section('content')
-<h1>This is User Dashboard Page</h1>
+<h1>This is User Edit Profile Page</h1>
 @endsection
 @section('scripts')
 <script type="text/javascript">
 	$(document).ready( function() {
-		$('#dashboard').addClass('active');
+		$('#editprofile').addClass('active');
 	});
 </script>
 @endsection

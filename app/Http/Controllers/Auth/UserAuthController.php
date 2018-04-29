@@ -11,6 +11,41 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class UserAuthController extends Controller{
+    /*
+    |-------------------------------------------------------------------------
+    | Function:     loginLand
+    | Input:        Null
+    | Output:       Display the login page
+    | Logic:        Used to direct to login page
+    |
+    */
+    public function loginLand(){
+
+        if(Auth::check()){
+            //return redirect()->route('reg_home');  //route for dashboard
+            if(Auth::user()->role == 1 && Auth::user()->active == 1){// for normal user
+                // return Auth::user();
+                return redirect()->route('memberHome');
+            }
+            if(Auth::user()->role == 2 && Auth::user()->active == 1){//for admin
+                // return Auth::user();
+                return redirect()->route('adminHome');
+            }else{
+                return redirect()->route('login')->with('error', 'Not a user.');
+            }
+        }
+
+        return redirect()->route('login')->with('info', 'Please enter your username and password');
+    }
+
+    /*
+    |-------------------------------------------------------------------------
+    | Function:     authenticate
+    | Input:        Request
+    | Output:       Check credentials
+    | Logic:        Used to direct to homepage
+    |
+    */
 	public function authenticate(Request $request){
         $validator = Validator::make($request->all(), [
             'username' => 'required',
@@ -160,7 +195,7 @@ class UserAuthController extends Controller{
     public function logout(){
     	Auth::logout();
 		Session::flush();
-        return redirect()->route('login')->with('success', 'You have successfully logged out.');
+        return redirect()->route('login')->with('success', 'Logged out successfully');
     }//end of logout
 
     public function login(){

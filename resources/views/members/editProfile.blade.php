@@ -1,16 +1,15 @@
 @extends('layouts.members.master')
-@section('title', 'User Profile')
+@section('title', 'Edit Profile')
 @section('styles')
 @stop
 
 @section('content')
-<h1>This is User Profile Page</h1>
-<a href = "{{route('memberEditProfile')}}">Edit Profile</a>
+<h1>This is User Edit Profile Page</h1>
 @endsection
 @section('scripts')
 <script type="text/javascript">
 	$(document).ready( function() {
-		$('#profile').addClass('active');
+		$('#editprofile').addClass('active');
 	});
 </script>
 @endsection

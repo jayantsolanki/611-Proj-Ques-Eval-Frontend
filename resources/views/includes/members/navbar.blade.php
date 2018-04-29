@@ -12,10 +12,10 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Dashboard</a></li>
-            <li><a href="#about">Question Viewer</a></li>
-            <li><a href="#contact">Question Viewer</a></li>
-            <li><a href="#contact">Statistics</a></li>
+            <li id="dashboard"><a href="#">Dashboard</a></li>
+            <li id="qv"><a href="#about">Question Viewer</a></li>
+            <li id="qe"><a href="#contact">Question Editor</a></li>
+            <li id ="st"><a href="#stats">Statistics</a></li>
             <!-- <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -30,11 +30,11 @@
             </li> -->
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="active">
+            <li class="text text-info">
                 <a href="{{route('memberHome')}}">Welcome<strong> {{strstr(Auth::user()->email,'@', true)}}</strong><span class="sr-only">(current)</span>
                 </a>
             </li>
-            <li>
+            <li id="profile">
                 <a href="{!! route('memberProfile') !!}">Profile</span>
                 </a>
             </li>

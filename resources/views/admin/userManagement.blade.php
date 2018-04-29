@@ -1,15 +1,15 @@
-@extends('layouts.members.master')
-@section('title', 'Dashboard')
+@extends('layouts.admin.master')
+@section('title', 'User Management')
 @section('styles')
 @stop
 
 @section('content')
-<h1>This is User Dashboard Page</h1>
+<h1>Provide admin rights to user here</h1>
 @endsection
 @section('scripts')
 <script type="text/javascript">
 	$(document).ready( function() {
-		$('#dashboard').addClass('active');
+		$('#usermang').addClass('active');
 	});
 </script>
 @endsection

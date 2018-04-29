@@ -4,18 +4,16 @@
 
 @section('content')
 <div class="col-md-4 col-sm-5 col-md-offset-4">
-	@if (session('success'))
-	<div class="row">
-		<div class="alert alert-success text-center">
-			<p>{{session('success')}}</p>
-		</div>
-	</div>
-	@endif
-
 	@if (session('error'))
 	<div class="alert alert-danger">
 		{{session('error')}}
 	</div>
+	@endif
+	@if (session('success'))
+		<div class="alert alert-success">{{session('success')}}</div>
+	@endif
+	@if (session('info'))
+		<div class="alert alert-info">{{session('info')}}</div>
 	@endif
 	<form method="POST" action="{{ route('user_login') }}">
 		<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -45,15 +43,6 @@
 			</div>
 		</div>
 	</form>
-	@if (count($errors) > 0)
-	    <div class="alert alert-danger">
-	        <ul>
-	            @foreach ($errors->all() as $error)
-	                <li>{{ $error }}</li>
-	            @endforeach
-	        </ul>
-	    </div>
-	@endif
 </div>
 @endsection
 

@@ -11,24 +11,20 @@
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-//Home
-Route::any('/', [
-	'as' => 'home',
-	function () {
-    	//return view('register/home');
-    	return redirect()->route('login');
-	}
+
+/********************Home*****************************/
+
+Route::any('/',[
+	'as' => 'loginLand',
+	'uses' => 'Auth\UserAuthController@loginLand'
 ]);
 
+/*****************Authentication Controller*************/
 Route::POST('auth/user_login',[
 	'as' => 'user_login',
 	'uses' => 'Auth\UserAuthController@authenticate'
 ]);
 
-//login page
 Route::any('/login', [
 	'as' => 'login',
 	'uses' => 'Auth\UserAuthController@login'
@@ -36,7 +32,7 @@ Route::any('/login', [
 
 Route::any('/logout', [
 	'as' => 'logout',
-	'uses' => 'Auth\UserAuthController@login'
+	'uses' => 'Auth\UserAuthController@logout'
 ]);
 
 Route::any('auth/forgotpass',[
@@ -51,7 +47,7 @@ Route::any('register/forgotpassprocess',[
 	'uses' => 'Auth\UserAuthController@forgotpassProcess'
 ]);
 
-// create account
+/*****************Account Controller*************/
 Route::any('/createAccountPage', [
 	'as' => 'createAccountPage',
 	function(){
@@ -64,20 +60,50 @@ Route::any('/createAccount', [
 	'uses' => 'Auth\RegisterController@create'
 ]);
 
-Route::GET('admin/dashboard',[
+/*****************Admin Controller*************/
+Route::any('admin/dashboard',[
 		'as' => 'adminHome',
+		'middleware' => 'auth',
 		'uses' => 'Admin\AdminController@showDashboard'
-	]);
+]);
 
-Route::GET('member/dashboard',[
+Route::any('admin/profile',[
+	'as' => 'adminProfile',
+	'middleware' => 'auth',
+	'uses' => 'Admin\AdminController@showProfile'
+]);
+
+Route::any('admin/editProfile',[
+	'as' => 'adminEditProfile',
+	'middleware' => 'auth',
+	'uses' => 'Admin\AdminController@editProfile'
+]);
+
+Route::any('admin/userManage',[
+	'as' => 'userManage',
+	'middleware' => 'auth',
+	'uses' => 'Admin\AdminController@userManage'
+]);
+/*****************Member Controller*************/
+Route::any('member/dashboard',[
 	'as' => 'memberHome',
+	'middleware' => 'auth',
 	'uses' => 'Members\MembersController@showDashboard'
 ]);
 
-Route::GET('member/profile',[
+Route::any('member/profile',[
 	'as' => 'memberProfile',
+	'middleware' => 'auth',
 	'uses' => 'Members\MembersController@showProfile'
 ]);
+
+Route::any('member/editProfile',[
+	'as' => 'memberEditProfile',
+	'middleware' => 'auth',
+	'uses' => 'Members\MembersController@editProfile'
+]);
+
+/*****************Question Controller*************/
 
 Route::group(['middleware' => 'auth'], function (){
 
