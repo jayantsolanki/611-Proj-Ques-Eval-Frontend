@@ -60,6 +60,17 @@ Route::any('/createAccount', [
 	'uses' => 'Auth\RegisterController@create'
 ]);
 
+Route::any('admin/updateAccount', [
+	'middleware' => 'auth',
+	'as' => 'adminUpdateAccount',
+	'uses' => 'Admin\AdminController@update'
+]);
+
+Route::any('member/updateAccount', [
+	'middleware' => 'auth',
+	'as' => 'memberUpdateAccount',
+	'uses' => 'Members\MembersController@update'
+]);
 /*****************Admin Controller*************/
 Route::any('admin/dashboard',[
 		'as' => 'adminHome',

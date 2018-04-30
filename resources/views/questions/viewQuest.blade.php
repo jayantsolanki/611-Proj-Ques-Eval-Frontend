@@ -24,6 +24,9 @@
     .quesbody {
       margin: 0px 10px 20px 10px;
     }
+    body {
+	  overflow-x: hidden;
+	}
   </style>
 @endsection
 @section('content')
@@ -40,6 +43,15 @@
 		<div class="alert alert-danger">
 			{{session('error')}}
 		</div>
+		@endif
+		@if (count($errors) > 0)
+		    <div class="alert alert-danger">
+		        <ul>
+		            @foreach ($errors->all() as $error)
+		                <li>{{ $error }}</li>
+		            @endforeach
+		        </ul>
+		    </div>
 		@endif
 		<div class="row">
 			<p class="suggestive">Browse Questions</p>
@@ -164,15 +176,6 @@
 			</div>
 			
 		</div>
-	    @if (count($errors) > 0)
-		    <div class="alert alert-danger">
-		        <ul>
-		            @foreach ($errors->all() as $error)
-		                <li>{{ $error }}</li>
-		            @endforeach
-		        </ul>
-		    </div>
-		@endif
 	</div>
 
 

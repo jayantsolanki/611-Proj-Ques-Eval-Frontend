@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\QuestionMaster;
 use App\DatabaseCatalogue;
+use Illuminate\Support\Facades\Validator;
 
 class QuestionController extends Controller{
 
@@ -19,6 +20,28 @@ class QuestionController extends Controller{
  		{
 	 		if(sizeof($data->all())>0)
 	 		{	
+	 			// return $data->all() ;
+		        $rules = [
+		            'category' => 'integer|min:1|digits_between:1,4',
+		            'difficulty' => 'integer|min:0|digits_between:0,3',
+		            'year' => 'integer|min:2014|max:2025',
+		            'new' => 'in:next,previous,filter,goto',
+		            'current' => 'integer|min:1|max:3000|digits_between:1,3000'
+		        ];
+		        $messages = [   
+		            'category.integer' =>  'Category must be integer',
+		            'difficulty.integer' =>  'Difficulty level must be integer',
+		            'year.integer'        =>  'Year must be integer',
+		            'new' =>  'Must be either previous, next, goto or filter',
+		            'current.integer' =>  'Question id must be integer',
+		            'current.max' =>  'Question id must be below 3000',
+		            'current.min' =>  'Question id must be above 0'
+		        ];
+		        $validator = Validator::make($data->all(), $rules, $messages);
+		        // return (string)$validator->fails();
+		        if ($validator->fails()) {
+		            return redirect()->route('quesViewer')->withErrors($validator);
+		        }
 	 			$count = QuestionMaster::where('year',$data -> year)->count();
 	 			// return $data->all();
 	 			$category = $data -> category;

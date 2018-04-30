@@ -112,4 +112,6 @@ class RegisterController extends Controller
         });//end of transaction
         return redirect()->route('login');
     }
+
+    
 }

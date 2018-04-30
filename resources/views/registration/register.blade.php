@@ -67,7 +67,7 @@
 
 	        <div class="form-group input-group">
 	            <span class="input-group-addon" id="sizing-addon1">Confirm Password <i class="glyphicon glyphicon-lock"></i></span>
-	            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required="" placeholder="Confirm Password" aria-describedby="sizing-addon1" value="{!!old('password')!!}">
+	            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required="" placeholder="Confirm Password" aria-describedby="sizing-addon1" value="{!!old('password_confirmation')!!}">
 	        </div>
 	 
 	        <div class="form-group">
