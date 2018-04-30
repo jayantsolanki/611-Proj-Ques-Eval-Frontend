@@ -111,12 +111,6 @@
 			<!-- Footer ================================================== -->
 
 			<div class="container">
-				<div class="well well-small text-center">
-					<em>
-						
-					</em>
-				</div>
-
 				<hr class="soften"/>
 				<footer class="footer">
 					<p>

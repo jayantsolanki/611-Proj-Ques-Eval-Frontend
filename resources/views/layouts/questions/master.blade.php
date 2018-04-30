@@ -16,13 +16,12 @@
   <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
   <link rel="shortcut icon" href="{!! asset('favicon.ico') !!}">
   @yield('styles')
-
 </head>
 
 <body>
   @if(Auth::user()->role == 1)
     @include('includes.members.navbar')
-  @elsif(Auth::user()->role == 2)
+  @elseif(Auth::user()->role == 2)
     @include('includes.admin.navbar')
   @endif
   <!-- Container -->
@@ -38,12 +37,6 @@
       <!-- Footer ================================================== -->
 
       <div class="container">
-        <div class="well well-small text-center">
-          <em>
-            
-          </em>
-        </div>
-
         <hr class="soften"/>
         <footer class="footer">
           <p>

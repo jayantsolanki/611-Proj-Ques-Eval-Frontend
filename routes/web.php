@@ -105,6 +105,30 @@ Route::any('member/editProfile',[
 
 /*****************Question Controller*************/
 
+Route::any('question/quesViewer',[
+	'as' => 'quesViewer',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@quesViewer'
+]);
+
+Route::any('question/quesEditor',[
+	'as' => 'quesEditor',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@quesEditor'
+]);
+
+Route::any('question/showStats',[
+	'as' => 'showStats',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@showStats'
+]);
+
+Route::any('question/showTasks',[
+	'as' => 'showTasks',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@showTasks'
+]);
+
 Route::group(['middleware' => 'auth'], function (){
 
 	

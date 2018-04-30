@@ -14,7 +14,6 @@ class MembersController extends Controller{
  		}
  		return view('members.home')->with('userDetails', Auth::user());
  	}
-
  	public function showProfile(){
  		if(Auth::user()->role != 1){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');

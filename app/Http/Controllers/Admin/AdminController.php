@@ -15,7 +15,6 @@ class AdminController extends Controller{
  		}
  		return view('admin.home')->with('userDetails', Auth::user());
  	}
-
  	public function showProfile(){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');

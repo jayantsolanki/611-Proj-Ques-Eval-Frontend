@@ -22,7 +22,7 @@
 <body>
   @include('includes.members.navbar')
   <!-- Container -->
-  <div class="container-fluid" style="margin-top: 85px;min-height:400px;">
+  <div class=" container-fluid" style="margin-top: 85px;min-height:400px;">
     <!-- Content -->
     <div class="row" style="top-margin: 50px">
         @yield('content')
@@ -34,12 +34,6 @@
       <!-- Footer ================================================== -->
 
       <div class="container">
-        <div class="well well-small text-center">
-          <em>
-            
-          </em>
-        </div>
-
         <hr class="soften"/>
         <footer class="footer">
           <p>

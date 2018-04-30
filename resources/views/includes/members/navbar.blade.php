@@ -8,14 +8,15 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Question Manager</a>
+          <a class="navbar-brand" href="{{route('loginLand')}}">Question Manager</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li id="dashboard"><a href="#">Dashboard</a></li>
-            <li id="qv"><a href="#about">Question Viewer</a></li>
-            <li id="qe"><a href="#contact">Question Editor</a></li>
-            <li id ="st"><a href="#stats">Statistics</a></li>
+          <ul class="nav navbar-nav ">
+            <li id="dashboard"><a href="{{route('loginLand')}}">Dashboard</a></li>
+            <li id="qv"><a href="{{route('quesViewer')}}">Question Viewer</a></li>
+            <li id="qe"><a href="{{route('quesEditor')}}">Question Editor</a></li>
+            <li id ="st"><a href="{{route('showStats')}}">Statistics</a></li>
+            <li id ="tv"><a href="{{route('showTasks')}}">Tasks</a></li>
             <!-- <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -31,14 +32,14 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="text text-info">
-                <a href="{{route('memberHome')}}">Welcome<strong> {{strstr(Auth::user()->email,'@', true)}}</strong><span class="sr-only">(current)</span>
+                <a href="{{route('loginLand')}}">Welcome<strong> {{strstr(Auth::user()->email,'@', true)}}</strong><span class="sr-only">(current)</span>
                 </a>
             </li>
             <li id="profile">
                 <a href="{!! route('memberProfile') !!}">Profile</span>
                 </a>
             </li>
-            <li class="page-scroll"><li>
+            <li>
                 <a href="{!! route('logout') !!}">Logout</a>
             </li>
           </ul>

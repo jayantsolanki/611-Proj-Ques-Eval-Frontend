@@ -62,7 +62,7 @@
 	 
 	        <div class="form-group input-group">
 	            <span class="input-group-addon" id="sizing-addon1">Password <i class="glyphicon glyphicon-lock"></i></span>
-	            <input type="password" class="form-control" id="password" name="password" required="" placeholder="Password" aria-describedby="sizing-addon1" value="{!!old('password')!!}">
+	            <input type="password" class="form-control" id="password" name="password" required="" placeholder="Should be at least 6 characters long" aria-describedby="sizing-addon1" value="{!!old('password')!!}">
 	        </div>
 
 	        <div class="form-group input-group">
