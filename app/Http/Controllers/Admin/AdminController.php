@@ -34,12 +34,40 @@ class AdminController extends Controller{
  		$userdetails = UserDetails::where('id',Auth::user()->user_id)->first();
  		return view('admin.editProfile')->with('userDetails', $userdetails);
  	}
- 	public function userManage(){
+ 	public function userManage(Request $data){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
  		}
+ 		if(sizeof($data->all())>0){
+ 			$rules = [
+	            'selectUser' => 'required'
+	        ];
+	        $messages = [   
+	            'selectUser.required' =>  'Please select the profile to be edited'     
+	        ];
+
+        $validator = Validator::make($data->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return redirect()->route('userManage')->withErrors($validator)->withInput($data->all());
+        }
+ 			$user = 'user'.$data->selectUser;
+ 			$data -> user = $data -> $user;
+ 			// return $data->$user;
+ 			DB::transaction(function($data) use ($data){
+	            $userdetails = UserDetails::where('id',$data->selectUser)->first();
+	            $userdetails -> role =  $data->user;
+	            $userdetails ->save();
+
+	            $oldLogin = Login::where('user_id',$data->selectUser)->first();
+	        	$oldLogin -> role =  $data->user;
+	            $oldLogin ->save();
+	        });//end of transaction
+	        return redirect()->route('userManage')->with("success","User profile ".$data->selectUser." updated successfully");
+
+ 		}
  		// add all the current users data here
- 		return view('admin.userManagement')->with('userDetails', Auth::user());
+ 		$userdetails = UserDetails::get();
+ 		return view('admin.userManagement')->with('userDetails', $userdetails);
  	}
  	/**
      * Update user instance after a valid registration.

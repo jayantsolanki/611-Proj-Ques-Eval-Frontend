@@ -46,10 +46,59 @@
 		    </div>
 		@endif
 		<div class="row">
-			<p class="suggestive">Hi {{strstr(Auth::user()->email,'@', true)}}, you can manage your profile here</p>
+			<p class="suggestive">You can manage Users' profiles here</p>
 		</div>
 		<div class="row">
-	
+			<div class="panel panel-default">
+			  <div class="panel-heading">
+			    <h3 class="panel-title">Choose user profile to edit</h3>
+			  </div>
+			  <div class="panel-body">
+			  	<div class="row">
+			  		<div class = "col-md-10">
+			  			<form method="POST" action="{{ route('userManage') }}">
+					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+				  			<table class="table">
+							  <thead>
+							    <tr>
+							      <th scope="col">UserId</th>
+							      <th scope="col">Name</th>
+							      <th scope="col">Email</th>
+							      <th scope="col">Gender</th>
+							      <th scope="col">Role</th>
+							      <th scope="col"><span class="text text-warning">Select User to edit</span></th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  	@foreach ($userDetails as $userDetail)
+							  	<tr>
+							      <th scope="row">{{$userDetail->id}}</th>
+							      <td>{{$userDetail->name}}</td>
+							      <td>{{$userDetail->email}}</td>
+							      <td>@if($userDetail->gender==1) Male @else Female @endif</td>
+							      <td>
+							      	<select class="form-control" name="user{{$userDetail->id}}" id="role">
+										<option value="0" disabled selected>Choose role</option>
+										<option value="1" @if($userDetail->role==1) selected @endif> Normal User</option>
+										<option value="2" @if($userDetail->role==2) selected @endif> Admin</option>
+									</select>
+								</td>
+								<td>
+									<input name="selectUser" type="radio" id="test1" value="{{$userDetail->id}}"/>
+								</td>
+							    </tr>
+							  	@endforeach
+							  </tbody>
+							</table>
+					 
+					        <div class="form-group">
+					            <button style="cursor:pointer" type="submit" class="btn btn-success">Save Change</button>
+					        </div>
+					    </form>
+			  		</div>
+			  	</div>
+			  </div>
+			</div>
 			
 		</div>
 	    
