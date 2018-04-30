@@ -150,7 +150,7 @@
 
 				<div class="panel panel-default">
 				  <div class="panel-heading">
-				    <h3 class="panel-title">Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b>@endif&nbsp;&nbsp Year: <b class="text text-warning">{{$fetchQues->year}}</b></h3>
+				    <h3 class="panel-title">Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b>@endif&nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}&nbsp;&nbsp;<a href="{{route('quesEditor')}}?qid={{$fetchQues->id}}&type=editques" class="glyphicon glyphicon-pencil text text-info pull-right">Edit</a></h3>
 				  </div>
 				  <div class="panel-body">
 				    <div class="card card-info" role="alert">@if($fetchQues->question_text == null)<h3 class="text text-center">This question has only image</h3>@else {{$fetchQues->question_text}}@endif
