@@ -107,7 +107,7 @@
 					<input type="hidden" name="new" value="goto">
 				</div>
 				<div class=" input-group  col-md-2">
-					<button style="cursor:pointer" type="submit" class="btn btn-info">Goto</button>
+					<button style="cursor:pointer" type="submit" class="btn btn-info">See Question</button>
 				</div>
 			</form>
 		    @endif
@@ -120,7 +120,9 @@
 				@else
 				<div class="panel panel-default">
 				  <div class="panel-heading">
-				    <h3 class="panel-title">Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b>@endif&nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}&nbsp;&nbsp;<a href="{{route('quesEditor')}}?qid={{$fetchQues->id}}&type=editques" class="glyphicon glyphicon-pencil text text-info pull-right">Edit</a></b></h3>
+				    <h3 class="panel-title">
+				    	Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b>@endif&nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;
+				    </h3>
 				  </div>
 				  <div class="panel-body">
 				  	<div class="ques row">
@@ -153,9 +155,15 @@
 							    </li>
 							  </ul>
 							</form>
+							<form method="POST" action="{{ route('quesEditor') }}">
+				    		<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				    		<input type="hidden" name="qid" value="{{$fetchQues->id}}">
+							<input type="hidden" name="type" value="editques">
+				    		<button style="cursor:pointer" type="submit" class=" text text-small btn btn-info glyphicon glyphicon-pencil pull-right"> Edit</button>
+				    	</form>
 						</div>
 					</div>
-				    <div class="card card-info col-md-7"  role="alert">@if($fetchQues->question_text == null)<span class="text text-left">This question has only image</span>@else {{$fetchQues->question_text}}@endif
+				    <div class="card card-info col-md-7"  role="alert">@if($fetchQues->question_text == null)<span class="text text-left">This question only has an image</span>@else {{$fetchQues->question_text}}@endif
 				    </div><br/>
 				    <div class="quesbody row">
 					    

@@ -31,7 +31,7 @@
               </ul>
             </li>
             <li  id="usermang">
-                <a href="{!! route('userManage') !!}">Manage Users <span class="badge badge-danger">@if(Auth::user()->role==2) {{$inactiveUsers}} @endif</span>
+                <a href="{!! route('userManage') !!}">Manage Users <span class="badge badge-danger">@if(Auth::user()->role==2 && $inactiveUsers>0) {{$inactiveUsers}} @endif</span>
                 </a>
             </li>
             <li>

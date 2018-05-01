@@ -68,7 +68,7 @@
 							<p class="suggestive">Create new Question</p>
 							<div class="row">
 						</div>
-					        <div class="form-group input-group col-md-6">
+					        <div class="form-group input-group col-md-10">
 					            <span class="input-group-addon" id="sizing-addon1">Question Text <i class=""></i></span>
 					            <input type="text" class="form-control"  placeholder="Question Text, optional" id="qtext" name="qtext" value="{!!old('qtext')!!}">
 					        </div>
@@ -131,10 +131,11 @@
 					        </div>
 					        <hr>
 					 
-					        <div class="form-group pull-right">
-					            <button style="cursor:pointer" type="submit" class="btn btn-success glyphicon glyphicon-floppy-save">Save</button>
+					        <div class="form-group">
+					            <button style="cursor:pointer" type="submit" class="btn btn-success glyphicon glyphicon-floppy-save pull-right"> Save</button>
 					        </div>
 					    </form>
+					    <button style="cursor:pointer"  class="btn btn-info pull-left glyphicon glyphicon-arrow-left" onclick="goBack1()"> Go back</button>
 			  			
 			  		</div>
 			  	</div>
@@ -155,7 +156,7 @@
 							<p class="suggestive">Edit Question id {{$qid}}</p>
 							<div class="row">
 						</div>
-					        <div class="form-group input-group col-md-6">
+					        <div class="form-group input-group col-md-10">
 					            <span class="input-group-addon" id="sizing-addon1">Question Text <i class=""></i></span>
 					            <input type="text" class="form-control"  placeholder="Question Text, optional" id="qtext" name="qtext" value="{{$fetchQues->question_text}}">
 					        </div>
@@ -218,10 +219,12 @@
 					        </div>
 					        <hr>
 					 
-					        <div class="form-group pull-right">
-					            <button style="cursor:pointer" type="submit" class="glyphicon glyphicon-ok btn btn-success">Update</button>
+					        <div class="form-group">
+					            
+					            <button style="cursor:pointer" type="submit" class="btn btn-success glyphicon glyphicon-floppy-save pull-right"> Save</button>
 					        </div>
 					    </form>
+					    <button style="cursor:pointer"  class="btn btn-info pull-left glyphicon glyphicon-arrow-left" onclick="goBack2()"> Go back</button>
 			  			
 			  		</div>
 			  	</div>
@@ -238,5 +241,11 @@
 	$(document).ready( function() {
 		$('#qe').addClass('active');
 	});
+	function goBack1() {
+	    window.history.back();
+	}
+	function goBack2() {
+	    window.history.back();
+	}
 </script>
 @endsection

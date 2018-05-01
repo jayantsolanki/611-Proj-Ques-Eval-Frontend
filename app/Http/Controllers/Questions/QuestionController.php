@@ -40,7 +40,7 @@ class QuestionController extends Controller{
 			        $fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 			        // return $fetchQues;
 					if(sizeof($fetchQues)==0)
-						return redirect()->route('quesViewer')->with('error',"Invalid question id range")->with('inactiveUsers', $inactiveUsers);
+						return redirect()->route('quesViewer')->with('error',"IPlease enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
 					else
 					{
 						$count = QuestionMaster::where('year',$data -> year)->count();
@@ -52,7 +52,7 @@ class QuestionController extends Controller{
 			 				$next = 0;
 			 			else
 			 				$next = $fetchQues->quid + 1;
-						return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', $fetchQues->year)->with('category', $fetchQues->category_id)->with('difficulty', $fetchQues->pre_tag)->with('fetchQues',$fetchQues)->with('years',$years)->with("count",$count)->with('previous',$previous)->with('next',$next)->with('inactiveUsers', $inactiveUsers);
+						return view('questions.viewQuest')->with('userDetails', fAuth::user())->with('defaultyear', $fetchQues->year)->with('category', $fetchQues->category_id)->with('difficulty', $fetchQues->pre_tag)->with('fetchQues',$fetchQues)->with('years',$years)->with("count",$count)->with('previous',$previous)->with('next',$next)->with('inactiveUsers', $inactiveUsers);
 					}
 
 	 			}
@@ -69,8 +69,10 @@ class QuestionController extends Controller{
 		            'year.integer'        =>  'Year must be integer',
 		            'new' =>  'Must be either previous, next, goto or filter',
 		            'current.integer' =>  'Question id must be integer',
-		            'current.max' =>  'Question id must be below 3000',
-		            'current.min' =>  'Question id must be above 0'
+		            'current.max' =>  'Question id must be between the range given',
+		            'current.min' =>  'Question id must be above 0',
+		            'current.digits_between' =>  'Question id must be between the range given'
+
 		        ];
 		        $validator = Validator::make($data->all(), $rules, $messages);
 		        // return (string)$validator->fails();
@@ -123,7 +125,7 @@ class QuestionController extends Controller{
 				}
 				else//if no results than switch to default
 				{
-					return redirect()->route('quesViewer')->with('error',"Invalid question id range")->with('inactiveUsers', $inactiveUsers);
+					return redirect()->route('quesViewer')->with('error',"Please enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
 					// $fetchQues = QuestionMaster::where('year', $data -> year)->where('quid', '=', $data -> current)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->first();
 					// if($fetchQues->quid == '1')
 	 			// 		$previous = 0;

@@ -55,7 +55,7 @@
 			  </div>
 			  <div class="panel-body">
 			  	<div class="row">
-			  		<div class = "col-md-10">
+			  		<div class = "col-md-12">
 			  			<form method="POST" action="{{ route('userManage') }}">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 				  			<table class="table">
@@ -64,7 +64,7 @@
 							      <th scope="col">UserId</th>
 							      <th scope="col">Name</th>
 							      <th scope="col">Email</th>
-							      <th scope="col">Gender</th>
+							      <!-- <th scope="col">Gender</th> -->
 							      <th scope="col">Role</th>
 							      <th scope="col">Access</th>
 							      <th scope="col"><span class="text text-warning">Select User to edit</span></th>
@@ -77,14 +77,14 @@
 										{{$userDetail->id}}
 									</th>
 									<td>
-										{{$userDetail->name}}
+										@if($userDetail->active==0) <span class="badge badge-danger">new</span> @endif {{$userDetail->name}}
 									</td>
 									<td>
 										{{$userDetail->email}}
 									</td>
-									<td>
+									<!-- <td>
 										@if($userDetail->gender==1) Male @else Female @endif
-									</td>
+									</td> -->
 									<td>
 										<select class="form-control" name="userRole{{$userDetail->id}}" id="role">
 											<option value="0" disabled selected>Choose role</option>
@@ -100,8 +100,8 @@
 											<option value="2" @if($userDetail->active==2) selected @endif> Blacklisted</option>
 										</select>
 									</td>
-									<td>
-										<input name="selectUser" type="radio" id="test1" value="{{$userDetail->id}}"/>
+									<td class="text text-center" for="test{{$userDetail->id}}">
+										<input name="selectUser" type="radio" id="test{{$userDetail->id}}" value="{{$userDetail->id}}"/>
 									</td>
 							    </tr>
 							  	@endforeach
@@ -109,7 +109,7 @@
 							</table>
 					 
 					        <div class="form-group">
-					            <button style="cursor:pointer" type="submit" class="btn btn-success">Save Change</button>
+					            <button style="cursor:pointer" type="submit" class="btn btn-success pull-right">Save changes</button>
 					        </div>
 					    </form>
 			  		</div>
