@@ -107,7 +107,8 @@
 					        </div>
 					 
 					        <div class="form-group">
-					            <button style="cursor:pointer" type="submit" class="btn btn-success">Save</button>
+					            <button style="cursor:pointer"  class="btn btn-info pull-left" onclick="goBack()">Go back</button>
+					            <button style="cursor:pointer" type="submit" class="btn btn-success pull-right">Save</button>
 					        </div>
 					    </form>
 			  		</div>
@@ -125,5 +126,8 @@
 	$(document).ready( function() {
 		$('#editprofile').addClass('active');
 	});
+	function goBack() {
+	    window.history.back();
+	}
 </script>
 @endsection

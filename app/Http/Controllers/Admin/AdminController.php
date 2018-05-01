@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Auth;
 use App\UserDetails;
+use App\UserFullDetails;
 use App\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,23 +18,28 @@ class AdminController extends Controller{
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
  		}
- 		return view('admin.home')->with('userDetails', Auth::user());
+        $inactiveUsers = Login::where('active',0)->count();
+ 		return view('admin.home')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers);
  	}
  	public function showProfile(){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
  		}
+        $inactiveUsers = Login::where('active',0)->count();
  		$userdetails = UserDetails::where('id',Auth::user()->user_id)->first();
  		// return $userdetails;
- 		return view('admin.profile')->with('userDetails', $userdetails);
+ 		return view('admin.profile')->with('userDetails', $userdetails)->with('inactiveUsers', $inactiveUsers);
  	}
  	public function editProfile(){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
  		}
+        $inactiveUsers = Login::where('active',0)->count();
  		$userdetails = UserDetails::where('id',Auth::user()->user_id)->first();
- 		return view('admin.editProfile')->with('userDetails', $userdetails);
+ 		return view('admin.editProfile')->with('userDetails', $userdetails)->with('inactiveUsers', $inactiveUsers);
  	}
+
+    /*****************Manage user profile******************/
  	public function userManage(Request $data){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
@@ -46,28 +52,44 @@ class AdminController extends Controller{
 	            'selectUser.required' =>  'Please select the profile to be edited'     
 	        ];
 
-        $validator = Validator::make($data->all(), $rules, $messages);
-        if ($validator->fails()) {
-            return redirect()->route('userManage')->withErrors($validator)->withInput($data->all());
-        }
- 			$user = 'user'.$data->selectUser;
- 			$data -> user = $data -> $user;
- 			// return $data->$user;
+            $validator = Validator::make($data->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return redirect()->route('userManage')->withErrors($validator)->withInput($data->all());
+            }
+            $inactiveUsers = Login::where('active',0)->count();
+            if(Auth::user()->user_id == $data->selectUser){
+                return redirect()->route('userManage')->with('error',"You are not allowed to configure your own account")->with('inactiveUsers', $inactiveUsers);
+            }
+            //hack
+ 			$user = 'userRole'.$data->selectUser;
+ 			$data -> userRole = $data -> $user;
+            $user = 'userActive'.$data->selectUser;
+            $data -> userActive = $data -> $user;
+            $userdetails = UserDetails::where('id',$data->selectUser)->first();
+ 			// return $data->selectUser;
  			DB::transaction(function($data) use ($data){
 	            $userdetails = UserDetails::where('id',$data->selectUser)->first();
-	            $userdetails -> role =  $data->user;
+	            $userdetails -> role =  $data->userRole;
 	            $userdetails ->save();
 
 	            $oldLogin = Login::where('user_id',$data->selectUser)->first();
-	        	$oldLogin -> role =  $data->user;
+	        	$oldLogin -> role =  $data->userRole;
+                $oldLogin -> active =  $data->userActive;
 	            $oldLogin ->save();
+                $data->name = $userdetails->name;
 	        });//end of transaction
-	        return redirect()->route('userManage')->with("success","User profile ".$data->selectUser." updated successfully");
+            $inactiveUsers = Login::where('active',0)->count();
+	        return redirect()->route('userManage')->with("success","User profile ".$data->name." updated successfully")->with('inactiveUsers', $inactiveUsers);
 
  		}
  		// add all the current users data here
- 		$userdetails = UserDetails::get();
- 		return view('admin.userManagement')->with('userDetails', $userdetails);
+ 		// $userdetails = UserDetails::get();
+        $userdetails = UserDetails::select('user_details.id','name','user_details.email','user_details.role','active')
+       ->join('login','login.user_id','=','user_details.id')
+       ->get();
+        // return $userdetails;
+        $inactiveUsers = Login::where('active',0)->count();
+ 		return view('admin.userManagement')->with('userDetails', $userdetails)->with('inactiveUsers', $inactiveUsers);
  	}
  	/**
      * Update user instance after a valid registration.
@@ -91,11 +113,11 @@ class AdminController extends Controller{
             'gender.required' =>  'Gender is compulsory'
             
         ];
-
+        $inactiveUsers = Login::where('active',0)->count();
         $validator = Validator::make($data->all(), $rules, $messages);
         // return (string)$validator->fails();
         if ($validator->fails()) {
-            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all());
+            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all())->with('inactiveUsers', $inactiveUsers);
         }
         // checking if new email is already in the database or not
         if(Auth::user()->email!=$data->email){
@@ -109,7 +131,7 @@ class AdminController extends Controller{
 	        $validator = Validator::make($data->all(), $rules, $messages);
 	        // return (string)$validator->fails();
 	        if ($validator->fails()) {
-	            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all());
+	            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all())->with('inactiveUsers', $inactiveUsers);
 	        }
         }
         //check if security question is changed
@@ -124,13 +146,13 @@ class AdminController extends Controller{
 	        $validator = Validator::make($data->all(), $rules, $messages);
 	        // return (string)$validator->fails();
 	        if ($validator->fails()) {
-	            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all());
+	            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all())->with('inactiveUsers', $inactiveUsers);
 	        }
         }
         // Check currentpassword and storedpassword match. Use Hash
         $oldpassword = $data->oldpassword;
         if(!(Hash::check($oldpassword, Auth::user()->password))) {
-            return redirect()->route('adminEditProfile')->with('error','Incorrect Current Password')->withInput($data->all());;
+            return redirect()->route('adminEditProfile')->with('error','Incorrect Current Password')->withInput($data->all())->with('inactiveUsers', $inactiveUsers);
         }
         //save new password
         if($data->password!=null){
@@ -144,7 +166,7 @@ class AdminController extends Controller{
 	        $validator = Validator::make($data->all(), $rules, $messages);
 	        // return (string)$validator->fails();
 	        if ($validator->fails()) {
-	            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all());
+	            return redirect()->route('adminEditProfile')->withErrors($validator)->withInput($data->all())->with('inactiveUsers', $inactiveUsers);
 	        }
         }
 
@@ -165,6 +187,6 @@ class AdminController extends Controller{
             	$oldLogin -> password =  bcrypt($data['password']);
             $oldLogin ->save();
         });//end of transaction
-        return redirect()->route('adminProfile')->with("success","Account updated successfully");
+        return redirect()->route('adminProfile')->with("success","Account updated successfully")->with('inactiveUsers', $inactiveUsers);
     }
 }

@@ -18,5 +18,5 @@ class UserDetails extends Model
 	 *
 	 * @var array
 	 */
-	protected $hidden = array();
+	protected $hidden = ['securityQuestion', 'securityAnswer'];
 }

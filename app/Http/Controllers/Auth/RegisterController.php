@@ -107,10 +107,10 @@ class RegisterController extends Controller
             $newLogin -> email =  $data['email'];
             $newLogin -> password =  bcrypt($data['password']);
             $newLogin -> role =  1;
-            $newLogin -> active =  1;
+            $newLogin -> active =  0;
             $newLogin ->save();
         });//end of transaction
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'Account created successfully, please wait for account activation by Admin');;
     }
 
     

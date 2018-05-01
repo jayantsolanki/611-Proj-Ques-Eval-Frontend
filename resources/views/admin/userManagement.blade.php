@@ -66,26 +66,43 @@
 							      <th scope="col">Email</th>
 							      <th scope="col">Gender</th>
 							      <th scope="col">Role</th>
+							      <th scope="col">Access</th>
 							      <th scope="col"><span class="text text-warning">Select User to edit</span></th>
 							    </tr>
 							  </thead>
 							  <tbody>
 							  	@foreach ($userDetails as $userDetail)
 							  	<tr>
-							      <th scope="row">{{$userDetail->id}}</th>
-							      <td>{{$userDetail->name}}</td>
-							      <td>{{$userDetail->email}}</td>
-							      <td>@if($userDetail->gender==1) Male @else Female @endif</td>
-							      <td>
-							      	<select class="form-control" name="user{{$userDetail->id}}" id="role">
-										<option value="0" disabled selected>Choose role</option>
-										<option value="1" @if($userDetail->role==1) selected @endif> Normal User</option>
-										<option value="2" @if($userDetail->role==2) selected @endif> Admin</option>
-									</select>
-								</td>
-								<td>
-									<input name="selectUser" type="radio" id="test1" value="{{$userDetail->id}}"/>
-								</td>
+									<th scope="row">
+										{{$userDetail->id}}
+									</th>
+									<td>
+										{{$userDetail->name}}
+									</td>
+									<td>
+										{{$userDetail->email}}
+									</td>
+									<td>
+										@if($userDetail->gender==1) Male @else Female @endif
+									</td>
+									<td>
+										<select class="form-control" name="userRole{{$userDetail->id}}" id="role">
+											<option value="0" disabled selected>Choose role</option>
+											<option value="1" @if($userDetail->role==1) selected @endif> Normal User</option>
+											<option value="2" @if($userDetail->role==2) selected @endif> Admin</option>
+										</select>
+									</td>
+									<td>
+										<select class="form-control" name="userActive{{$userDetail->id}}" id="active">
+											<option value="" disabled selected>Choose role</option>
+											<option value="0" @if($userDetail->active==0) selected @endif> Inactive</option>
+											<option value="1" @if($userDetail->active==1) selected @endif> Active</option>
+											<option value="2" @if($userDetail->active==2) selected @endif> Blacklisted</option>
+										</select>
+									</td>
+									<td>
+										<input name="selectUser" type="radio" id="test1" value="{{$userDetail->id}}"/>
+									</td>
 							    </tr>
 							  	@endforeach
 							  </tbody>

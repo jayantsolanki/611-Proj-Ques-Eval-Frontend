@@ -23,28 +23,35 @@
 
 @section('content')
 	<div class="container">
-		@if (session('success'))
-		<div class="alert alert-success text-center">
-			<p>{{session('success')}}</p>
-		</div>
-		@endif
-
-		@if (session('error'))
-		<div class="alert alert-danger">
-			{{session('error')}}
-		</div>
-		@endif
-		@if (count($errors) > 0)
-		    <div class="alert alert-danger">
-		        <ul>
-		            @foreach ($errors->all() as $error)
-		                <li>{{ $error }}</li>
-		            @endforeach
-		        </ul>
-		    </div>
-		@endif
 		<div class="row">
 			<p class="suggestive">View and Edit Questions</p>
+			@if (session('updatesuccess'))
+			<div class="alert alert-success text-center">
+				<p>Question Updated Successfully, <a  target=blank href="{{route('quesViewer')}}/?qid={{session('updatesuccess')}}">Visit the updated Question</a></p>
+			</div>
+			@endif
+			@if (session('createsuccess'))
+			<div class="alert alert-success text-center">
+				<p>Question Added Successfully, <a  target=blank href="{{route('quesViewer')}}/?qid={{session('createsuccess')}}">Visit the created Question</a></p>
+			</div>
+			@endif
+
+			@if (session('error'))
+			<div class="alert alert-danger">
+				<ul>
+				<li>{{session('error')}}</li>
+				</ul>
+			</div>
+			@endif
+			@if (count($errors) > 0)
+			    <div class="alert alert-danger">
+			        <ul>
+			            @foreach ($errors->all() as $error)
+			                <li>{{ $error }}</li>
+			            @endforeach
+			        </ul>
+			    </div>
+			@endif
 		</div>
 		<div class="row">
 			@if($qid==0)

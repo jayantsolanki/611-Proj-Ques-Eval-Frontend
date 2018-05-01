@@ -15,7 +15,7 @@
       font-size: 14 !important;
     }
     .ques {
-      margin: 0px 10px 20px 10px;
+      margin: 0px 00px 0px 0px;
       text-align: right;
     }
     .corr {
@@ -89,74 +89,81 @@
 						</select>
 			        </div>
 			        <div class=" input-group col-md-2">
-			            <button style="cursor:pointer" type="submit" class="btn btn-danger">Change Filter</button>
+			            <button style="cursor:pointer" type="submit" class="btn btn-info">Change Filter</button>
 			        </div>
 			    </div> 
 		            
 		    </form>
 		    <br/>
+		    <label>Year {{$defaultyear}} has {{$count}} Questions, id ranging 1 to {{$count}}</label>
 		    <form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
-		    	<div class="input-group col-md-offset-0">
+				<div class="input-group col-md-offset-0">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<input type="hidden" name="year" value="{{ $defaultyear }}">
 					<input type="hidden" name="difficulty" value="{{ $difficulty }}">
 					<input type="hidden" name="category" value="{{ $category }}">
 					<input type="text" class="form-control" name="current" value="{{ $fetchQues->quid }}">
+
 					<input type="hidden" name="new" value="goto">
 				</div>
-			  <div class=" input-group  col-md-2">
-		            <button style="cursor:pointer" type="submit" class="btn btn-danger">Goto</button>
-		        </div>
+				<div class=" input-group  col-md-2">
+					<button style="cursor:pointer" type="submit" class="btn btn-info">Goto</button>
+				</div>
 			</form>
 		    @endif
 		</div>
+		<hr>
 		<div class="row">
 			<div>
 				@if($fetchQues == null)
 				<p class="label label-danger">No questions found</p>
 				@else
-				<div class="ques row">
-					<div class=" pull-left">
-						<form name="prevQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
-							<input type="hidden" name="_token" value="{{ csrf_token() }}">
-							<input type="hidden" name="year" value="{{ $defaultyear }}">
-							<input type="hidden" name="difficulty" value="{{ $difficulty }}">
-							<input type="hidden" name="category" value="{{ $category }}">
-							<input type="hidden" name="current" value="{{ $fetchQues->quid }}">
-							<input type="hidden" name="new" value="previous">
-						  <ul class="pagination justify-content-end">
-						    <li class="page-item @if($previous == 0) disabled @endif">
-						      <a class="page-link" href="@if($previous == 0) # @else javascript: submitprev() @endif" tabindex="-1">Previous</a>
-						    </li>
-						  </ul>
-						</form>
-					</div>
-					<div class="pull-right">
-						<form name="nextQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
-							<input type="hidden" name="_token" value="{{ csrf_token() }}">
-							<input type="hidden" name="year" value="{{ $defaultyear }}">
-							<input type="hidden" name="difficulty" value="{{ $difficulty }}">
-							<input type="hidden" name="category" value="{{ $category }}">
-							<input type="hidden" name="current" value="{{ $fetchQues->quid }}">
-							<input type="hidden" name="new" value="next">
-						  <ul class="pagination justify-content-end">
-						    <li class="page-item @if($next == 0) disabled @endif">
-						      <a class="page-link" href="@if($next == 0) # @else javascript: submitnext() @endif">Next</a>
-						    </li>
-						  </ul>
-						</form>
-					</div>
-				</div>
-
 				<div class="panel panel-default">
 				  <div class="panel-heading">
-				    <h3 class="panel-title">Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b>@endif&nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}&nbsp;&nbsp;<a href="{{route('quesEditor')}}?qid={{$fetchQues->id}}&type=editques" class="glyphicon glyphicon-pencil text text-info pull-right">Edit</a></h3>
+				    <h3 class="panel-title">Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b>@endif&nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}&nbsp;&nbsp;<a href="{{route('quesEditor')}}?qid={{$fetchQues->id}}&type=editques" class="glyphicon glyphicon-pencil text text-info pull-right">Edit</a></b></h3>
 				  </div>
 				  <div class="panel-body">
-				    <div class="card card-info" role="alert">@if($fetchQues->question_text == null)<h3 class="text text-center">This question has only image</h3>@else {{$fetchQues->question_text}}@endif
+				  	<div class="ques row">
+						<div class=" pull-left">
+							<form name="prevQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
+								<input type="hidden" name="_token" value="{{ csrf_token() }}">
+								<input type="hidden" name="year" value="{{ $defaultyear }}">
+								<input type="hidden" name="difficulty" value="{{ $difficulty }}">
+								<input type="hidden" name="category" value="{{ $category }}">
+								<input type="hidden" name="current" value="{{ $fetchQues->quid }}">
+								<input type="hidden" name="new" value="previous">
+							  <ul class="pagination justify-content-end">
+							    <li class="page-item @if($previous == 0) disabled @endif">
+							      <a class="page-link" href="@if($previous == 0) # @else javascript: submitprev() @endif" tabindex="-1"><< See previous question</a>
+							    </li>
+							  </ul>
+							</form>
+						</div>
+						<div class="pull-right">
+							<form name="nextQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
+								<input type="hidden" name="_token" value="{{ csrf_token() }}">
+								<input type="hidden" name="year" value="{{ $defaultyear }}">
+								<input type="hidden" name="difficulty" value="{{ $difficulty }}">
+								<input type="hidden" name="category" value="{{ $category }}">
+								<input type="hidden" name="current" value="{{ $fetchQues->quid }}">
+								<input type="hidden" name="new" value="next">
+							  <ul class="pagination justify-content-end">
+							    <li class="page-item @if($next == 0) disabled @endif">
+							      <a class="page-link" href="@if($next == 0) # @else javascript: submitnext() @endif">See next question >></a>
+							    </li>
+							  </ul>
+							</form>
+						</div>
+					</div>
+				    <div class="card card-info col-md-7"  role="alert">@if($fetchQues->question_text == null)<span class="text text-left">This question has only image</span>@else {{$fetchQues->question_text}}@endif
 				    </div><br/>
 				    <div class="quesbody row">
-					    <div class="list-group col-md-3">
+					    
+						<div align="middle" class="card col-md-7">
+					    	@if($fetchQues->question_img == null)
+					    	<img class="picimg" src="/img/qwdara/noimage.png"/>@else <img width= "70%" height="70%" id="imgpic" class="picimg" src="/img/qwdara/{{$fetchQues->year}}/{{$fetchQues->question_img}}" width= "70%" height="70%" onError="this.onerror=null;this.src='/img/qwdara/default-image.png';"/>@endif
+					    </div>
+					    <div class="list-group col-md-5">
 						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 1) list-group-item-success @endif">Option 1: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option1 }}</a>
 						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 2) list-group-item-success @endif">Option 2: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option2 }}</a>
 						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 3) list-group-item-success @endif">Option 3: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option3 }}</a>
@@ -164,11 +171,9 @@
 						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 5) list-group-item-success @endif">Option 5: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option5 }}</a>
 						  <p class="label label-success">Correct Option: &nbsp;&nbsp;&nbsp;{{ $fetchQues->answer_option1 }}</p>
 						</div>
-						<div align="middle" class="card col-md-9">
-					    	@if($fetchQues->question_img == null)
-					    	<h3 class="text text-center">This question has no image</h3>@else <img src="/img/qwdara/{{$fetchQues->year}}/{{$fetchQues->question_img}}" width="70%" height="70%"/>@endif
-					    </div>
 					</div>
+					<hr>
+					
 				  </div>
 				</div>
 
@@ -181,15 +186,20 @@
 
 @endsection
 @section('scripts')
-<script type="text/javascript">
+<script type="text/javascript"> 
 	$(document).ready( function() {
 		$('#qv').addClass('active');
 	});
-</script>
- <script type="text/javascript"> 
-    function submitprev() {   document.prevQuest.submit(); } 
-</script> 
-<script type="text/javascript"> 
-    function submitnext() {   document.nextQuest.submit(); } 
+
+	function submitprev() {
+	   document.prevQuest.submit(); 
+	}
+    function submitnext() {   
+    	document.nextQuest.submit(); 
+    } 
+    function myFunction() {
+	    // alert('The image could not be loaded.');
+	    document.getElementById("imgpic").src="/img/qwdara/default-image.png";
+	}
 </script> 
 @endsection

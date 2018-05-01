@@ -22,7 +22,16 @@ class UserAuthController extends Controller{
     public function loginLand(){
 
         if(Auth::check()){
+            //authenticated successfully, now cheeck for roles and activity
             //return redirect()->route('reg_home');  //route for dashboard
+            if(Auth::user()->active == 0){// for deactivated user
+                // return Auth::user();
+                return redirect()->route('login')->with('error', 'Your account is not active, please contact the Admin');
+            }
+            if(Auth::user()->active == 2){// for deactivated user
+                // return Auth::user();
+                return redirect()->route('login')->with('error', 'Your account has been blacklisted, please contact the Admin');
+            }
             if(Auth::user()->role == 1 && Auth::user()->active == 1){// for normal user
                 // return Auth::user();
                 return redirect()->route('memberHome');
@@ -30,7 +39,8 @@ class UserAuthController extends Controller{
             if(Auth::user()->role == 2 && Auth::user()->active == 1){//for admin
                 // return Auth::user();
                 return redirect()->route('adminHome');
-            }else{
+            }
+            else{
                 return redirect()->route('login')->with('error', 'Not a user.');
             }
         }
@@ -66,9 +76,18 @@ class UserAuthController extends Controller{
                 // return Auth::user();
                 return redirect()->route('adminHome');
             }else{
-                return redirect()->route('login')->with('error', 'Not a user.');
+                return redirect()->route('login')->with('error', 'Unknown role given to you, please contact Admin');
             }
-        } else {
+        } 
+        else if (Auth::attempt(['email' => $request->username, 'password' => $request->password, 'active' => 0])) {
+            // Authentication passed...
+            return redirect()->route('login')->with('error', 'Your account is not active, please contact the Admin');
+        }
+        else if (Auth::attempt(['email' => $request->username, 'password' => $request->password, 'active' => 2])) {
+            // Authentication passed...
+            return redirect()->route('login')->with('error', 'Your account has been blacklisted, please contact the Admin');
+        }
+        else {
             Auth::logout();
 			Session::flush();
         	return redirect()->route('login')->with('error', 'Please type your correct credentials.');
