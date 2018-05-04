@@ -140,8 +140,10 @@ Route::any('question/showTasks',[
 	'uses' => 'Questions\QuestionController@showTasks'
 ]);
 
-Route::group(['middleware' => 'auth'], function (){
+/*****************Question Analysis Controller*************/
 
-	
-
-});
+Route::any('analysis/createFeatures',[
+	'as' => 'createFeatures',
+	'middleware' => 'auth',
+	'uses' => 'MlAnalysis\QAnalysisController@createFeatures'
+]);
