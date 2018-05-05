@@ -159,7 +159,7 @@
 												<input type="hidden" name="_token" value="{{ csrf_token() }}">
 												<input type="hidden" name="taskId" value="{{$Task->id}}">
 												<input type="hidden" name="year" value="{{$defaultyear}}">
-												<button style="cursor:pointer" type="submit" class="label btn-info">See Info</button>
+												<button style="cursor:pointer" type="submit" class="label btn-info">View Info</button>
 											</form>
 										</span>
 										@endif

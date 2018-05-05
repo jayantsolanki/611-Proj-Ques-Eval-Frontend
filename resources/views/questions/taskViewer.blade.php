@@ -97,6 +97,9 @@
 	  -o-transform: scale(1, -1);
 	  transform: scale(1, -1);
 	}
+	.hideSpan 
+
+		{ display: none; }
   </style>
 @endsection
 
@@ -221,7 +224,15 @@
 										@if($Task->status==0) <span id="status{{$Task->id}}" class="label label-warning">Created</span>
 										@elseif($Task->status==1) <span id="status{{$Task->id}}" class="label label-info">Ongoing</span>
 										@else
-										<span id="status{{$Task->id}}" class="label label-success">Completed</span>
+										<span id="sstatus{{$Task->id}}">
+											<form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('showStats') }}">
+												<input type="hidden" name="_token" value="{{ csrf_token() }}">
+												<input type="hidden" name="taskId" value="{{$Task->id}}">
+												<input type="hidden" name="year" value="{{$Task->year}}">
+												<button style="cursor:pointer" type="submit" class="label btn-success">Completed, View Info</button>
+											</form>
+										</span>
+										
 										@endif
 									</td>
 									<td>
@@ -292,20 +303,26 @@
 		        var progress = '#progress'+response['id']
 		        var circle = '#circle'+response['id']
 		        var status = '#status'+response['id']
+		        var sstatus = '#sstatus'+response['id']
 		        var accuracy = '#accuracy'+response['id']
 		        var time = '#time'+response['id']
 		        $(progress).html(response['progress']+"%")
 		        $(time).html(response['updated_at'])
+		        // $(sstatus).remove();
 		        if(response['progress']>0 && response['progress']<100){
 		        	$(circle).attr('class', 'glyphicon glyphicon-refresh gly-spin')
 		        	$(status).html("Ongoing")
 		        	$(status).attr('class', 'label label-info');
+		        	$(sstatus).attr('class', 'hideSpan');
 		        }
 		        if(response['progress']==100){
 		        	$(circle).removeClass( "glyphicon glyphicon-refresh gly-spin" )
-		        	$(status).html("Completed")
-		        	$(status).attr('class', 'label label-success');
+		        	$(status).html("<form name='gotoQuest' class ='form-inline' method='POST' action='{{ route('showStats') }}'>												<input type='hidden' name='_token' value='{{ csrf_token() }}'>												<input type='hidden' name='taskId' value='{{$Task->id}}'>												<input type='hidden' name='year' value='{{$Task->year}}''>												<button style='cursor:pointer' type='submit' class='label btn-success'>Completed, View Info</button>											</form>");
+		        	// $(sstatus).removeClass('hideSpan');
+		        	// $(status).attr('class', 'hideSpan');
+		        	$(status).removeClass('label label-info');
 		        	$(accuracy).html(response['accuracy']+"%")
+		        	// hideSpan
 		        }
 		        
 		    },

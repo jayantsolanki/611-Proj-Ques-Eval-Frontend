@@ -16,7 +16,6 @@
             <li id="qv"><a href="{{route('quesViewer')}}">Question Viewer</a></li>
             <li id="qe"><a href="{{route('quesEditor')}}">Question Editor</a></li>
             <li id ="st"><a href="{{route('showStats')}}">Statistics</a></li>
-            <li id ="tv"><a href="{{route('showTasks')}}">Tasks</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="text text-info">
