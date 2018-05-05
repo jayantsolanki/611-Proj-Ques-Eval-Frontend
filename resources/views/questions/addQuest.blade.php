@@ -153,7 +153,7 @@
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <input type="hidden" name="type" value="updateques">
 					        <input type="hidden" name="qid" value="{{$qid}}">
-							<p class="suggestive">Edit Question id {{$qid}}</p>
+							<p class="suggestive">Edit Question id {{$fetchQues->quid}}</p>
 							<div class="row">
 						</div>
 					        <div class="form-group input-group col-md-10">
@@ -168,11 +168,12 @@
 					        <hr>
 					        <label class="text text-info">Choose Diffculty and Category</label>
 					        <div class="form-group input-group">
-								<input required name="difficulty" type="radio" id="test1" value="1" @if(old('difficulty') == 0) checked @elseif($fetchQues->pre_tag == 0) checked @endif/>
+					        	<label >Predicted Tagging @if($fetchQues->post_tag == 0) <b class ="label label-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="label label-info">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="label label-danger">Hard</b> @endif &nbsp;&nbsp;Manual Tagging @if($fetchQues->pre_tag == 0) <b class ="label label-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="label label-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="label label-danger">Hard</b> @endif &nbsp;&nbsp;</label><br>
+								<input required name="difficulty" type="radio" id="test1" value="1" @if(old('difficulty') == 0) checked @elseif($fetchQues->difficulty_level == 0) checked @endif/>
 								<label class = "text text-success" for="test1">&nbsp;Easy</label>&nbsp;&nbsp;
-								<input name="difficulty" type="radio" id="test2" value="2"@if(old('difficulty') == 1) checked @elseif($fetchQues->pre_tag == 1) checked @endif/>
+								<input name="difficulty" type="radio" id="test2" value="2"@if(old('difficulty') == 1) checked @elseif($fetchQues->difficulty_level == 1) checked @endif/>
 								<label class = "text text-warning" for="test2">&nbsp;Medium</label>&nbsp;&nbsp;
-								<input name="difficulty" type="radio" id="test3" value="2"@if(old('difficulty') == 1) checked @elseif($fetchQues->pre_tag == 2) checked @endif/>
+								<input name="difficulty" type="radio" id="test3" value="2"@if(old('difficulty') == 1) checked @elseif($fetchQues->difficulty_level == 2) checked @endif/>
 								<label class = "text text-danger" for="test3">&nbsp;Hard</label>
 							</div>
 							<div class="form-group input-group">

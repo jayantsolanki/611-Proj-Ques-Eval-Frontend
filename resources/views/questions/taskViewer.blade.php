@@ -17,6 +17,86 @@
 	body {
 	  overflow-x: hidden;
 	}
+	.gly-spin {
+	  -webkit-animation: spin 2s infinite linear;
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	  }
+	  100% {
+	    -moz-transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -webkit-transform: rotate(0deg);
+	  }
+	  100% {
+	    -webkit-transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -o-transform: rotate(0deg);
+	  }
+	  100% {
+	    -o-transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+	  100% {
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	.gly-rotate-90 {
+	  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+	  -webkit-transform: rotate(90deg);
+	  -moz-transform: rotate(90deg);
+	  -ms-transform: rotate(90deg);
+	  -o-transform: rotate(90deg);
+	  transform: rotate(90deg);
+	}
+	.gly-rotate-180 {
+	  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+	  -webkit-transform: rotate(180deg);
+	  -moz-transform: rotate(180deg);
+	  -ms-transform: rotate(180deg);
+	  -o-transform: rotate(180deg);
+	  transform: rotate(180deg);
+	}
+	.gly-rotate-270 {
+	  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	  -webkit-transform: rotate(270deg);
+	  -moz-transform: rotate(270deg);
+	  -ms-transform: rotate(270deg);
+	  -o-transform: rotate(270deg);
+	  transform: rotate(270deg);
+	}
+	.gly-flip-horizontal {
+	  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+	  -webkit-transform: scale(-1, 1);
+	  -moz-transform: scale(-1, 1);
+	  -ms-transform: scale(-1, 1);
+	  -o-transform: scale(-1, 1);
+	  transform: scale(-1, 1);
+	}
+	.gly-flip-vertical {
+	  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+	  -webkit-transform: scale(1, -1);
+	  -moz-transform: scale(1, -1);
+	  -ms-transform: scale(1, -1);
+	  -o-transform: scale(1, -1);
+	  transform: scale(1, -1);
+	}
   </style>
 @endsection
 
@@ -50,11 +130,12 @@
 		<div class="row">
 			<div class="panel panel-default">
 			  <div class="panel-heading">
-			    <h3 class="panel-title">Update your Profile</h3>
+			    <h3 class="panel-title">Predict difficulty level</h3>
 			  </div>
 			  <div class="panel-body">
 			  	<div class="row">
-			  		<div class = "col-md-6">
+			  		<div class = "col-md-12">
+			  			<label>Choose the database year</label>
 			  			<form method="POST" action="{{ route('createFeatures') }}">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <div class="form-group input-group">
@@ -73,12 +154,12 @@
 			  	@if($hasFeatures == 1)
 			  	<div class="row">
 			  		<hr>
-			  		<div class = "col-md-6">
+			  		<div class = "col-md-12">
 			  			<label>Features created, You can now run the analysis for Database year {{$defaultyear}}</label>
 			  			<form action = "http://localhost:8888/doAnalysis" id="analysis">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <input type="hidden" name="year" value="{{ $defaultyear }}">
-					        <input type="hidden" name="taskId" value="{{ $taskId }}">	        
+					        <input type="hidden" name="taskId" value="{{ $taskId }}">	      
 					        <div class="form-group">
 					            <button style="cursor:pointer" type="submit" class="btn btn-success pull-right">Run Analysis</button>
 					        </div>
@@ -103,11 +184,11 @@
 							  <thead>
 							    <tr>
 									<th scope="col">TaskId</th>
-									<th scope="col">Database Year</th>
-									<th scope="col">Accuracy</th>
+									<th scope="col">DB Year</th>
+									<th scope="col">Accuracy %</th>
 									<th scope="col">Progress %</th>
-									<th scope="col">Algorithm Used</th>
-									<th scope="col">Completion Status</th>
+									<th scope="col">Algorithm</th>
+									<th scope="col">Status</th>
 									<th scope="col">Created by</th>
 									<th scope="col">Created at</th>
 									<th scope="col">Last Updated</th>
@@ -123,21 +204,23 @@
 										{{$Task->year}}
 									</th>
 									<th scope="row">
-										{{$Task->accuracy}}
+										<span id="accuracy{{$Task->id}}">{{$Task->accuracy}}%</span>
 									</th>
 									<td>
-										@if($Task->progress<100){{$Task->progress}}% <span id="progress" class="glyphicon glyphicon-refresh gly-spin"></span>
+										@if($Task->progress==0)<b id="progress{{$Task->id}}">{{$Task->progress}}%</b> <span id="circle{{$Task->id}}" class="glyphicon glyphicon-stop"></span>
+										@elseif($Task->progress<100 && $Task->progress>0)<b id="progress{{$Task->id}}">{{$Task->progress}}%</b><span id="circle{{$Task->id}}" class="glyphicon glyphicon-refresh gly-spin"></span>
 										@else
-										{{$Task->progress}}%
+										<b id="progress{{$Task->id}}">{{$Task->progress}}%</b>
 										@endif
 									</td>
 									<td>
 										{{$Task->algoUsed}}
 									</td>
 									<td>
-										@if($Task->status==0) <span id="progress" class="label label-info">Ongoing</span>
+										@if($Task->status==0) <span id="status{{$Task->id}}" class="label label-warning">Created</span>
+										@elseif($Task->status==1) <span id="status{{$Task->id}}" class="label label-info">Ongoing</span>
 										@else
-										<span id="progress" class="label label-success">Completed</span>
+										<span id="status{{$Task->id}}" class="label label-success">Completed</span>
 										@endif
 									</td>
 									<td>
@@ -147,7 +230,7 @@
 										{{$Task->created_at}}
 									</td>
 									<td>
-										{{$Task->updated_at}}
+										{{$Task->updated_at}} <a href = "{{route('showTasks')}}/?id={{$Task->id}}"><span title="delete dormant task" id="delete" class="glyphicon glyphicon-remove"></span></a>
 									</td>
 							    </tr>
 							  	@endforeach
@@ -169,6 +252,7 @@
 <script type="text/javascript">
 	$(document).ready( function() {
 		$('#tv').addClass('active');
+		setInterval(checkProgress,1000);
 	});
 	$("#analysis").submit(function(event){
 		/* stop form from submitting normally */
@@ -192,8 +276,41 @@
             // $("#result").empty().append(content);
             content = data
             alert(content);
-            // top.location.href = "{{route('showTasks')}}";
+            top.location.href = "{{route('showTasks')}}";
         });
 	});
+
+	function checkProgress(){
+        $.ajax({
+		    method: 'POST', // Type of response and matches what we said in the route
+		    url: "{{route('checkProgress')}}", // This is the url we gave in the route
+		    data: {'_token' : "{{ csrf_token() }}"}, // a JSON object to send back
+		    success: function(response){ // What to do if we succeed
+		        console.log(response); 
+		        console.log(response['id'])
+		        var progress = '#progress'+response['id']
+		        var circle = '#circle'+response['id']
+		        var status = '#status'+response['id']
+		        var accuracy = '#accuracy'+response['id']
+		        $(progress).html(response['progress']+"%")
+		        if(response['progress']>0 && response['progress']<100){
+		        	$(circle).attr('class', 'glyphicon glyphicon-refresh gly-spin')
+		        	$(status).html("Ongoing")
+		        	$(status).attr('class', 'label label-info');
+		        }
+		        if(response['progress']==100){
+		        	$(circle).removeClass( "glyphicon glyphicon-refresh gly-spin" )
+		        	$(status).html("Completed")
+		        	$(status).attr('class', 'label label-success');
+		        	$(accuracy).html(response['accuracy']+"%")
+		        }
+		        
+		    },
+		    error: function(jqXHR, textStatus, errorThrown) { // What to do if we fail
+		        console.log(JSON.stringify(jqXHR));
+		        console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+		    }
+		});
+	}
 </script>
 @endsection

@@ -138,14 +138,20 @@ Route::any('analysis/createFeatures',[
 	'uses' => 'MlAnalysis\QAnalysisController@createFeatures'
 ]);
 
-Route::any('question/showStats',[
+Route::any('analysis/showStats',[
 	'as' => 'showStats',
 	'middleware' => 'auth',
 	'uses' => 'MlAnalysis\QAnalysisController@showStats'
 ]);
 
-Route::any('question/showTasks',[
+Route::any('analysis/showTasks',[
 	'as' => 'showTasks',
 	'middleware' => 'auth',
 	'uses' => 'MlAnalysis\QAnalysisController@showTasks'
+]);
+
+Route::any('analysis/checkProgress',[
+	'as' => 'checkProgress',
+	'middleware' => 'auth',
+	'uses' => 'MlAnalysis\QAnalysisController@checkProgress'
 ]);

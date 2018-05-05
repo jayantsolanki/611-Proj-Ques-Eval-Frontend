@@ -22,9 +22,9 @@ class QAnalysisController extends Controller{
  		}
  		$inactiveUsers = Login::where('active',0)->count();
  		$years = DatabaseCatalogue::get()->pluck('year');
- 		$runningTask = Analysis::where('status',0)->count();
+ 		$runningTask = Analysis::where('status',1)->count();
  		
- 		if($data->all()>0)
+ 		if(sizeof($data->all())>0)
  		{
  			$Tasks = Analysis::get();
  			if($runningTask>0){
@@ -35,7 +35,7 @@ class QAnalysisController extends Controller{
 			        ];
 			$messages = [   
 			            'year.required' =>  'Database year name is required',
-			            'year.integer' =>  'Database yea must be integer',
+			            'year.integer' =>  'Database year must be integer',
 			            'year.min' =>  'Database year must be at least 2014 or above'
 			        ];
 			$validator = Validator::make($data->all(), $rules, $messages);
@@ -44,7 +44,7 @@ class QAnalysisController extends Controller{
 	        }
 	        $dbdetails = DatabaseCatalogue::where('year',$data->year)->first();//fetching details of the database with year value
  			//drop these tables if they exists
- 			$Tasks = Analysis::get();
+ 			
 	 		DB::statement("drop table if exists WeightedFeature1;");
 	 		DB::statement("drop table if exists WeightedFeature2;");
 	 		DB::statement("drop table if exists w_values;");
@@ -113,7 +113,7 @@ class QAnalysisController extends Controller{
 			DB::statement("drop table if exists WeightedFeature1;");
 	 		DB::statement("drop table if exists WeightedFeature2;");
 	 		DB::statement("drop table if exists w_values;");
-
+	 		$Tasks = Analysis::get();
 	 		return view('questions.taskViewer')->with('userDetails', Auth::user())->with('hasFeatures', 1)->with('defaultyear', $dbdetails->year)->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('runningTask', $runningTask)->with('Tasks', $Tasks)->with('taskId', $newTask->id);
 
 
@@ -130,13 +130,6 @@ class QAnalysisController extends Controller{
  		$userdetails = UserDetails::where('id',Auth::user()->user_id)->first();
  		return view('members.profile')->with('userDetails', $userdetails);
  	}
- 	public function checkProgress(Request $data){
- 		if(Auth::user()->role != 2){
- 			return redirect()->route('login')->with('error', 'Unauthorised Access');
- 		}
- 		$userdetails = UserDetails::where('id',Auth::user()->user_id)->first();
- 		return view('members.editProfile')->with('userDetails', $userdetails);
- 	}
 
  	public function showStats(){
  		if(Auth::user()->role != 2){
@@ -145,15 +138,56 @@ class QAnalysisController extends Controller{
  		$inactiveUsers = Login::where('active',0)->count();
  		return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers);
  	}
- 	public function showTasks(){
+ 	public function showTasks(Request $data){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
  		}
  		$runningTask = Analysis::where('status',0)->count();
  		$Tasks = Analysis::get();
  		$inactiveUsers = Login::where('active',0)->count();
+ 		if(sizeof($data->all())>0)//just for deleting a rogue task
+ 		{
+ 			$rules = [
+			            'id' => 'required|integer|min:1'
+			        ];
+			$messages = [   
+			            'year.required' =>  'Task Id is required',
+			            'year.integer' =>  'Task Id must be integer',
+			            'year.min' =>  'Task Id must be at least 2014 or above'
+			        ];
+			$validator = Validator::make($data->all(), $rules, $messages);
+			if ($validator->fails()) {
+	            return redirect()->route('showTasks')->withErrors($validator);
+	        }
+ 			$Analysis = Analysis::where('id', $data->id)->first();
+ 			if(sizeof($Analysis)==0){
+ 				return redirect()->route('showTasks')->with('error', "Enter a valid Task Id");
+ 			}
+ 			// return $Analysis->status;
+ 			if($Analysis->status > 0){
+ 				return redirect()->route('showTasks')->with('error', "Only dormant tasks can be deleted, not the ongoing or completed tasks");
+ 			}
+ 			else{
+	 			$Analysis->delete();
+	 			$Tasks = Analysis::get();
+	 			return redirect()->route('showTasks')->with('success', "Task deleted");
+	 		}
+ 		}
  		//fetching database catalogues
  		$years = DatabaseCatalogue::get()->pluck('year');
  		return view('questions.taskViewer')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', 2017)->with('hasFeatures', 0)->with('runningTask', $runningTask)->with('Tasks', $Tasks);
+ 	}
+
+ 	public function checkProgress(Request $data){
+ 		if(Auth::user()->role != 2){
+ 			return redirect()->route('login')->with('error', 'Unauthorised Access');
+ 		}
+ 		
+ 		$Analysis = Analysis::orderBy('id', 'desc')->first();//check for recent ongoing task
+ 		if(sizeof($Analysis)>0){
+ 			return $Analysis;
+ 		}
+ 		else
+ 			return 0;
  	}
 }

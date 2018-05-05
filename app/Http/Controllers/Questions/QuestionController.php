@@ -52,7 +52,7 @@ class QuestionController extends Controller{
 			 				$next = 0;
 			 			else
 			 				$next = $fetchQues->quid + 1;
-						return view('questions.viewQuest')->with('userDetails', fAuth::user())->with('defaultyear', $fetchQues->year)->with('category', $fetchQues->category_id)->with('difficulty', $fetchQues->pre_tag)->with('fetchQues',$fetchQues)->with('years',$years)->with("count",$count)->with('previous',$previous)->with('next',$next)->with('inactiveUsers', $inactiveUsers);
+						return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', $fetchQues->year)->with('category', $fetchQues->category_id)->with('difficulty', $fetchQues->pre_tag)->with('fetchQues',$fetchQues)->with('years',$years)->with("count",$count)->with('previous',$previous)->with('next',$next)->with('inactiveUsers', $inactiveUsers);
 					}
 
 	 			}
@@ -258,6 +258,7 @@ class QuestionController extends Controller{
 			            	$fetchQues -> option5 =  $data['option5'];
 			            $fetchQues -> answer_option1 =  $data['answeroption'];
 			            $fetchQues -> pre_tag =  $data['difficulty'];
+			            $fetchQues -> difficulty_level =  $data['difficulty'];
 			            $fetchQues -> category_id =  $data['category'];
 			            // $fetchQues -> is_practice_question =  0;
 			            $fetchQues -> user_id =  Auth::user()->user_id;
@@ -360,7 +361,8 @@ class QuestionController extends Controller{
 		            if($data['option5']!='')
 		            	$newQues -> option5 =  $data['option5'];
 		            $newQues -> answer_option1 =  $data['answeroption'];
-		            $newQues -> pre_tag =  $data['difficulty'];
+		            // $newQues -> pre_tag =  $data['difficulty'];
+		            $newQues -> difficulty_level =  $data['difficulty'];
 		            $newQues -> category_id =  $data['category'];
 		            // $newQues -> is_practice_question =  0;
 		            $newQues -> user_id =  Auth::user()->user_id;
