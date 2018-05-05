@@ -140,6 +140,7 @@
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <div class="form-group input-group">
 					            <select class="form-control" name="year" id="year">
+					            	<option value="" disabled selected>Choose correct option</option>
 					            	@foreach ($years as $year)
 					            		<option value="{{$year}}" @if($year == $defaultyear) selected @endif>{{$year}}</option>
 					            	@endforeach
@@ -230,7 +231,7 @@
 										{{$Task->created_at}}
 									</td>
 									<td>
-										{{$Task->updated_at}} <a href = "{{route('showTasks')}}/?id={{$Task->id}}"><span title="delete dormant task" id="delete" class="glyphicon glyphicon-remove"></span></a>
+										<span id="time{{$Task->id}}">{{$Task->updated_at}}</span> <a href = "{{route('showTasks')}}/?id={{$Task->id}}"><span title="delete dormant task" id="delete" class="glyphicon glyphicon-remove"></span></a>
 									</td>
 							    </tr>
 							  	@endforeach
@@ -292,7 +293,9 @@
 		        var circle = '#circle'+response['id']
 		        var status = '#status'+response['id']
 		        var accuracy = '#accuracy'+response['id']
+		        var time = '#time'+response['id']
 		        $(progress).html(response['progress']+"%")
+		        $(time).html(response['updated_at'])
 		        if(response['progress']>0 && response['progress']<100){
 		        	$(circle).attr('class', 'glyphicon glyphicon-refresh gly-spin')
 		        	$(status).html("Ongoing")

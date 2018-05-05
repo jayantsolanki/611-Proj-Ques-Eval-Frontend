@@ -12,7 +12,7 @@ class Stats extends Model
 	 * @var string
 	 */
 
-	protected $table = 'Stats';
+	protected $table = 'stats';
 	/**
 	 * The attributes excluded from the model's JSON form.
 	 *

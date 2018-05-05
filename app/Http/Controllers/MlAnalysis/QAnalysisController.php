@@ -10,6 +10,7 @@ use App\QuestionMaster;
 use App\Login;
 use App\DatabaseCatalogue;
 use App\Analysis;
+use App\Stats;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 // use DB;
@@ -120,7 +121,7 @@ class QAnalysisController extends Controller{
  		}
  		
 
- 		// reutrn default if no request asked
+ 		// return default if no request asked
  		return view('questions.taskViewer')->with('userDetails', Auth::user())->with('hasFeatures', 0)->with('defaultyear', 2017)->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('runningTask', $runningTask)->with('Tasks', $Tasks);
  	}
  	public function createTask(Request $data){
@@ -131,13 +132,177 @@ class QAnalysisController extends Controller{
  		return view('members.profile')->with('userDetails', $userdetails);
  	}
 
- 	public function showStats(){
+ 	public function showStats(Request $data){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
  		}
  		$inactiveUsers = Login::where('active',0)->count();
- 		return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers);
+ 		$years = DatabaseCatalogue::get()->pluck('year');
+ 		if(sizeof($data->all())>0)
+ 		{
+ 			$rules = [
+			            'taskId' => 'integer|min:1',
+			            'year' => 'required|integer|min:2014'
+			        ];
+			$messages = [   
+			            'year.required' =>  'Year is required',
+			            'taskId.integer' =>  'Task Id must be integer',
+			            'taskId.min' =>  'Task Id must be at least 1 or above'
+			        ];
+			$validator = Validator::make($data->all(), $rules, $messages);
+			if ($validator->fails()) {
+	            return redirect()->route('showStats')->withErrors($validator);
+	        }
+ 			
+ 			if(isset($data->taskId))
+ 			{
+ 				$TotalQues = QuestionMaster::where('year',$data->year)->count();
+ 				$Reports = Analysis::where('year', $data->year)->where('status',2)->get();
+ 				$Stats = Stats::where('task_id', $data->taskId)->get();
+ 				//////////////////////////////////////////////////////////
+ 				$QuesStatsPreEasy = QuestionMaster::where('year',$data->year)->where('category_id', 1)->where('pre_tag',0)->count();//apti, pre tag easy
+ 				$QuesStatsPreMed = QuestionMaster::where('year',$data->year)->where('category_id', 1)->where('pre_tag',1)->count();//apti, pre tag medium
+ 				$QuesStatsPreHard = QuestionMaster::where('year',$data->year)->where('category_id', 1)->where('pre_tag',2)->count(); //apti, pre tag hard
+ 				///////////
+ 				$QuesStatsPostEasy = QuestionMaster::where('year',$data->year)->where('category_id', 1)->where('post_tag',0)->count();//apti, post_tag tag easy
+ 				$QuesStatsPostMed = QuestionMaster::where('year',$data->year)->where('category_id', 1)->where('post_tag',1)->count();//apti, post_tag tag med
+ 				$QuesStatsPostHard = QuestionMaster::where('year',$data->year)->where('category_id', 1)->where('post_tag',2)->count();//apti, post_tag tag hard
+ 				/////////////
+ 				$apti = [];
+ 				$payload = array(
+ 					'difficulty_level'=>'easy',
+ 					'pre_tag'=> $QuesStatsPreEasy,
+ 					'post_tag'=> $QuesStatsPostEasy,
+ 					'diff' => $TotalQues*3/30-$QuesStatsPostEasy
+
+ 				);
+ 				array_push($apti, $payload);
+ 				$payload = array(
+ 					'difficulty_level'=>'medium',
+ 					'pre_tag'=> $QuesStatsPreMed,
+ 					'post_tag'=> $QuesStatsPostMed,
+ 					'diff' => $TotalQues*4/30-$QuesStatsPostMed
+
+ 				);
+ 				array_push($apti, $payload);
+ 				$payload = array(
+ 					'difficulty_level'=>'hard',
+ 					'pre_tag'=> $QuesStatsPreHard,
+ 					'post_tag'=> $QuesStatsPostHard,
+ 					'diff' => $TotalQues*3/30-$QuesStatsPostHard
+
+ 				);
+ 				array_push($apti, $payload);
+ 				$apti = json_encode($apti);
+ 				// return $a/pti;
+ 				///////////////////////////////////////////////////////////
+ 				$QuesStatsPreEasy = QuestionMaster::where('year',$data->year)->where('category_id', 2)->where('pre_tag',0)->count();//electricals, pre tag easy
+ 				$QuesStatsPreMed = QuestionMaster::where('year',$data->year)->where('category_id', 2)->where('pre_tag',1)->count();//electricals, pre tag medium
+ 				$QuesStatsPreHard = QuestionMaster::where('year',$data->year)->where('category_id', 2)->where('pre_tag',2)->count(); //electricals, pre tag hard
+ 				///////////
+ 				$QuesStatsPostEasy = QuestionMaster::where('year',$data->year)->where('category_id', 2)->where('post_tag',0)->count();//electricals, post_tag tag easy
+ 				$QuesStatsPostMed = QuestionMaster::where('year',$data->year)->where('category_id', 2)->where('post_tag',1)->count();//electricals, post_tag tag med
+ 				$QuesStatsPostHard = QuestionMaster::where('year',$data->year)->where('category_id', 2)->where('post_tag',2)->count();//electricals, post_tag tag hard
+ 				/////////////
+ 				$elec = [];
+ 				$payload = array(
+ 					'difficulty_level'=>'easy',
+ 					'pre_tag'=> $QuesStatsPreEasy,
+ 					'post_tag'=> $QuesStatsPostEasy,
+ 					'diff' => $TotalQues*3/30-$QuesStatsPostEasy
+
+ 				);
+ 				array_push($elec, $payload);
+ 				$payload = array(
+ 					'difficulty_level'=>'medium',
+ 					'pre_tag'=> $QuesStatsPreMed,
+ 					'post_tag'=> $QuesStatsPostMed,
+ 					'diff' => $TotalQues*4/30-$QuesStatsPostMed
+
+ 				);
+ 				array_push($elec, $payload);
+ 				$payload = array(
+ 					'difficulty_level'=>'hard',
+ 					'pre_tag'=> $QuesStatsPreHard,
+ 					'post_tag'=> $QuesStatsPostHard,
+ 					'diff' => $TotalQues*3/30-$QuesStatsPostHard
+
+ 				);
+ 				array_push($elec, $payload);
+ 				$elec = json_encode($elec);
+ 				// return $elec;
+ 				///////////////////////////////////////////////////////////
+ 				$QuesStatsPreEasy = QuestionMaster::where('year',$data->year)->where('category_id', 3)->where('pre_tag',0)->count();//programming, pre tag easy
+ 				$QuesStatsPreMed = QuestionMaster::where('year',$data->year)->where('category_id', 3)->where('pre_tag',1)->count();//programming, pre tag medium
+ 				$QuesStatsPreHard = QuestionMaster::where('year',$data->year)->where('category_id', 3)->where('pre_tag',2)->count(); //programming, pre tag hard
+ 				///////////
+ 				$QuesStatsPostEasy = QuestionMaster::where('year',$data->year)->where('category_id', 3)->where('post_tag',0)->count();//programming, post_tag tag easy
+ 				$QuesStatsPostMed = QuestionMaster::where('year',$data->year)->where('category_id', 3)->where('post_tag',1)->count();//programming, post_tag tag med
+ 				$QuesStatsPostHard = QuestionMaster::where('year',$data->year)->where('category_id', 3)->where('post_tag',2)->count();//programming, post_tag tag hard
+ 				/////////////
+ 				$prog = [];
+ 				$payload = array(
+ 					'difficulty_level'=>'easy',
+ 					'pre_tag'=> $QuesStatsPreEasy,
+ 					'post_tag'=> $QuesStatsPostEasy,
+ 					'diff' => $TotalQues*3/30-$QuesStatsPostEasy
+
+ 				);
+ 				array_push($prog, $payload);
+ 				$payload = array(
+ 					'difficulty_level'=>'medium',
+ 					'pre_tag'=> $QuesStatsPreMed,
+ 					'post_tag'=> $QuesStatsPostMed,
+ 					'diff' => $TotalQues*4/30-$QuesStatsPostMed
+
+ 				);
+ 				array_push($prog, $payload);
+ 				$payload = array(
+ 					'difficulty_level'=>'hard',
+ 					'pre_tag'=> $QuesStatsPreHard,
+ 					'post_tag'=> $QuesStatsPostHard,
+ 					'diff' => $TotalQues*3/30-$QuesStatsPostHard
+
+ 				);
+ 				array_push($prog, $payload);
+ 				$prog = json_encode($prog);
+ 				// return $prog[0];
+ 				///////////////////////////////////////////////////////////
+ 			
+ 				return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQues', $TotalQues)->with('Reports', $Reports)->with('Stats', $Stats)->with('apti',$apti)->with('elec',$elec)->with('prog',$prog);
+
+
+ 			}
+ 			else{
+ 				$TotalQues = QuestionMaster::where('year',$data->year)->count();
+ 				$Reports = Analysis::where('year', $data->year)->where('status',2)->get();
+ 				if(sizeof($Reports)>0)
+		 		{
+		 			return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQues', $TotalQues)->with('Reports', $Reports);
+
+		 		}
+		 		else{
+		 			return view('questions.showStat')->with('error',"No reports found for Year ".$data->year."")->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQues', $TotalQues)->with('Reports', []);
+		 		}
+ 			}
+
+
+
+ 		}
+ 		$TotalQues = QuestionMaster::where('year',2017)->count();
+ 		$Reports = Analysis::where('year', 2017)->where('status',2)->get();
+ 		if(sizeof($Reports)>0)
+ 		{
+ 			return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', 2017)->with('TotalQues', $TotalQues)->with('Reports', $Reports);
+
+ 		}
+ 		else{
+ 			return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', 2017)->with('TotalQues', $TotalQues)->with('Reports', []);
+ 		}
+ 		
  	}
+
+ 	// view tasks and create one
  	public function showTasks(Request $data){
  		if(Auth::user()->role != 2){
  			return redirect()->route('login')->with('error', 'Unauthorised Access');
@@ -151,9 +316,9 @@ class QAnalysisController extends Controller{
 			            'id' => 'required|integer|min:1'
 			        ];
 			$messages = [   
-			            'year.required' =>  'Task Id is required',
-			            'year.integer' =>  'Task Id must be integer',
-			            'year.min' =>  'Task Id must be at least 2014 or above'
+			            'id.required' =>  'Task Id is required',
+			            'id.integer' =>  'Task Id must be integer',
+			            'id.min' =>  'Task Id must be at least 1 or above'
 			        ];
 			$validator = Validator::make($data->all(), $rules, $messages);
 			if ($validator->fails()) {
