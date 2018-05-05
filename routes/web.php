@@ -128,17 +128,7 @@ Route::any('question/quesEditor',[
 	'uses' => 'Questions\QuestionController@quesEditor'
 ]);
 
-Route::any('question/showStats',[
-	'as' => 'showStats',
-	'middleware' => 'auth',
-	'uses' => 'Questions\QuestionController@showStats'
-]);
 
-Route::any('question/showTasks',[
-	'as' => 'showTasks',
-	'middleware' => 'auth',
-	'uses' => 'Questions\QuestionController@showTasks'
-]);
 
 /*****************Question Analysis Controller*************/
 
@@ -146,4 +136,16 @@ Route::any('analysis/createFeatures',[
 	'as' => 'createFeatures',
 	'middleware' => 'auth',
 	'uses' => 'MlAnalysis\QAnalysisController@createFeatures'
+]);
+
+Route::any('question/showStats',[
+	'as' => 'showStats',
+	'middleware' => 'auth',
+	'uses' => 'MlAnalysis\QAnalysisController@showStats'
+]);
+
+Route::any('question/showTasks',[
+	'as' => 'showTasks',
+	'middleware' => 'auth',
+	'uses' => 'MlAnalysis\QAnalysisController@showTasks'
 ]);

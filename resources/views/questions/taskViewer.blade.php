@@ -45,7 +45,7 @@
 		    </div>
 		@endif
 		<div class="row">
-			<p class="suggestive"><span class="glyphicon glyphicon-user"></span> Hi {{strstr($userDetails->name,' ', true)}}, you can edit your profile here</p>
+			<p class="suggestive"><span class=""></span> Perform machine learning task for difficulty prediction here</p>
 		</div>
 		<div class="row">
 			<div class="panel panel-default">
@@ -58,20 +58,109 @@
 			  			<form method="POST" action="{{ route('createFeatures') }}">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <div class="form-group input-group">
-					            <span class="input-group-addon" id="sizing-addon1">Database <i class="glyphicon glyphicon-user"></i></span>
-					            <input type="text" class="form-control"  placeholder="Database Name" id="database" name="database" value="{!!$userDetails->name!!}">
+					            <select class="form-control" name="year" id="year">
+					            	@foreach ($years as $year)
+					            		<option value="{{$year}}" @if($year == $defaultyear) selected @endif>{{$year}}</option>
+					            	@endforeach
+								</select>
 					        </div>
 					        <div class="form-group">
-					        	<button style="cursor:pointer"  class="btn btn-info pull-left" onclick="goBack()">Go back</button>
-					            <button style="cursor:pointer" type="submit" class="btn btn-success pull-right">Save</button>
+					            <button style="cursor:pointer" type="submit" class="btn btn-success pull-right">Create Features</button>
 					        </div>
 					    </form>
 			  		</div>
 			  	</div>
+			  	@if($hasFeatures == 1)
+			  	<div class="row">
+			  		<hr>
+			  		<div class = "col-md-6">
+			  			<label>Features created, You can now run the analysis for Database year {{$defaultyear}}</label>
+			  			<form action = "http://localhost:8888/doAnalysis" id="analysis">
+					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+					        <input type="hidden" name="year" value="{{ $defaultyear }}">
+					        <input type="hidden" name="taskId" value="{{ $taskId }}">	        
+					        <div class="form-group">
+					            <button style="cursor:pointer" type="submit" class="btn btn-success pull-right">Run Analysis</button>
+					        </div>
+					    </form>
+			  		</div>
+			  	</div>
+			  	@endif
+			  	@if($runningTask >= 1)
+			  	<div class="row">
+			  		<hr>
+			  		<div class = "error alert alert-info">
+			  			<h4 class="text text-center">New analysis cannot be done before the previous task is finished</h4>
+			  		</div>
+			  	</div>
+			  	@endif
+			  	<div class="row">
+			  		<hr>
+			  		
+			  		<div class = "col-md-12">
+			  			<h4 class="text text-center"><b>Analysis History</b></h4>
+			  			<table class="table">
+							  <thead>
+							    <tr>
+									<th scope="col">TaskId</th>
+									<th scope="col">Database Year</th>
+									<th scope="col">Accuracy</th>
+									<th scope="col">Progress %</th>
+									<th scope="col">Algorithm Used</th>
+									<th scope="col">Completion Status</th>
+									<th scope="col">Created by</th>
+									<th scope="col">Created at</th>
+									<th scope="col">Last Updated</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  	@foreach ($Tasks as $Task)
+							  	<tr>
+									<th scope="row">
+										{{$Task->id}}
+									</th>
+									<th scope="row">
+										{{$Task->year}}
+									</th>
+									<th scope="row">
+										{{$Task->accuracy}}
+									</th>
+									<td>
+										@if($Task->progress<100){{$Task->progress}}% <span id="progress" class="glyphicon glyphicon-refresh gly-spin"></span>
+										@else
+										{{$Task->progress}}%
+										@endif
+									</td>
+									<td>
+										{{$Task->algoUsed}}
+									</td>
+									<td>
+										@if($Task->status==0) <span id="progress" class="label label-info">Ongoing</span>
+										@else
+										<span id="progress" class="label label-success">Completed</span>
+										@endif
+									</td>
+									<td>
+										{{$Task->creator}}
+									</td>
+									<td>
+										{{$Task->created_at}}
+									</td>
+									<td>
+										{{$Task->updated_at}}
+									</td>
+							    </tr>
+							  	@endforeach
+							  </tbody>
+						</table>
+			  		</div>
+			  	</div>
+			  	
 			  </div>
 			</div>
 			
 		</div>
+
 	    
 	</div>
 
@@ -81,9 +170,30 @@
 	$(document).ready( function() {
 		$('#tv').addClass('active');
 	});
-	function goBack() {
-		alert(1);
-	    window.history.back();
-	}
+	$("#analysis").submit(function(event){
+		/* stop form from submitting normally */
+        event.preventDefault();
+
+        /* get some values from elements on the page: */
+        var $form = $(this),
+            year = $form.find('input[name="year"]').val(),
+            taskId = $form.find('input[name="taskId"]').val(),
+            url = $form.attr('action');
+
+        /* Send the data using post */
+        var posting = $.post(url, {
+            year: year,
+            taskId: taskId
+        });
+
+        /* Put the results in a div */
+        posting.done(function(data) {
+            var content = $(data).find('#content');
+            // $("#result").empty().append(content);
+            content = data
+            alert(content);
+            // top.location.href = "{{route('showTasks')}}";
+        });
+	});
 </script>
 @endsection

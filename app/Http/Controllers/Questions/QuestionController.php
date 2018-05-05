@@ -376,12 +376,4 @@ class QuestionController extends Controller{
  		}
  		return view('questions.addQuest')->with('qid',0)->with('inactiveUsers', $inactiveUsers);
  	}
- 	public function showStats(){
- 		$inactiveUsers = Login::where('active',0)->count();
- 		return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers);
- 	}
- 	public function showTasks(){
- 		$inactiveUsers = Login::where('active',0)->count();
- 		return view('questions.taskViewer')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers);
- 	}
-}
+ }
