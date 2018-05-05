@@ -197,7 +197,7 @@ class QAnalysisController extends Controller{
  				$elec = json_encode($summary[1]);
  				$prog = json_encode($summary[2]);
  				///////////////////////////////////////////////////////////
- 			
+ 				// return $summary;
  				return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQues', $TotalQues)->with('Reports', $Reports)->with('Stats', $Stats)->with('apti',$apti)->with('elec',$elec)->with('prog',$prog);
 
 
@@ -285,7 +285,7 @@ class QAnalysisController extends Controller{
  			return 0;
  	}
 
- 	private function retrieveStats($year, $TotalQues){
+private function retrieveStats($year, $TotalQues){
 
  		$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 1)->where('pre_tag',0)->count();//apti, pre tag easy
 			$QuesStatsPreMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('pre_tag',1)->count();//apti, pre tag medium
@@ -295,12 +295,17 @@ class QAnalysisController extends Controller{
 			$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',1)->count();//apti, post_tag tag med
 			$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',2)->count();//apti, post_tag tag hard
 			/////////////
+			$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',0)->count();//apti, difficulty tag easy
+			$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',1)->count();//apti, difficulty tag med
+			$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',2)->count();//apti, difficulty tag hard
+			/////////////
 			$apti = [];
 			$payload = array(
 				'difficulty_level'=>'easy',
 				'pre_tag'=> $QuesStatsPreEasy,
 				'post_tag'=> $QuesStatsPostEasy,
-				'diff' => $TotalQues*3/30-$QuesStatsPostEasy
+				'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
+				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
 
 			);
 			array_push($apti, $payload);
@@ -308,7 +313,8 @@ class QAnalysisController extends Controller{
 				'difficulty_level'=>'medium',
 				'pre_tag'=> $QuesStatsPreMed,
 				'post_tag'=> $QuesStatsPostMed,
-				'diff' => $TotalQues*4/30-$QuesStatsPostMed
+				'diff' => $TotalQues*4/30-$QuesStatsPostMed,
+				'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
 
 			);
 			array_push($apti, $payload);
@@ -316,7 +322,8 @@ class QAnalysisController extends Controller{
 				'difficulty_level'=>'hard',
 				'pre_tag'=> $QuesStatsPreHard,
 				'post_tag'=> $QuesStatsPostHard,
-				'diff' => $TotalQues*3/30-$QuesStatsPostHard
+				'diff' => $TotalQues*3/30-$QuesStatsPostHard,
+				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
 
 			);
 			array_push($apti, $payload);
@@ -331,12 +338,17 @@ class QAnalysisController extends Controller{
 			$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',1)->count();//electricals, post_tag tag med
 			$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',2)->count();//electricals, post_tag tag hard
 			/////////////
+			$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',0)->count();//apti, difficulty tag easy
+			$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',1)->count();//apti, difficulty tag med
+			$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',2)->count();//apti, difficulty tag hard
+			/////////////
 			$elec = [];
 			$payload = array(
 				'difficulty_level'=>'easy',
 				'pre_tag'=> $QuesStatsPreEasy,
 				'post_tag'=> $QuesStatsPostEasy,
-				'diff' => $TotalQues*3/30-$QuesStatsPostEasy
+				'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
+				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
 
 			);
 			array_push($elec, $payload);
@@ -344,7 +356,8 @@ class QAnalysisController extends Controller{
 				'difficulty_level'=>'medium',
 				'pre_tag'=> $QuesStatsPreMed,
 				'post_tag'=> $QuesStatsPostMed,
-				'diff' => $TotalQues*4/30-$QuesStatsPostMed
+				'diff' => $TotalQues*4/30-$QuesStatsPostMed,
+				'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
 
 			);
 			array_push($elec, $payload);
@@ -352,7 +365,8 @@ class QAnalysisController extends Controller{
 				'difficulty_level'=>'hard',
 				'pre_tag'=> $QuesStatsPreHard,
 				'post_tag'=> $QuesStatsPostHard,
-				'diff' => $TotalQues*3/30-$QuesStatsPostHard
+				'diff' => $TotalQues*3/30-$QuesStatsPostHard,
+				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
 
 			);
 			array_push($elec, $payload);
@@ -367,12 +381,17 @@ class QAnalysisController extends Controller{
 			$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',1)->count();//programming, post_tag tag med
 			$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',2)->count();//programming, post_tag tag hard
 			/////////////
+			$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',0)->count();//apti, difficulty-level tag easy
+			$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',1)->count();//apti, difficulty tag med
+			$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',2)->count();//apti, difficulty tag hard
+			/////////////
 			$prog = [];
 			$payload = array(
 				'difficulty_level'=>'easy',
 				'pre_tag'=> $QuesStatsPreEasy,
 				'post_tag'=> $QuesStatsPostEasy,
-				'diff' => $TotalQues*3/30-$QuesStatsPostEasy
+				'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
+				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
 
 			);
 			array_push($prog, $payload);
@@ -380,7 +399,8 @@ class QAnalysisController extends Controller{
 				'difficulty_level'=>'medium',
 				'pre_tag'=> $QuesStatsPreMed,
 				'post_tag'=> $QuesStatsPostMed,
-				'diff' => $TotalQues*4/30-$QuesStatsPostMed
+				'diff' => $TotalQues*4/30-$QuesStatsPostMed,
+				'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
 
 			);
 			array_push($prog, $payload);
@@ -388,7 +408,8 @@ class QAnalysisController extends Controller{
 				'difficulty_level'=>'hard',
 				'pre_tag'=> $QuesStatsPreHard,
 				'post_tag'=> $QuesStatsPostHard,
-				'diff' => $TotalQues*3/30-$QuesStatsPostHard
+				'diff' => $TotalQues*3/30-$QuesStatsPostHard,
+				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
 
 			);
 			array_push($prog, $payload);

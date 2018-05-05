@@ -40,6 +40,9 @@
         {
             fill: FireBrick;
         }
+        table.stats {
+		    font-size: 10px;
+		}
         
        
 	</style>
@@ -187,13 +190,14 @@
 			  		<div class = " col-md-4">
 			  			<h4 class="text text-center">Aptitude Category</h4>
 			  			<svg id="apti" width="300" height="500"></svg>
-			  			<table class="table">
+			  			<table  class=" stats table">
 							  <thead>
 							    <tr>
-									<th scope="col">Difficulty Level</th>
-									<th scope="col">Pre-Tag</th>
-									<th scope="col">Post-Tag</th>
-									<th scope="col">Difference</th>
+									<th scope="col">Category</th>
+									<th scope="col">PreTag</th>
+									<th scope="col">PostTag</th>
+									<th scope="col">Original Difference</th>
+									<th scope="col">Current</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -217,6 +221,16 @@
 										<span class="label label-success">{{$Task->diff}}</span>
 										@endif
 									</td>
+									<td scope="row">
+										@if($Task->diff < 0)
+										<span class="label label-danger">{{$Task->currentdiff}}</span>
+										@elseif($Task->diff > 0)
+										<span class="label label-danger">{{$Task->currentdiff}}</span>
+										@else
+										<span class="label label-success">{{$Task->diff}}</span>
+										@currentdiff
+										@endif
+									</td>
 							    </tr>
 							  	@endforeach
 							  </tbody>
@@ -225,13 +239,14 @@
 			  		<div class = " col-md-4">
 			  			<h4 class="text text-center">Electricals Category</h4>
 			  			<svg id="elec" width="300" height="500"></svg>
-			  			<table class="table">
+			  			<table class="stats table">
 							  <thead>
 							    <tr>
-									<th scope="col">Difficulty Level</th>
-									<th scope="col">Pre-Tag</th>
-									<th scope="col">Post-Tag</th>
-									<th scope="col">Difference</th>
+									<th scope="col">Category</th>
+									<th scope="col">PreTag</th>
+									<th scope="col">PostTag</th>
+									<th scope="col">Original Difference</th>
+									<th scope="col">Current</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -255,6 +270,16 @@
 										<span class="label label-success">{{$Task->diff}}</span>
 										@endif
 									</td>
+									<td scope="row">
+										@if($Task->diff < 0)
+										<span class="label label-danger">{{$Task->currentdiff}}</span>
+										@elseif($Task->diff > 0)
+										<span class="label label-danger">{{$Task->currentdiff}}</span>
+										@else
+										<span class="label label-success">{{$Task->diff}}</span>
+										@currentdiff
+										@endif
+									</td>
 							    </tr>
 							  	@endforeach
 							  </tbody>
@@ -263,13 +288,14 @@
 			  		<div class = " col-md-4">
 			  			<h4 class="text text-center">Programming Category</h4>
 			  			<svg id="prog" width="300" height="500"></svg>
-			  			<table class="table">
+			  			<table class="stats table">
 							  <thead>
 							    <tr>
-									<th scope="col">Difficulty Level</th>
-									<th scope="col">Pre-Tag</th>
-									<th scope="col">Post-Tag</th>
-									<th scope="col">Difference</th>
+									<th scope="col">Category</th>
+									<th scope="col">PreTag</th>
+									<th scope="col">PostTag</th>
+									<th scope="col">Original Difference</th>
+									<th scope="col">Current</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -291,6 +317,16 @@
 										<span class="label label-danger">{{$Task->diff}}</span>
 										@else
 										<span class="label label-success">{{$Task->diff}}</span>
+										@endif
+									</td>
+									<td scope="row">
+										@if($Task->diff < 0)
+										<span class="label label-danger">{{$Task->currentdiff}}</span>
+										@elseif($Task->diff > 0)
+										<span class="label label-danger">{{$Task->currentdiff}}</span>
+										@else
+										<span class="label label-success">{{$Task->diff}}</span>
+										@currentdiff
 										@endif
 									</td>
 							    </tr>
@@ -346,20 +382,20 @@
 		    "color" : "green" 
 		  }, {
 		    'x': '{{json_decode($apti)[1]->difficulty_level}}-pre',
-		    'y': {{json_decode($apti)[0]->pre_tag}},
+		    'y': {{json_decode($apti)[1]->pre_tag}},
 		    "color" : "navy" 
 		  }, {
 		    'x': '{{json_decode($apti)[1]->difficulty_level}}-post',
-		    'y': {{json_decode($apti)[0]->post_tag}},
+		    'y': {{json_decode($apti)[1]->post_tag}},
 		    "color" : "navy" 
 		  },
 		  {
 		    'x': '{{json_decode($apti)[2]->difficulty_level}}-pre',
-		    'y': {{json_decode($apti)[0]->pre_tag}},
+		    'y': {{json_decode($apti)[2]->pre_tag}},
 		    "color" : "gray" 
 		  }, {
 		    'x': '{{json_decode($apti)[2]->difficulty_level}}-post',
-		    'y': {{json_decode($apti)[0]->post_tag}},
+		    'y': {{json_decode($apti)[2]->post_tag}},
 		    "color" : "gray" 
 		  },];
 
@@ -439,20 +475,20 @@
 	    "color" : "green" 
 	  }, {
 	    'x': '{{json_decode($elec)[1]->difficulty_level}}-pre',
-	    'y': {{json_decode($elec)[0]->pre_tag}},
+	    'y': {{json_decode($elec)[1]->pre_tag}},
 	    "color" : "navy" 
 	  }, {
 	    'x': '{{json_decode($elec)[1]->difficulty_level}}-post',
-	    'y': {{json_decode($elec)[0]->post_tag}},
+	    'y': {{json_decode($elec)[1]->post_tag}},
 	    "color" : "navy" 
 	  },
 	  {
 	    'x': '{{json_decode($elec)[2]->difficulty_level}}-pre',
-	    'y': {{json_decode($elec)[0]->pre_tag}},
+	    'y': {{json_decode($elec)[2]->pre_tag}},
 	    "color" : "gray" 
 	  }, {
 	    'x': '{{json_decode($elec)[2]->difficulty_level}}-post',
-	    'y': {{json_decode($elec)[0]->post_tag}},
+	    'y': {{json_decode($elec)[2]->post_tag}},
 	    "color" : "gray" 
 	  },];
 
@@ -532,20 +568,20 @@
 	    "color" : "green" 
 	  }, {
 	    'x': '{{json_decode($apti)[1]->difficulty_level}}-pre',
-	    'y': {{json_decode($prog)[0]->pre_tag}},
+	    'y': {{json_decode($prog)[1]->pre_tag}},
 	    "color" : "navy" 
 	  }, {
 	    'x': '{{json_decode($apti)[1]->difficulty_level}}-post',
-	    'y': {{json_decode($prog)[0]->post_tag}},
+	    'y': {{json_decode($prog)[1]->post_tag}},
 	    "color" : "navy" 
 	  },
 	  {
 	    'x': '{{json_decode($apti)[2]->difficulty_level}}-pre',
-	    'y': {{json_decode($prog)[0]->pre_tag}},
+	    'y': {{json_decode($prog)[2]->pre_tag}},
 	    "color" : "gray" 
 	  }, {
 	    'x': '{{json_decode($apti)[2]->difficulty_level}}-post',
-	    'y': {{json_decode($prog)[0]->post_tag}},
+	    'y': {{json_decode($prog)[2]->post_tag}},
 	    "color" : "gray" 
 	  },];
 

@@ -17,6 +17,10 @@
     body {
 	  overflow-x: hidden;
 	}
+	table 
+	{
+		    font-size: 10px;
+		}
 
   </style>
 @endsection
@@ -82,10 +86,11 @@
 						  			<table class="table">
 										  <thead>
 										    <tr>
-												<th scope="col">Difficulty Level</th>
-												<th scope="col">Pre-Tag</th>
-												<th scope="col">Post-Tag</th>
-												<th scope="col">Difference</th>
+												<th scope="col">Category</th>
+												<th scope="col">PreTag</th>
+												<th scope="col">PostTag</th>
+												<th scope="col">Original Difference</th>
+												<th scope="col">Current</th>
 										    </tr>
 										  </thead>
 										  <tbody>
@@ -107,6 +112,16 @@
 													<span class="label label-danger">{{$Task->diff}}</span>
 													@else
 													<span class="label label-success">{{$Task->diff}}</span>
+													@endif
+												</td>
+												<td scope="row">
+													@if($Task->diff < 0)
+													<span class="label label-danger">{{$Task->currentdiff}}</span>
+													@elseif($Task->diff > 0)
+													<span class="label label-danger">{{$Task->currentdiff}}</span>
+													@else
+													<span class="label label-success">{{$Task->diff}}</span>
+													@currentdiff
 													@endif
 												</td>
 										    </tr>
