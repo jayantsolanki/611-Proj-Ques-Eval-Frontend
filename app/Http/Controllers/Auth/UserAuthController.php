@@ -34,11 +34,11 @@ class UserAuthController extends Controller{
             }
             if(Auth::user()->role == 1 && Auth::user()->active == 1){// for normal user
                 // return Auth::user();
-                return redirect()->route('memberHome');
+                return redirect()->route('showMemberDashboard');
             }
             if(Auth::user()->role == 2 && Auth::user()->active == 1){//for admin
                 // return Auth::user();
-                return redirect()->route('adminHome');
+                return redirect()->route('showAdminDashboard');
             }
             else{
                 return redirect()->route('login')->with('error', 'Not a user.');
@@ -70,11 +70,11 @@ class UserAuthController extends Controller{
             // Authentication passed...
             if(Auth::user()->role == 1){// for normal user
                 // return Auth::user();
-                return redirect()->route('memberHome');
+                return redirect()->route('showMemberDashboard');
             }
             if(Auth::user()->role == 2 ){//for admin
                 // return Auth::user();
-                return redirect()->route('adminHome');
+                return redirect()->route('showAdminDashboard');
             }else{
                 return redirect()->route('login')->with('error', 'Unknown role given to you, please contact Admin');
             }

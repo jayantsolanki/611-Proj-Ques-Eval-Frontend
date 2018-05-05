@@ -1,7 +1,4 @@
-@if(Auth::user()->email)
-@extends('layouts.admin.master')
-@elseif()
-@endif
+@extends('layouts.questions.master')
 @section('title', 'Dashboard')
 @section("styles")
   <style type="text/css">
@@ -54,14 +51,73 @@
 		<div class="row">
 			<div class="panel panel-default">
 			  <div class="panel-heading">
-			    <h3 class="panel-title">See whats going on here</h3>
+			    <h3 class="panel-title">Overview</h3>
 			  </div>
 			  <div class="panel-body">
-			  	<div class="row">
-			  		<div class = "col-md-10">
-			  			
-			  		</div>
-			  	</div>
+			  	@if(sizeof($dashboard) == 0)
+				  	<div class="row">
+				  		<div class = "col-md-12">
+				  			<label class="alert alert-info col-md-12">No information found for any year, @if(Auth::user()->role==2) please run <a title="run analysis" href="{{route('showTasks')}}">analysis</a> @else Please contact admin to run analysis @endif</label>  			
+				  		</div>
+				  	</div>
+			  	@else
+			  		@foreach(json_decode($dashboard) as $dash)
+			  			<div class="row">
+			  				<hr>
+			  				<div class = " col-md-12">
+					  			<label class=" alert alert-info col-md-12 text text-center">Summary Report for Year {{$dash->year}} Question Database<br>
+					  			<span>
+											<form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('showStats') }}">
+												<input type="hidden" name="_token" value="{{ csrf_token() }}">
+												<input type="hidden" name="taskId" value="{{$dash->taskId}}">
+												<input type="hidden" name="year" value="{{$dash->year}}">
+												<button style="cursor:pointer" type="submit" class="label btn-info">View detailed Analysis</button>
+											</form>
+										</span></label>
+					  		</div>
+					  		<h4 class="text text-center">Total Questions {{$dash->TotalQues}}</h4>
+					  		@foreach($dash->tags as $key=>$tag)
+						  		<div class = " col-md-4">
+						  			<h4 class="text text-center">@if($key==0)Aptitude @elseif($key==1)Electricals @else Programming @endif</h4>
+						  			<table class="table">
+										  <thead>
+										    <tr>
+												<th scope="col">Difficulty Level</th>
+												<th scope="col">Pre-Tag</th>
+												<th scope="col">Post-Tag</th>
+												<th scope="col">Difference</th>
+										    </tr>
+										  </thead>
+										  <tbody>
+										  	@foreach ($tag as $Task)
+										  	<tr class="text-center">
+												<td scope="row">
+													{{$Task->difficulty_level}}
+												</td>
+												<td scope="row">
+													{{$Task->pre_tag}}
+												</td>
+												<td scope="row">
+													{{$Task->post_tag}}
+												</td>
+												<td scope="row">
+													@if($Task->diff < 0)
+													<span class="label label-danger">{{$Task->diff}}</span>
+													@elseif($Task->diff > 0)
+													<span class="label label-danger">{{$Task->diff}}</span>
+													@else
+													<span class="label label-success">{{$Task->diff}}</span>
+													@endif
+												</td>
+										    </tr>
+										  	@endforeach
+										  </tbody>
+									</table>
+						  		</div>
+					  		@endforeach					  		
+					  	</div>
+			  		@endforeach
+			  	@endif
 			  </div>
 			</div>
 			

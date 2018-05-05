@@ -11,6 +11,7 @@ use App\Login;
 use App\DatabaseCatalogue;
 use App\Analysis;
 use App\Stats;
+use App\UserDetails;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 // use DB;
@@ -127,12 +128,40 @@ class QAnalysisController extends Controller{
  		return 0;
  		return view('questions.taskViewer')->with('userDetails', Auth::user())->with('hasFeatures', 0)->with('defaultyear', 2017)->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('runningTask', $runningTask)->with('Tasks', $Tasks);
  	}
- 	public function createTask(Request $data){
- 		// if(Auth::user()->role != 2){
- 		// 	return redirect()->route('login')->with('error', 'Unauthorised Access');
- 		// }
+ 	public function showDashboard(Request $data){
+ 		if(Auth::user()->role != 2 && Auth::user()->role != 1){
+ 			return redirect()->route('login')->with('error', 'Unauthorised Access');
+ 		}
+ 		$inactiveUsers = Login::where('active',0)->count();
  		$userdetails = UserDetails::where('id',Auth::user()->user_id)->first();
- 		return view('members.profile')->with('userDetails', $userdetails);
+ 		$years = DatabaseCatalogue::get()->pluck('year');
+ 		
+		//////////////////////////////////////////////////////////
+		// $summary = $this->retrieveStats($data->year, $TotalQues);
+		$dashboard = [];
+ 		foreach ($years as $year) {
+ 			if($year==2018)
+ 				break;
+ 			$TotalQues = QuestionMaster::where('year',$year)->count();
+			$summary = $this->retrieveStats($year, $TotalQues);
+			$Analysis = Analysis::where('year', $year)->where('status', 2)->first();
+			$stats = array(
+				'year' => $year,
+				'tags' => $summary,
+				'taskId' => $Analysis->id,
+				'accuracy' => $Analysis->accuracy,
+				'algoUsed' => $Analysis->algoUsed,
+				'TotalQues' => $TotalQues
+
+			);
+			array_push($dashboard,$stats);
+
+ 		}
+ 		// foreach ($dashboard[0]['tags'] as $year) {
+ 		// 	return $year;
+ 		// }
+ 		// return $dashboard[0];
+ 		return view('questions.dashboard')->with('userDetails', $userdetails)->with('inactiveUsers', $inactiveUsers)->with('dashboard', json_encode($dashboard));
  	}
 
  	public function showStats(Request $data){
@@ -164,9 +193,9 @@ class QAnalysisController extends Controller{
  				$Stats = Stats::where('task_id', $data->taskId)->get();
  				//////////////////////////////////////////////////////////
  				$summary = $this->retrieveStats($data->year, $TotalQues);
- 				$apti = $summary[0];
- 				$elec = $summary[1];
- 				$prog = $summary[2];
+ 				$apti = json_encode($summary[0]);
+ 				$elec = json_encode($summary[1]);
+ 				$prog = json_encode($summary[2]);
  				///////////////////////////////////////////////////////////
  			
  				return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQues', $TotalQues)->with('Reports', $Reports)->with('Stats', $Stats)->with('apti',$apti)->with('elec',$elec)->with('prog',$prog);
@@ -291,7 +320,7 @@ class QAnalysisController extends Controller{
 
 			);
 			array_push($apti, $payload);
-			$apti = json_encode($apti);
+			// $apti = json_encode($apti);
 			// return $a/pti;
 			///////////////////////////////////////////////////////////
 			$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('pre_tag',0)->count();//electricals, pre tag easy
@@ -327,7 +356,7 @@ class QAnalysisController extends Controller{
 
 			);
 			array_push($elec, $payload);
-			$elec = json_encode($elec);
+			// $elec = json_encode($elec);
 			// return $elec;
 			///////////////////////////////////////////////////////////
 			$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('pre_tag',0)->count();//programming, pre tag easy
@@ -363,7 +392,7 @@ class QAnalysisController extends Controller{
 
 			);
 			array_push($prog, $payload);
-			$prog = json_encode($prog);
+			// $prog = json_encode($prog);
 
 			return array($apti, $elec, $prog);
 

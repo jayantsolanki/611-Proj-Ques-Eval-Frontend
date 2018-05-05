@@ -101,7 +101,7 @@
 			  	<div class="row">
 			  		<hr>
 			  		<div class = " col-md-12">
-			  			<label class=" alert alert-info col-md-12">No information found for Year {{$defaultyear}} Question Database, please run <a title="run analysis" href="{{route('showTasks')}}">analysis</a></label>
+			  			<label class=" alert alert-info col-md-12">No information found for Year {{$defaultyear}} Question Database, @if(Auth::user()->role==2) please run <a title="run analysis" href="{{route('showTasks')}}">analysis</a> @else Please contact admin to run analysis @endif</a></label>
 			  		</div>
 			  	</div>
 			  	@else

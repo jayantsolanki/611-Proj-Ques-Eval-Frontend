@@ -72,11 +72,11 @@ Route::any('member/updateAccount', [
 	'uses' => 'Members\MembersController@update'
 ]);
 /*****************Admin Controller*************/
-Route::any('admin/dashboard',[
-		'as' => 'adminHome',
-		'middleware' => 'auth',
-		'uses' => 'Admin\AdminController@showDashboard'
-]);
+// Route::any('admin/dashboard',[
+// 		'as' => 'adminHome',
+// 		'middleware' => 'auth',
+// 		'uses' => 'Admin\AdminController@showDashboard'
+// ]);
 
 Route::any('admin/profile',[
 	'as' => 'adminProfile',
@@ -96,11 +96,11 @@ Route::any('admin/userManage',[
 	'uses' => 'Admin\AdminController@userManage'
 ]);
 /*****************Member Controller*************/
-Route::any('member/dashboard',[
-	'as' => 'memberHome',
-	'middleware' => 'auth',
-	'uses' => 'Members\MembersController@showDashboard'
-]);
+// Route::any('member/dashboard',[
+// 	'as' => 'memberHome',
+// 	'middleware' => 'auth',
+// 	'uses' => 'Members\MembersController@showDashboard'
+// ]);
 
 Route::any('member/profile',[
 	'as' => 'memberProfile',
@@ -154,4 +154,16 @@ Route::any('analysis/checkProgress',[
 	'as' => 'checkProgress',
 	'middleware' => 'auth',
 	'uses' => 'MlAnalysis\QAnalysisController@checkProgress'
+]);
+
+Route::any('admin/showDashboard',[
+	'as' => 'showAdminDashboard',
+	'middleware' => 'auth',
+	'uses' => 'MlAnalysis\QAnalysisController@showDashboard'
+]);
+
+Route::any('memeber/showDashboard',[
+	'as' => 'showMemberDashboard',
+	'middleware' => 'auth',
+	'uses' => 'MlAnalysis\QAnalysisController@showDashboard'
 ]);
