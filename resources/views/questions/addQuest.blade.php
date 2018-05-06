@@ -62,7 +62,7 @@
 			  <div class="panel-body">
 			  	<div class="row">
 			  		<div class = "col-md-10">
-			  			<form method="POST" action="{{ route('quesEditor') }}">
+			  			<form enctype="multipart/form-data" method="POST" action="{{ route('quesEditor') }}">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <input type="hidden" name="type" value="newques">
 							<p class="suggestive">Create new Question</p>
@@ -75,8 +75,22 @@
 					 
 					        <div class="form-group input-group col-md-3">
 					            <span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
-					            <input type="text" class="form-control" id="year" name="year" required="" placeholder="Year like <?php echo date('Y');?>" aria-describedby="sizing-addon1" value="{!!old('year')!!}">
+					            <select required="" class="form-control" name="year" id="year">
+					            	<option value="" disabled selected>Select year</option>
+					            	@foreach ($years as $year)
+					            		<option value="{{$year}}" @if($year == ('year')) selected @endif >{{$year}}</option>
+					            	@endforeach
+								</select>
 					        </div>
+					        <div class="form-group input-group col-md-5">
+					            <span class="input-group-addon" id="sizing-addon1">Image <i class=""></i></span>
+					           <input class="form-control" data-preview="#preview" name="questionimage" type="file" id="questionimage">
+
+					           
+					        </div>
+					        <div class="form-group input-group col-md-5">
+					        	<img class="col-sm-6" id="preview"  src="" ></img>
+					    	</div>
 					        <hr>
 					        <label class="text text-info">Choose Diffculty and Category</label>
 					        <div class="form-group input-group">
@@ -149,7 +163,7 @@
 			  <div class="panel-body">
 			  	<div class="row">
 			  		<div class = "col-md-10">
-			  			<form method="POST" action="{{ route('quesEditor') }}">
+			  			<form enctype="multipart/form-data" method="POST" action="{{ route('quesEditor') }}">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <input type="hidden" name="type" value="updateques">
 					        <input type="hidden" name="qid" value="{{$qid}}">
@@ -163,8 +177,24 @@
 					 
 					        <div class="form-group input-group col-md-3">
 					            <span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
-					            <input type="text" class="form-control" id="year" name="year" required="" placeholder="Year like <?php echo date('Y');?>" aria-describedby="sizing-addon1" value="{{$fetchQues->year}}">
+					            <select required="" class="form-control" name="year" id="year">
+					            	<option value="" disabled selected>Select year</option>
+					            	@foreach ($years as $year)
+					            		<option value="{{$year}}" @if($year == $fetchQues->year) selected @endif>{{$year}}</option>
+					            	@endforeach
+								</select>
 					        </div>
+					        <div class="form-group input-group col-md-5">
+					            <span class="input-group-addon" id="sizing-addon1">Image <i class=""></i></span>
+					           <input class="form-control" data-preview="#preview" name="questionimage" type="file" id="questionimage">
+
+					           
+					        </div>
+					        <div class="form-group input-group col-md-5">
+					        	<img class="col-sm-6" id="preview"  src="" ></img>
+					         @if($fetchQues->question_img == null)
+					    		<img class="picimg" src="/img/qwdara/noimage.png"/>@else <img width= "70%" height="70%" id="imgpic" class="picimg" src="/img/qwdara/{{$fetchQues->year}}/{{$fetchQues->question_img}}" width= "70%" height="70%" onError="this.onerror=null;this.src='/img/qwdara/default-image.png';"/>@endif
+					    	</div>
 					        <hr>
 					        <label class="text text-info">Choose Diffculty and Category</label>
 					        <div class="form-group input-group">
@@ -247,6 +277,10 @@
 	}
 	function goBack2() {
 	    window.history.back();
+	}
+	function myFunction() {
+	    // alert('The image could not be loaded.');
+	    document.getElementById("imgpic").src="/img/qwdara/default-image.png";
 	}
 </script>
 @endsection

@@ -83,11 +83,11 @@
 			  <div class="panel-body">
 			  	<div class="row">
 			  		<div class = "col-md-12">
-			  			<label>Select year</label>
 			  			<form method="POST" action="{{ route('showStats') }}">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-					        <div class="form-group input-group">
-					            <select class="form-control" name="year" id="year">
+					        <div class="form-group input-group col-md-4"">
+					        	<span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
+					            <select class="form-control  name="year" id="year">
 					            	<option value="" disabled selected>Choose year</option>
 					            	@foreach ($years as $year)
 					            		<option value="{{$year}}" @if($year == $defaultyear) selected @endif>{{$year}}</option>

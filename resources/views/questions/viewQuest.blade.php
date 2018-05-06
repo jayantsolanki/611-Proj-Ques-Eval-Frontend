@@ -63,6 +63,7 @@
 		        <input type="hidden" name="new" value="filter">
 				<div class="row">
 			        <div class="input-group col-md-2 corr">
+			        	<span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
 			            <select required="" class="form-control" name="year" id="year">
 			            	<option value="" disabled selected>Select year</option>
 			            	@foreach ($years as $year)
@@ -71,6 +72,7 @@
 						</select>
 			        </div>
 			        <div class=" input-group col-md-3">
+			        	<span class="input-group-addon" id="sizing-addon1">Category <i class=""></i></span>
 			            <select required="" class="form-control" name="category" id="category">
 							<option value="" disabled selected>Select Category</option>
 							<option value="1" @if($category == 1) selected @endif>Aptitude</option>
@@ -79,7 +81,8 @@
 							<option value="4" @if($category == 4) selected @endif>All</option>
 						</select>
 			        </div>
-			        <div class=" input-group col-md-2">
+			        <div class=" input-group col-md-3">
+			        	<span class="input-group-addon" id="sizing-addon1">Difficulty<i class=""></i></span>
 			            <select required="" class="form-control" name="difficulty" id="difficulty">
 							<option value="" disabled selected>Select Difficulty level</option>
 							<option value="0" @if($difficulty == 0) selected @endif>Easy</option>

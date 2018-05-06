@@ -143,7 +143,11 @@ class QAnalysisController extends Controller{
  			if($year==2018)
  				break;
  			$TotalQues = QuestionMaster::where('year',$year)->count();
-			$summary = $this->retrieveStats($year, $TotalQues);
+ 			$TotalQuess = DatabaseCatalogue::where('year',$year)->first();//original count
+ 			// $TotalQuess = QuestionMaster::where('year',$year)->where('is_analysed',1)->count();//original count
+
+ 			// return $TotalQuess;
+			$summary = $this->retrieveStats($year, $TotalQuess->totalQuestion);
 			$Analysis = Analysis::where('year', $year)->where('status', 2)->first();
 			$stats = array(
 				'year' => $year,
@@ -192,7 +196,8 @@ class QAnalysisController extends Controller{
  				$Reports = Analysis::where('year', $data->year)->where('status',2)->get();
  				$Stats = Stats::where('task_id', $data->taskId)->get();
  				//////////////////////////////////////////////////////////
- 				$summary = $this->retrieveStats($data->year, $TotalQues);
+ 				$TotalQuess = DatabaseCatalogue::where('year',$data->year)->first();//original count
+ 				$summary = $this->retrieveStats($data->year, $TotalQuess->totalQuestion);
  				$apti = json_encode($summary[0]);
  				$elec = json_encode($summary[1]);
  				$prog = json_encode($summary[2]);

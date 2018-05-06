@@ -99,7 +99,9 @@ class QuestionController extends Controller{
 	 				$data -> difficulty = [$data -> difficulty];
 	 			}
 	 			if($data->new=="next")
+				{
 					$fetchQues = QuestionMaster::where('year', $data -> year)->where('quid', '>', $data -> current)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->first();
+				}
 				elseif ($data->new=="filter") {
 					// return $data -> category;
 					$fetchQues = QuestionMaster::where('year', $data -> year)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->first();
@@ -111,6 +113,7 @@ class QuestionController extends Controller{
 				}
 				else
 					$fetchQues = QuestionMaster::where('year', $data -> year)->where('quid', '<', $data -> current)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->orderBy('quid', 'desc')->first();
+				// return $fetchQues;
 				if(sizeof($fetchQues)>0)
 				{
 					if($fetchQues->quid == '1')
@@ -123,6 +126,7 @@ class QuestionController extends Controller{
 		 				$next = $fetchQues->quid + 1;
 					return view('questions.viewQuest')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
 				}
+
 				else//if no results than switch to default
 				{
 					return redirect()->route('quesViewer')->with('error',"Please enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
@@ -165,12 +169,13 @@ class QuestionController extends Controller{
  	/*****************For editing the question or creating new ones********************/
  	public function quesEditor(Request $data){
  		$inactiveUsers = Login::where('active',0)->count();
+ 		$years = DatabaseCatalogue::get()->pluck('year');
  		if(sizeof($data->all())>0)
 	 		{		 			
 		        if($data->type=='editques'){
 		        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 		        	// return $fetchQues;
-		        	return view('questions.addQuest')->with('qid',$fetchQues->id)->with('fetchQues',$fetchQues)->with('inactiveUsers', $inactiveUsers);
+		        	return view('questions.addQuest')->with('qid',$fetchQues->id)->with('fetchQues',$fetchQues)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 
 		        }
 		        if($data->type=='updateques'){
@@ -182,6 +187,7 @@ class QuestionController extends Controller{
 			 				'option4' => 'max:255',
 			 				'option5' => 'max:255',
 			 				'answeroption' => 'required|min:1|max:5',
+		 					'questionimage' => 'image|mimes:jpeg,bmp,png|max:2048',//max size 2MB
 				            'category' => 'required|integer|min:1|digits_between:1,4',
 				            'difficulty' => 'required|integer|min:0|digits_between:0,3',
 				            'year' => 'required|integer|min:2014|max:2025',
@@ -207,42 +213,42 @@ class QuestionController extends Controller{
 			        	if($data['option4']==''){//checking if the options are valid and agreeing with the answer option
 				        	if($data['option5']==''){
 				        		if($data['answeroption']>3){
-				        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+				        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 				        		}
 				        	}
 				        	else{
 				        		if($data['answeroption']>3){
-				        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+				        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 				        		}
-				        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+				        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 				        	}
 
 				        }
 				        else{
 				        	if($data['answeroption']==5 && $data['option5']==''){
-			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        		}
 				        }
-			            return redirect()->route('quesEditor')->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			            return redirect()->route('quesEditor')->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        }
 		        	// storing the new question
 			        if($data['option4']==''){//checking if the options are valid and agreeing with the answer option
 			        	if($data['option5']==''){
 			        		if($data['answeroption']>3){
-			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        		}
 			        	}
 			        	else{
 			        		if($data['answeroption']>3){
-			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        		}
-			        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        	}
 
 			        }
 			        else{
 			        	if($data['answeroption']==5 && $data['option5']==''){
-		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 		        		}
 			        }
 			        DB::transaction(function($data) use ($data){
@@ -256,7 +262,13 @@ class QuestionController extends Controller{
 			            	$fetchQues -> option4 =  $data['option4'];
 			            if($data['option5']!='')
 			            	$fetchQues -> option5 =  $data['option5'];
+			            if ($data->hasFile('questionimage')) {
+			            	$filename = $this->getFileName($data->questionimage);
+ 							$data->questionimage->move(base_path('public/img/qwdara/'.$fetchQues -> year), $filename);
+			            	$fetchQues -> question_img =  $filename;
+			            }
 			            $fetchQues -> answer_option1 =  $data['answeroption'];
+			            $fetchQues -> year =  $data['year'];
 			            $fetchQues -> pre_tag =  $data['difficulty'];
 			            $fetchQues -> difficulty_level =  $data['difficulty'];
 			            $fetchQues -> category_id =  $data['category'];
@@ -265,7 +277,7 @@ class QuestionController extends Controller{
 			            $fetchQues ->save();
 
 			        });//end of transaction
-			        return redirect()->route('quesEditor')->with("updatesuccess", $data -> qid)->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        return redirect()->route('quesEditor')->with("updatesuccess", $data -> qid)->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 
 
 		        }
@@ -277,6 +289,7 @@ class QuestionController extends Controller{
 		 				'option3' => 'required|max:255',
 		 				'option4' => 'max:255',
 		 				'option5' => 'max:255',
+		 				'questionimage' => 'image|mimes:jpeg,bmp,png|max:2048',//max size 2MB
 		 				'answeroption' => 'required|min:1|max:5',
 			            'category' => 'required|integer|min:1|digits_between:1,4',
 			            'difficulty' => 'required|integer|min:0|digits_between:0,3',
@@ -303,42 +316,42 @@ class QuestionController extends Controller{
 		        	if($data['option4']==''){//checking if the options are valid and agreeing with the answer option
 			        	if($data['option5']==''){
 			        		if($data['answeroption']>3){
-			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        		}
 			        	}
 			        	else{
 			        		if($data['answeroption']>3){
-			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        		}
-			        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+			        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        	}
 
 			        }
 			        else{
 			        	if($data['answeroption']==5 && $data['option5']==''){
-		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 		        		}
 			        }
-		            return redirect()->route('quesEditor')->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+		            return redirect()->route('quesEditor')->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 		        }
 	        	// storing the new question
 		        if($data['option4']==''){//checking if the options are valid and agreeing with the answer option
 		        	if($data['option5']==''){
 		        		if($data['answeroption']>3){
-		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 		        		}
 		        	}
 		        	else{
 		        		if($data['answeroption']>3){
-		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 		        		}
-		        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+		        		return redirect()->route('quesEditor')->with("error", "Option 5 cannot be filled before option 4")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 		        	}
 
 		        }
 		        else{
 		        	if($data['answeroption']==5 && $data['option5']==''){
-	        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+	        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 	        		}
 		        }
 		        DB::transaction(function($data) use ($data){
@@ -360,9 +373,15 @@ class QuestionController extends Controller{
 		            	$newQues -> option4 =  $data['option4'];
 		            if($data['option5']!='')
 		            	$newQues -> option5 =  $data['option5'];
+		            if ($data->hasFile('questionimage')) {
+		            	$filename = $this->getFileName($data->questionimage);
+							$data->questionimage->move(base_path('public/img/qwdara/'.$data -> year), $filename);
+		            	$newQues -> question_img =  $filename;
+		            }
 		            $newQues -> answer_option1 =  $data['answeroption'];
 		            // $newQues -> pre_tag =  $data['difficulty'];
 		            $newQues -> difficulty_level =  $data['difficulty'];
+		            $newQues -> pre_tag =  $data['difficulty'];
 		            $newQues -> category_id =  $data['category'];
 		            // $newQues -> is_practice_question =  0;
 		            $newQues -> user_id =  Auth::user()->user_id;
@@ -370,12 +389,17 @@ class QuestionController extends Controller{
 		            $data->qid = $newQues->id;
 
 		        });//end of transaction
-		        return redirect()->route('quesEditor')->with("createsuccess", $data->qid)->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+		        return redirect()->route('quesEditor')->with("createsuccess", $data->qid)->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 
 
 	        }
 	        
  		}
- 		return view('questions.addQuest')->with('qid',0)->with('inactiveUsers', $inactiveUsers);
+ 		return view('questions.addQuest')->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
  	}
+
+ 	protected function getFileName($file)
+	{
+	   return str_random(20) . '.' . $file->extension();
+	}
  }
