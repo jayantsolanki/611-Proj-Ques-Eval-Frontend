@@ -155,7 +155,8 @@ class QAnalysisController extends Controller{
 				'taskId' => $Analysis->id,
 				'accuracy' => $Analysis->accuracy,
 				'algoUsed' => $Analysis->algoUsed,
-				'TotalQues' => $TotalQues
+				'TotalQues' => $TotalQues,
+				'TotalQuess' => $TotalQuess->totalQuestion
 
 			);
 			array_push($dashboard,$stats);
@@ -203,7 +204,7 @@ class QAnalysisController extends Controller{
  				$prog = json_encode($summary[2]);
  				///////////////////////////////////////////////////////////
  				// return $summary;
- 				return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQues', $TotalQues)->with('Reports', $Reports)->with('Stats', $Stats)->with('apti',$apti)->with('elec',$elec)->with('prog',$prog);
+ 				return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQuess', $TotalQuess)->with('TotalQues', $TotalQues)->with('Reports', $Reports)->with('Stats', $Stats)->with('apti',$apti)->with('elec',$elec)->with('prog',$prog);
 
 
  			}

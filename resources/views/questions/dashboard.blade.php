@@ -19,7 +19,7 @@
 	}
 	table 
 	{
-		    font-size: 10px;
+		    font-size: 11px;
 		}
 
   </style>
@@ -65,10 +65,10 @@
 				  		</div>
 				  	</div>
 			  	@else
-			  		@foreach(json_decode($dashboard) as $dash)
+			  		@foreach(json_decode($dashboard) as $chartkey=>$dash)
 			  			<div class="row">
 			  				<hr>
-			  				<div class = " col-md-12">
+			  				<div class = "col-md-12">
 					  			<label class=" alert alert-info col-md-12 text text-center">Summary Report for Year {{$dash->year}} Question Database<br>
 					  			<span>
 											<form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('showStats') }}">
@@ -80,9 +80,11 @@
 										</span></label>
 					  		</div>
 					  		<h4 class="text text-center">Total Questions {{$dash->TotalQues}}</h4>
+					  		<h5 class="text text-center"><a href="#" data-toggle="tooltip" data-placement="top" title="Accuracy is defined as how much is the predicted tagging that is the post tag is similar to the manual tagging or the pre-tag">Overall Accuracy {{$dash->accuracy}}%</a></h5>
 					  		@foreach($dash->tags as $key=>$tag)
 						  		<div class = " col-md-4">
 						  			<h4 class="text text-center">@if($key==0)Aptitude @elseif($key==1)Electricals @else Programming @endif</h4>
+						  			<div id="chart{{$chartkey}}{{$key}}" style="width: 100%; height: 450px;"></div>
 						  			<table class="table">
 										  <thead>
 										    <tr>
@@ -128,6 +130,30 @@
 										  	@endforeach
 										  </tbody>
 									</table>
+									<script type="text/javascript">
+										function drawChart{{$chartkey}}{{$key}}() {
+									        var data = google.visualization.arrayToDataTable([
+									          ['Difficulty', 'Pre-Tag', 'Post-Tag', 'Expected Count'],
+									          ['{{$tag[0]->difficulty_level}}', {{$tag[0]->pre_tag}}, {{$tag[0]->post_tag}}, {{{($dash->TotalQuess)*3/30}}} ],
+									          ['{{$tag[1]->difficulty_level}}', {{$tag[1]->pre_tag}}, {{$tag[1]->post_tag}}, {{($dash->TotalQuess)*4/30}} ],
+									          ['{{$tag[2]->difficulty_level}}', {{$tag[2]->pre_tag}}, {{$tag[2]->post_tag}}, {{($dash->TotalQuess)*3/30}} ]
+									        ]);
+									    
+											var options = {
+												legend: { 
+												    position : 'bottom'
+												  },
+												vAxis: {minValue: 0},
+									      		colors: ['#1b9e77', '#d95f02', '#7570b3'],
+									          chart: {
+									            title: 'Comparison between Machine and Manual Prediction',
+									          }
+									        };
+									        var chart = new google.charts.Bar(document.getElementById('chart{{$chartkey}}{{$key}}'));
+
+									        chart.draw(data, google.charts.Bar.convertOptions(options));
+									    }
+									</script>
 						  		</div>
 					  		@endforeach					  		
 					  	</div>
@@ -141,9 +167,17 @@
 	</div>
 @endsection
 @section('scripts')
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
 	$(document).ready( function() {
 		$('#dashboard').addClass('active');
+		$('[data-toggle="tooltip"]').tooltip(); 
+		google.charts.load('current', {'packages':['bar']});
+		@foreach(json_decode($dashboard) as $chartkey=>$dash)
+			@foreach($dash->tags as $key=>$tag)
+				google.charts.setOnLoadCallback(drawChart{{$chartkey}}{{$key}});
+			@endforeach
+		@endforeach
 	});
 </script>
 @endsection

@@ -27,6 +27,12 @@
     body {
 	  overflow-x: hidden;
 	}
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button {  
+
+	   opacity: 1;
+
+	}
   </style>
 @endsection
 @section('content')
@@ -105,7 +111,7 @@
 					<input type="hidden" name="year" value="{{ $defaultyear }}">
 					<input type="hidden" name="difficulty" value="{{ $difficulty }}">
 					<input type="hidden" name="category" value="{{ $category }}">
-					<input type="text" class="form-control" name="current" value="{{ $fetchQues->quid }}">
+					<input type="number" class="form-control" name="current" value="{{ $fetchQues->quid }}">
 
 					<input type="hidden" name="new" value="goto">
 				</div>

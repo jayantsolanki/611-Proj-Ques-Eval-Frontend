@@ -41,7 +41,7 @@
             fill: FireBrick;
         }
         table.stats {
-		    font-size: 10px;
+		    font-size: 11px;
 		}
         
        
@@ -87,7 +87,7 @@
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <div class="form-group input-group col-md-4"">
 					        	<span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
-					            <select class="form-control  name="year" id="year">
+					            <select class="form-control"  name="year" id="year">
 					            	<option value="" disabled selected>Choose year</option>
 					            	@foreach ($years as $year)
 					            		<option value="{{$year}}" @if($year == $defaultyear) selected @endif>{{$year}}</option>
@@ -110,8 +110,8 @@
 			  	@else
 			  	<div class="row">
 			  		<hr>
-			  		<div class = "alert alert-info col-md-12 text text-center">
-			  			<label>List of analysis performed on Year {{$defaultyear}} Question Database</label>
+			  		<div class = "col-md-12">
+				  			<label class="alert alert-info col-md-12 text text-center">List of analysis performed on Year {{$defaultyear}} Question Database</label>  			
 			  		</div>
 			  	</div>
 			  	<div class="row">
@@ -189,14 +189,14 @@
 			  		<h4 class="text text-center">Total Questions {{$TotalQues}}</h4>
 			  		<div class = " col-md-4">
 			  			<h4 class="text text-center">Aptitude Category</h4>
-			  			<svg id="apti" width="300" height="500"></svg>
+			  			<div id="apti" style="width: 100%; height: 450px;"></div>
 			  			<table  class=" stats table">
 							  <thead>
 							    <tr>
 									<th scope="col">Category</th>
 									<th scope="col">PreTag</th>
 									<th scope="col">PostTag</th>
-									<th scope="col">Original Difference</th>
+									<th scope="col"><a href="#" data-toggle="tooltip" data-placement="top" title="Diffierence is defined as the Expected - the Post_Tag count">Original Difference</a></th>
 									<th scope="col">Current</th>
 							    </tr>
 							  </thead>
@@ -214,7 +214,7 @@
 									</td>
 									<td scope="row">
 										@if($Task->diff < 0)
-										<span class="label label-danger">{{$Task->diff}}</span>
+										<span class="label label-danger"{{$Task->diff}}</span>
 										@elseif($Task->diff > 0)
 										<span class="label label-danger">{{$Task->diff}}</span>
 										@else
@@ -238,14 +238,14 @@
 			  		</div>
 			  		<div class = " col-md-4">
 			  			<h4 class="text text-center">Electricals Category</h4>
-			  			<svg id="elec" width="300" height="500"></svg>
+			  			<div id="elec" style="width: 100%; height: 450px;"></div>
 			  			<table class="stats table">
 							  <thead>
 							    <tr>
 									<th scope="col">Category</th>
 									<th scope="col">PreTag</th>
 									<th scope="col">PostTag</th>
-									<th scope="col">Original Difference</th>
+									<th scope="col"><a href="#" data-toggle="tooltip" data-placement="top" title="Diffierence is defined as the Expected - the Post_Tag count">Original Difference</a></th>
 									<th scope="col">Current</th>
 							    </tr>
 							  </thead>
@@ -287,14 +287,14 @@
 			  		</div>
 			  		<div class = " col-md-4">
 			  			<h4 class="text text-center">Programming Category</h4>
-			  			<svg id="prog" width="300" height="500"></svg>
+			  			<div id="prog" style="width: 100%; height: 450px;"></div>
 			  			<table class="stats table">
 							  <thead>
 							    <tr>
 									<th scope="col">Category</th>
 									<th scope="col">PreTag</th>
 									<th scope="col">PostTag</th>
-									<th scope="col">Original Difference</th>
+									<th scope="col"><a href="#" data-toggle="tooltip" data-placement="top" title="Diffierence is defined as the Expected - the Post_Tag count">Original Difference</a></th>
 									<th scope="col">Current</th>
 							    </tr>
 							  </thead>
@@ -357,298 +357,89 @@
 
 @endsection
 @section('scripts')
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
 	$(document).ready( function() {
 		$('#st').addClass('active');
+		$('[data-toggle="tooltip"]').tooltip(); 
 		@if(isset($Stats))
-		InitChartApti();
-		InitChartElec();
-		InitChartProg();
+		google.charts.load('current', {'packages':['bar']});
+		google.charts.setOnLoadCallback(drawChartApti);
+		google.charts.setOnLoadCallback(drawChartElec);
+		google.charts.setOnLoadCallback(drawChartProg);
+	
 		@endif
 
 		
 	});
 	@if(isset($Stats))
-	function InitChartApti() {
+	
+	function drawChartApti() {
+        var data = google.visualization.arrayToDataTable([
+          ['Difficulty', 'Pre-Tag', 'Post-Tag', 'Expected Count'],
+          ['{{json_decode($apti)[0]->difficulty_level}}', {{json_decode($apti)[0]->pre_tag}}, {{json_decode($apti)[0]->post_tag}}, {{{($TotalQuess->totalQuestion)*3/30}}} ],
+          ['{{json_decode($apti)[1]->difficulty_level}}', {{json_decode($apti)[1]->pre_tag}}, {{json_decode($apti)[1]->post_tag}}, {{($TotalQuess->totalQuestion)*4/30}} ],
+          ['{{json_decode($apti)[2]->difficulty_level}}', {{json_decode($apti)[2]->pre_tag}}, {{json_decode($apti)[2]->post_tag}}, {{($TotalQuess->totalQuestion)*3/30}} ]
+        ]);
+    
+		var options = {
+			legend: { 
+			    position : 'bottom'
+			  },
+			vAxis: {minValue: 0},
+      		colors: ['#1b9e77', '#d95f02', '#7570b3'],
+          chart: {
+            title: 'Comparison between Machine and Manual Prediction',
+          }
+        };
+        var chart = new google.charts.Bar(document.getElementById('apti'));
 
-		  var barData = [{
-		    'x': '{{json_decode($apti)[0]->difficulty_level}}-pre',
-		    'y': {{json_decode($apti)[0]->pre_tag}},
-		    "color" : "green" 
-		  }, {
-		    'x': '{{json_decode($apti)[0]->difficulty_level}}-post',
-		    'y': {{json_decode($apti)[0]->post_tag}},
-		    "color" : "green" 
-		  }, {
-		    'x': '{{json_decode($apti)[1]->difficulty_level}}-pre',
-		    'y': {{json_decode($apti)[1]->pre_tag}},
-		    "color" : "navy" 
-		  }, {
-		    'x': '{{json_decode($apti)[1]->difficulty_level}}-post',
-		    'y': {{json_decode($apti)[1]->post_tag}},
-		    "color" : "navy" 
-		  },
-		  {
-		    'x': '{{json_decode($apti)[2]->difficulty_level}}-pre',
-		    'y': {{json_decode($apti)[2]->pre_tag}},
-		    "color" : "gray" 
-		  }, {
-		    'x': '{{json_decode($apti)[2]->difficulty_level}}-post',
-		    'y': {{json_decode($apti)[2]->post_tag}},
-		    "color" : "gray" 
-		  },];
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    }
+    function drawChartElec() {
+        var data = google.visualization.arrayToDataTable([
+          ['Difficulty', 'Pre-Tag', 'Post-Tag', 'Expected Count'],
+          ['{{json_decode($apti)[0]->difficulty_level}}', {{json_decode($elec)[0]->pre_tag}}, {{json_decode($elec)[0]->post_tag}}, {{{($TotalQuess->totalQuestion)*3/30}}} ],
+          ['{{json_decode($apti)[1]->difficulty_level}}', {{json_decode($elec)[1]->pre_tag}}, {{json_decode($elec)[1]->post_tag}}, {{($TotalQuess->totalQuestion)*4/30}} ],
+          ['{{json_decode($apti)[2]->difficulty_level}}', {{json_decode($elec)[2]->pre_tag}}, {{json_decode($elec)[2]->post_tag}}, {{($TotalQuess->totalQuestion)*3/30}} ]
+        ]);
+    
+		var options = {
+			legend: { 
+			    position : 'bottom'
+			  },
+			vAxis: {minValue: 0},
+      		colors: ['#1b9e77', '#d95f02', '#7570b3'],
+          chart: {
+            title: 'Comparison between Machine and Manual Prediction',
+          }
+        };
+        var chart = new google.charts.Bar(document.getElementById('elec'));
 
-		  var vis = d3.select('#apti'),
-		    WIDTH = 300,
-		    HEIGHT = 500,
-		    MARGINS = {
-		      top: 20,
-		      right: 20,
-		      bottom: 50,
-		      left: 50
-		    },
-		    xRange = d3.scale.ordinal().rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.5).domain(barData.map(function (d) {
-		      return d.x;
-		    })),
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    }
+    function drawChartProg() {
+        var data = google.visualization.arrayToDataTable([
+          ['Difficulty', 'Pre-Tag', 'Post-Tag', 'Expected Count'],
+          ['{{json_decode($apti)[0]->difficulty_level}}', {{json_decode($prog)[0]->pre_tag}}, {{json_decode($prog)[0]->post_tag}}, {{{($TotalQuess->totalQuestion)*3/30}}} ],
+          ['{{json_decode($apti)[1]->difficulty_level}}', {{json_decode($prog)[1]->pre_tag}}, {{json_decode($prog)[1]->post_tag}}, {{($TotalQuess->totalQuestion)*4/30}} ],
+          ['{{json_decode($apti)[2]->difficulty_level}}', {{json_decode($prog)[2]->pre_tag}}, {{json_decode($prog)[2]->post_tag}}, {{($TotalQuess->totalQuestion)*3/30}} ]
+        ]);
+    
+		var options = {
+			legend: { 
+			    position : 'bottom'
+			  },
+			vAxis: {minValue: 0},
+      		colors: ['#1b9e77', '#d95f02', '#7570b3'],
+          chart: {
+            title: 'Comparison between Machine and Manual Prediction',
+          }
+        };
+        var chart = new google.charts.Bar(document.getElementById('prog'));
 
-
-		    yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,
-		      d3.max(barData, function (d) {
-		        return d.y+20;
-		      })
-		    ]),
-
-		    xAxis = d3.svg.axis()
-		      .scale(xRange)
-		      .tickSize(5)
-		      .tickSubdivide(true),
-
-		    yAxis = d3.svg.axis()
-		      .scale(yRange)
-		      .tickSize(5)
-		      .orient("left")
-		      .tickSubdivide(true);
-
-
-		  vis.append('svg:g')
-		    .attr('class', 'x axis')
-		    .attr('transform', 'translate(0,' + (HEIGHT - MARGINS.bottom) + ')')
-		    .call(xAxis);
-
-		  vis.append('svg:g')
-		    .attr('class', 'y axis')
-		    .attr('transform', 'translate(' + (MARGINS.left) + ',0)')
-		    .call(yAxis);
-
-		  vis.selectAll('rect')
-		    .data(barData)
-		    .enter()
-		    .append('rect')
-		    .attr('x', function (d) {
-		      return xRange(d.x);
-		    })
-		    .attr('y', function (d) {
-		      return yRange(d.y);
-		    })
-		    .attr('width', xRange.rangeBand())
-		    .attr('height', function (d) {
-		      return ((HEIGHT - MARGINS.bottom) - yRange(d.y));
-		    })
-		    .attr('fill', function(d) { return d.color; });
-		    vis.selectAll("text")
-		    .attr("y", 0)
-		    .attr("x", 9)
-		    .attr("dy", ".35em")
-		    .attr("transform", "rotate(45)")
-		    .style("text-anchor", "start");
-	}
-	function InitChartElec() {
-
-	  var barData = [{
-	    'x': '{{json_decode($elec)[0]->difficulty_level}}-pre',
-	    'y': {{json_decode($elec)[0]->pre_tag}},
-	    "color" : "green" 
-	  }, {
-	    'x': '{{json_decode($elec)[0]->difficulty_level}}-post',
-	    'y': {{json_decode($elec)[0]->post_tag}},
-	    "color" : "green" 
-	  }, {
-	    'x': '{{json_decode($elec)[1]->difficulty_level}}-pre',
-	    'y': {{json_decode($elec)[1]->pre_tag}},
-	    "color" : "navy" 
-	  }, {
-	    'x': '{{json_decode($elec)[1]->difficulty_level}}-post',
-	    'y': {{json_decode($elec)[1]->post_tag}},
-	    "color" : "navy" 
-	  },
-	  {
-	    'x': '{{json_decode($elec)[2]->difficulty_level}}-pre',
-	    'y': {{json_decode($elec)[2]->pre_tag}},
-	    "color" : "gray" 
-	  }, {
-	    'x': '{{json_decode($elec)[2]->difficulty_level}}-post',
-	    'y': {{json_decode($elec)[2]->post_tag}},
-	    "color" : "gray" 
-	  },];
-
-	  var vis = d3.select('#elec'),
-	    WIDTH = 300,
-	    HEIGHT = 500,
-	    MARGINS = {
-	      top: 20,
-	      right: 20,
-	      bottom: 50,
-	      left: 50
-	    },
-	    xRange = d3.scale.ordinal().rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.5).domain(barData.map(function (d) {
-	      return d.x;
-	    })),
-
-
-	    yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,
-	      d3.max(barData, function (d) {
-	        return d.y+20;
-	      })
-	    ]),
-
-	    xAxis = d3.svg.axis()
-	      .scale(xRange)
-	      .tickSize(5)
-	      .tickSubdivide(true),
-
-	    yAxis = d3.svg.axis()
-	      .scale(yRange)
-	      .tickSize(5)
-	      .orient("left")
-	      .tickSubdivide(true);
-
-
-	  vis.append('svg:g')
-	    .attr('class', 'x axis')
-	    .attr('transform', 'translate(0,' + (HEIGHT - MARGINS.bottom) + ')')
-	    .call(xAxis);
-
-	  vis.append('svg:g')
-	    .attr('class', 'y axis')
-	    .attr('transform', 'translate(' + (MARGINS.left) + ',0)')
-	    .call(yAxis);
-
-	  vis.selectAll('rect')
-	    .data(barData)
-	    .enter()
-	    .append('rect')
-	    .attr('x', function (d) {
-	      return xRange(d.x);
-	    })
-	    .attr('y', function (d) {
-	      return yRange(d.y);
-	    })
-	    .attr('width', xRange.rangeBand())
-	    .attr('height', function (d) {
-	      return ((HEIGHT - MARGINS.bottom) - yRange(d.y));
-	    })
-	    .attr('fill', function(d) { return d.color; });
-	    vis.selectAll("text")
-	    .attr("y", 0)
-	    .attr("x", 9)
-	    .attr("dy", ".35em")
-	    .attr("transform", "rotate(45)")
-	    .style("text-anchor", "start");
-	}
-	function InitChartProg() {
-
-	  var barData = [{
-	    'x': '{{json_decode($prog)[0]->difficulty_level}}-pre',
-	    'y': {{json_decode($prog)[0]->pre_tag}},
-	    "color" : "green" 
-	  }, {
-	    'x': '{{json_decode($apti)[0]->difficulty_level}}-post',
-	    'y': {{json_decode($prog)[0]->post_tag}},
-	    "color" : "green" 
-	  }, {
-	    'x': '{{json_decode($apti)[1]->difficulty_level}}-pre',
-	    'y': {{json_decode($prog)[1]->pre_tag}},
-	    "color" : "navy" 
-	  }, {
-	    'x': '{{json_decode($apti)[1]->difficulty_level}}-post',
-	    'y': {{json_decode($prog)[1]->post_tag}},
-	    "color" : "navy" 
-	  },
-	  {
-	    'x': '{{json_decode($apti)[2]->difficulty_level}}-pre',
-	    'y': {{json_decode($prog)[2]->pre_tag}},
-	    "color" : "gray" 
-	  }, {
-	    'x': '{{json_decode($apti)[2]->difficulty_level}}-post',
-	    'y': {{json_decode($prog)[2]->post_tag}},
-	    "color" : "gray" 
-	  },];
-
-	  var vis = d3.select('#prog'),
-	    WIDTH = 300,
-	    HEIGHT = 500,
-	    MARGINS = {
-	      top: 20,
-	      right: 20,
-	      bottom: 50,
-	      left: 50
-	    },
-	    xRange = d3.scale.ordinal().rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.5).domain(barData.map(function (d) {
-	      return d.x;
-	    })),
-
-
-	    yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,
-	      d3.max(barData, function (d) {
-	        return d.y+20;
-	      })
-	    ]),
-
-	    xAxis = d3.svg.axis()
-	      .scale(xRange)
-	      .tickSize(5)
-	      .tickSubdivide(true),
-
-	    yAxis = d3.svg.axis()
-	      .scale(yRange)
-	      .tickSize(5)
-	      .orient("left")
-	      .tickSubdivide(true);
-
-
-	  vis.append('svg:g')
-	    .attr('class', 'x axis')
-	    .attr('transform', 'translate(0,' + (HEIGHT - MARGINS.bottom) + ')')
-	    .call(xAxis);
-
-	  vis.append('svg:g')
-	    .attr('class', 'y axis')
-	    .attr('transform', 'translate(' + (MARGINS.left) + ',0)')
-	    .call(yAxis);
-
-	  vis.selectAll('rect')
-	    .data(barData)
-	    .enter()
-	    .append('rect')
-	    .attr('x', function (d) {
-	      return xRange(d.x);
-	    })
-	    .attr('y', function (d) {
-	      return yRange(d.y);
-	    })
-	    .attr('width', xRange.rangeBand())
-	    .attr('height', function (d) {
-	      return ((HEIGHT - MARGINS.bottom) - yRange(d.y));
-	    })
-	    .attr('fill', function(d) { return d.color; });
-	    vis.selectAll("text")
-	    .attr("y", 0)
-	    .attr("x", 9)
-	    .attr("dy", ".35em")
-	    .attr("transform", "rotate(45)")
-	    .style("text-anchor", "start");
-	}
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    }
 	@endif
 </script>
 @endsection
