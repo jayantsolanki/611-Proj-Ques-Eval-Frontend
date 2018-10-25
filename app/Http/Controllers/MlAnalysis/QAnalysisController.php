@@ -148,7 +148,7 @@ class QAnalysisController extends Controller{
 
  			// return $TotalQuess;
 			$summary = $this->retrieveStats($year, $TotalQuess->totalQuestion);
-			$Analysis = Analysis::where('year', $year)->where('status', 2)->first();
+			$Analysis = Analysis::where('year', $year)->where('status', 2)->orderBy('id','desc')->first();
 			$stats = array(
 				'year' => $year,
 				'tags' => $summary,
