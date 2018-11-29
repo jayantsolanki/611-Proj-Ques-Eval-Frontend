@@ -22,7 +22,7 @@ class QAnalysisController extends Controller{
  		$inactiveUsers = Login::where('active',0)->count();
  		$years = DatabaseCatalogue::get()->pluck('year');
  		$runningTask = Analysis::where('status',1)->count();
- 		$Tasks = Analysis::get();
+ 		$Tasks = Analysis::orderBy('id','desc')->get();
  		if(Auth::user()->role != 2){//only allowed for admin
  			return view('questions.taskViewer')->with('error', "You cannot run another analysis until the previous analysis is finished")->with('userDetails', Auth::user())->with('hasFeatures', 0)->with('defaultyear', 2017)->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('runningTask', $runningTask)->with('Tasks', $Tasks);
  		}
@@ -30,7 +30,7 @@ class QAnalysisController extends Controller{
  		if(sizeof($data->all())>0)
  		{
 
- 			$Tasks = Analysis::get();
+ 			$Tasks = Analysis::orderBy('id','desc')->get();
  			if($runningTask>0){
  				return view('questions.taskViewer')->with('error', "You cannot run another analysis until the previous analysis is finished")->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('hasFeatures', 0)->with('defaultyear', 2017)->with('years', $years)->with('runningTask', $runningTask)->with('Tasks', $Tasks);
  			}
@@ -117,7 +117,7 @@ class QAnalysisController extends Controller{
 			DB::statement("drop table if exists WeightedFeature1;");
 	 		DB::statement("drop table if exists WeightedFeature2;");
 	 		DB::statement("drop table if exists w_values;");
-	 		$Tasks = Analysis::get();
+	 		$Tasks = Analysis::orderBy('id','desc')->get();
 	 		return view('questions.taskViewer')->with('userDetails', Auth::user())->with('hasFeatures', 1)->with('defaultyear', $dbdetails->year)->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('runningTask', $runningTask)->with('Tasks', $Tasks)->with('taskId', $newTask->id);
 
 
@@ -148,7 +148,7 @@ class QAnalysisController extends Controller{
 
  			// return $TotalQuess;
 			$summary = $this->retrieveStats($year, $TotalQuess->totalQuestion);
-			$Analysis = Analysis::where('year', $year)->where('status', 2)->first();
+			$Analysis = Analysis::where('year', $year)->where('status', 2)->orderBy('id','desc')->first();
 			$stats = array(
 				'year' => $year,
 				'tags' => $summary,
@@ -194,7 +194,7 @@ class QAnalysisController extends Controller{
  			if(isset($data->taskId))
  			{
  				$TotalQues = QuestionMaster::where('year',$data->year)->count();
- 				$Reports = Analysis::where('year', $data->year)->where('status',2)->get();
+ 				$Reports = Analysis::where('year', $data->year)->where('status',2)->orderBy('id','desc')->get();
  				$Stats = Stats::where('task_id', $data->taskId)->get();
  				//////////////////////////////////////////////////////////
  				$TotalQuess = DatabaseCatalogue::where('year',$data->year)->first();//original count
@@ -210,7 +210,7 @@ class QAnalysisController extends Controller{
  			}
  			else{
  				$TotalQues = QuestionMaster::where('year',$data->year)->count();
- 				$Reports = Analysis::where('year', $data->year)->where('status',2)->get();
+ 				$Reports = Analysis::where('year', $data->year)->where('status',2)->orderBy('id','desc')->get();
  				if(sizeof($Reports)>0)
 		 		{
 		 			return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', $data->year)->with('TotalQues', $TotalQues)->with('Reports', $Reports);
@@ -225,7 +225,7 @@ class QAnalysisController extends Controller{
 
  		}
  		$TotalQues = QuestionMaster::where('year',2017)->count();
- 		$Reports = Analysis::where('year', 2017)->where('status',2)->get();
+ 		$Reports = Analysis::where('year', 2017)->where('status',2)->orderBy('id','desc')->get();
  		if(sizeof($Reports)>0)
  		{
  			return view('questions.showStat')->with('userDetails', Auth::user())->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('defaultyear', 2017)->with('TotalQues', $TotalQues)->with('Reports', $Reports);
@@ -243,7 +243,7 @@ class QAnalysisController extends Controller{
  		// 	return redirect()->route('login')->with('error', 'Unauthorised Access');
  		// }
  		$runningTask = Analysis::where('status',0)->count();
- 		$Tasks = Analysis::get();
+ 		$Tasks = Analysis::orderBy('id','desc')->get();
  		$inactiveUsers = Login::where('active',0)->count();
  		if(sizeof($data->all())>0)//just for deleting a rogue task
  		{
@@ -269,7 +269,7 @@ class QAnalysisController extends Controller{
  			}
  			else{
 	 			$Analysis->delete();
-	 			$Tasks = Analysis::get();
+	 			$Tasks = Analysis::orderBy('id','desc')->get();
 	 			return redirect()->route('showTasks')->with('success', "Task deleted");
 	 		}
  		}

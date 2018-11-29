@@ -160,7 +160,15 @@
 			  		<hr>
 			  		<div class = "col-md-12">
 			  			<label>Features created, You can now run the analysis for Database year {{$defaultyear}}</label>
-			  			<form action = "http://localhost:8888/doAnalysis" id="analysis">
+			  			<form action = "http://<?php
+
+$file = file_get_contents('http://ip6.me/');
+$pos = strpos( $file, '+3' ) + 3;
+$ip = substr( $file, $pos, strlen( $file ) );
+$pos = strpos( $ip, '</' );
+$ip = substr( $ip, 0, $pos );
+echo $ip;
+?>:8888/doAnalysis" id="analysis">
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <input type="hidden" name="year" value="{{ $defaultyear }}">
 					        <input type="hidden" name="taskId" value="{{ $taskId }}">	      

@@ -162,7 +162,7 @@ Route::any('admin/showDashboard',[
 	'uses' => 'MlAnalysis\QAnalysisController@showDashboard'
 ]);
 
-Route::any('memeber/showDashboard',[
+Route::any('member/showDashboard',[
 	'as' => 'showMemberDashboard',
 	'middleware' => 'auth',
 	'uses' => 'MlAnalysis\QAnalysisController@showDashboard'
