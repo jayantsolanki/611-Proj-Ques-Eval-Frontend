@@ -309,9 +309,15 @@
 		        $(progress).html(response['progress']+"%")
 		        $(time).html(response['updated_at'])
 		        // $(sstatus).remove();
-		        if(response['progress']>0 && response['progress']<100){
+		        if(response['progress']>0 && response['progress']<=97){
 		        	$(circle).attr('class', 'glyphicon glyphicon-refresh gly-spin')
 		        	$(status).html("Ongoing")
+		        	$(status).attr('class', 'label label-info');
+		        	$(sstatus).attr('class', 'hideSpan');
+		        }
+		        if(response['progress']>97 && response['progress']<100){
+		        	$(circle).attr('class', 'glyphicon glyphicon-refresh gly-spin')
+		        	$(status).html("Updating Tags")
 		        	$(status).attr('class', 'label label-info');
 		        	$(sstatus).attr('class', 'hideSpan');
 		        }
