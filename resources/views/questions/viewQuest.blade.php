@@ -104,7 +104,7 @@
 		            
 		    </form>
 		    <br/>
-		    <label>Year {{$defaultyear}} has {{$count}} Questions, id ranging 1 to {{$count}}</label>
+		    <!-- <span>Year <b>{{$defaultyear}}</b> has <b>{{$count}}</b> Questions with Question Id ranging <b>1</b> to <b>{{$count}}</b></span> -->
 		    <form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
 				<div class="input-group col-md-offset-0">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -118,7 +118,11 @@
 				<div class=" input-group  col-md-2">
 					<button style="cursor:pointer" type="submit" class="btn btn-info">See Question</button>
 				</div>
+				<span style="font-size: 18px;">Year <b>{{$defaultyear}}</b> has <b>{{$count}}</b> Questions with Question Id ranging <b>1</b> to <b>{{$count}}</b></span>
+		    	<a style="cursor:pointer" onclick="editQues('{{$fetchQues->id}}', 'editques', '{{csrf_token()}}')"  class="text text-small btn btn-danger glyphicon glyphicon-pencil pull-right"> Edit</a>
+
 			</form>
+			
 		    @endif
 		</div>
 		<hr>
@@ -130,12 +134,12 @@
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				    <h3 class="panel-title">
-				    	Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Current Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b>@endif&nbsp;&nbsp;Predicted Tagging @if($fetchQues->post_tag == 0) <b class ="label label-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="label label-info">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="label label-danger">Hard</b> @endif &nbsp;&nbsp;Manual Tagging @if($fetchQues->pre_tag == 0) <b class ="label label-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="label label-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="label label-danger">Hard</b> @endif &nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;
+				    	Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Current Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b> @else NA @endif&nbsp;&nbsp;Predicted Tagging: @if($fetchQues->post_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp;Manual Tagging: @if($fetchQues->pre_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;
 				    </h3>
 				  </div>
 				  <div class="panel-body">
 				  	<div class="ques row">
-						<div class=" pull-left">
+						<div class="pull-left">
 							<form name="prevQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
 								<input type="hidden" name="_token" value="{{ csrf_token() }}">
 								<input type="hidden" name="year" value="{{ $defaultyear }}">
@@ -145,7 +149,7 @@
 								<input type="hidden" name="new" value="previous">
 							  <ul class="pagination justify-content-end">
 							    <li class="page-item @if($previous == 0) disabled @endif">
-							      <a class="page-link" href="@if($previous == 0) # @else javascript: submitprev() @endif" tabindex="-1"><< See previous question</a>
+							      <a class="page-link" href="@if($previous == 0) # @else javascript: submitprev() @endif" tabindex="-1"><< Prev</a>
 							    </li>
 							  </ul>
 							</form>
@@ -160,34 +164,34 @@
 								<input type="hidden" name="new" value="next">
 							  <ul class="pagination justify-content-end">
 							    <li class="page-item @if($next == 0) disabled @endif">
-							      <a class="page-link" href="@if($next == 0) # @else javascript: submitnext() @endif">See next question >></a>
+							      <a class="page-link" href="@if($next == 0) # @else javascript: submitnext() @endif">Next >></a>
 							    </li>
 							  </ul>
 							</form>
-							<form method="POST" action="{{ route('quesEditor') }}">
-				    		<input type="hidden" name="_token" value="{{ csrf_token() }}">
-				    		<input type="hidden" name="qid" value="{{$fetchQues->id}}">
-							<input type="hidden" name="type" value="editques">
-				    		<button style="cursor:pointer" type="submit" class=" text text-small btn btn-info glyphicon glyphicon-pencil pull-right"> Edit</button>
-				    	</form>
+							
 						</div>
 					</div>
-				    <div class="card card-info col-md-7"  role="alert">@if($fetchQues->question_text == null)<span class="text text-left">This question only has an image</span>@else {{$fetchQues->question_text}}@endif
-				    </div><br/>
 				    <div class="quesbody row">
-					    
+				    	<div class="card card-info col-md-5"  role="alert" style="border-right:1px solid #AAAAAA;height:100%">
+				    		@if($fetchQues->question_text == null)
+				    		<samp class="text text-left"><code>No description:</code><br>This question only has an image</samp>
+				    		@else <samp><code>Description:</code><br>{{$fetchQues->question_text}}</samp>
+				    		@endif
+				    		
+						    <div class="list-group">
+							  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 1) list-group-item-success @endif">Option 1: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option1 }}</a>
+							  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 2) list-group-item-success @endif">Option 2: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option2 }}</a>
+							  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 3) list-group-item-success @endif">Option 3: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option3 }}</a>
+							  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 4) list-group-item-success @endif">Option 4: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option4 }}</a>
+							  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 5) list-group-item-success @endif">Option 5: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option5 }}</a>
+							  <p class="label label-success">Correct Option: &nbsp;&nbsp;&nbsp;{{ $fetchQues->answer_option1 }}</p>
+							</div>
+						</div>
 						<div align="middle" class="card col-md-7">
 					    	@if($fetchQues->question_img == null)
-					    	<img class="picimg" src="/img/qwdara/noimage.png"/>@else <img width= "70%" height="70%" id="imgpic" class="picimg" src="/img/qwdara/{{$fetchQues->year}}/{{$fetchQues->question_img}}" width= "70%" height="70%" onError="this.onerror=null;this.src='/img/qwdara/default-image.png';"/>@endif
+					    	<img width= "50%" height="50%" id="imgpic" class="picimg" class="picimg" src="/img/qwdara/noimage.png"/>@else <img width= "50%" height="50%" id="imgpic" class="picimg" src="/img/qwdara/{{$fetchQues->year}}/{{$fetchQues->question_img}}" width= "50%" height="50%" onError="this.onerror=null;this.src='/img/qwdara/default-image.png';"/>@endif
 					    </div>
-					    <div class="list-group col-md-5">
-						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 1) list-group-item-success @endif">Option 1: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option1 }}</a>
-						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 2) list-group-item-success @endif">Option 2: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option2 }}</a>
-						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 3) list-group-item-success @endif">Option 3: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option3 }}</a>
-						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 4) list-group-item-success @endif">Option 4: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option4 }}</a>
-						  <a href="#" class="list-group-item @if($fetchQues->answer_option1 == 5) list-group-item-success @endif">Option 5: &nbsp;&nbsp;&nbsp;{{ $fetchQues->option5 }}</a>
-						  <p class="label label-success">Correct Option: &nbsp;&nbsp;&nbsp;{{ $fetchQues->answer_option1 }}</p>
-						</div>
+					    
 					</div>
 					<hr>
 					
@@ -203,7 +207,7 @@
 
 @endsection
 @section('scripts')
-<script type="text/javascript"> 
+<script type="application/javascript"> 
 	$(document).ready( function() {
 		$('#qv').addClass('active');
 	});
@@ -217,6 +221,24 @@
     function myFunction() {
 	    // alert('The image could not be loaded.');
 	    document.getElementById("imgpic").src="/img/qwdara/default-image.png";
+	}
+
+	function editQues(qid, action, token)
+	{
+		$.ajax({
+		  url: '{{ route('quesEditor') }}',
+		  method: 'POST',
+		  data:
+		  	{_token: token,
+		  	 qid: qid,
+		  	 type:action
+		  	},
+		  success: function(data){
+		  	document.write(data) 
+		  	$('#qe').addClass('active');
+		  	$('#qv').removeClass('active');
+	      }
+		});
 	}
 </script> 
 @endsection

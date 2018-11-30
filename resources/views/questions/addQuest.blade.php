@@ -57,99 +57,106 @@
 			@if($qid==0)
 			<div class="panel panel-default">
 			  <div class="panel-heading">
-			    <h3 class="panel-title">Question Control Panel</h3>
+			    <h3 class="panel-title">Create new Question</h3>
 			  </div>
 			  <div class="panel-body">
 			  	<div class="row">
-			  		<div class = "col-md-10">
-			  			<form enctype="multipart/form-data" method="POST" action="{{ route('quesEditor') }}">
-					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-					        <input type="hidden" name="type" value="newques">
-							<p class="suggestive">Create new Question</p>
-							<div class="row">
+			  		<div class = "col-md-12">
+			  			<div class="row">
+				  			<form enctype="multipart/form-data" method="POST" action="{{ route('quesEditor') }}">
+						        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+						        <input type="hidden" name="type" value="newques">
+								<!-- <p class="suggestive">Create new Question</p> -->
+								<div class="col-md-6">
+							        <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Question Description <i class=""></i></span>
+							            <!-- <input type="text" class="form-control"  placeholder="Question Text, optional" id="qtext" name="qtext" value="{!!old('qtext')!!}"> -->
+							            <textarea class="form-control" placeholder="Question Text, optional" id="qtext" name="qtext" rows="4" cols="10">{!!old('qtext')!!}</textarea>
+							        </div>
+							 
+							        <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
+							            <select required="" class="form-control" name="year" id="year">
+							            	<option value="" disabled selected>Select year</option>
+							            	@foreach ($years as $year)
+							            		<option value="{{$year}}" @if($year == ('year')) selected @endif >{{$year}}</option>
+							            	@endforeach
+										</select>
+							        </div>
+							        <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Upload image <i class=""></i></span>
+							            <input class="form-control" data-preview="#preview" name="questionimage" type="file" id="questionimage">
+							        	<img class="col-sm-6" id="preview"  src="" ></img>						           
+							        </div>
+							        <label class="text text-info">Choose Diffculty and Category</label>
+							        <div class="form-group input-group">
+										<input required name="difficulty" type="radio" id="test1" value="0" @if(old('difficulty') == '0') checked @endif/>
+										<label class = "text text-success" for="test1">&nbsp;Easy</label>&nbsp;&nbsp;
+										<input name="difficulty" type="radio" id="test2" value="1" @if(old('difficulty') == '1') checked @endif/>
+										<label class = "text text-warning" for="test2">&nbsp;Medium</label>&nbsp;&nbsp;
+										<input name="difficulty" type="radio" id="test3" value="2" @if(old('difficulty') == '2') checked @endif/>
+										<label class = "text text-danger" for="test3">&nbsp;Hard</label>
+									</div>
+									<div class="form-group input-group">
+										<input required name="category" type="radio" id="test4" value="1" @if(old('category') == '1') checked @endif/>
+										<label class = "text text-success" for="test4">&nbsp;Aptitude</label>&nbsp;&nbsp;
+										<input name="category" type="radio" id="test5" value="2" @if(old('category') == '2') checked @endif/>
+										<label class = "text text-warning" for="test5">&nbsp;Electricals</label>&nbsp;&nbsp;
+										<input name="category" type="radio" id="test6" value="3" @if(old('category') == '3') checked @endif/>
+										<label class = "text text-danger" for="test6">&nbsp;Programming</label>
+									</div>
+							    </div><!-- first column -->
+							    <div class="col-md-6">
+							        <!-- <label class="text text-info">Provide Options along with the correct one</label> -->
+
+							        <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Option 1 <i class=""></i></span>
+							            <input type="text" class="form-control" id="option1" name="option1" required="" placeholder="option1" aria-describedby="sizing-addon1" value="{!!old('option1')!!}">
+							        </div>
+							       <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Option 2 <i class=""></i></span>
+							            <input type="text" class="form-control" id="option2" name="option2" required="" placeholder="option2" aria-describedby="sizing-addon1" value="{!!old('option2')!!}">
+							        </div>
+							       <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Option 3 <i class=""></i></span>
+							            <input type="text" class="form-control" id="option3" name="option3" required="" placeholder="option3" aria-describedby="sizing-addon1" value="{!!old('option3')!!}">
+							        </div>
+							        <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Option 4 <i class=""></i></span>
+							            <input type="text" class="form-control" id="option4" name="option4" placeholder="option4, optional" aria-describedby="sizing-addon1" value="{!!old('option4')!!}">
+							        </div>
+							        <div class="form-group input-group">
+							            <span class="input-group-addon" id="sizing-addon1">Option 5 <i class=""></i></span>
+							            <input type="text" class="form-control" id="option5" name="option5" placeholder="option5, optional" aria-describedby="sizing-addon1" value="{!!old('option5')!!}">
+							        </div>
+
+							        <div class="form-group input-group">
+							            <select required="" class="form-control" name="answeroption" id="answeroption">
+											<option value="" disabled selected>Choose correct option</option>
+											<option value="1" @if(old('answeroption') == 1) selected @endif>Option 1</option>
+											<option value="2" @if(old('answeroption') == 2) selected @endif>Option 2</option>
+											<option value="3" @if(old('answeroption') == 3) selected @endif>Option 3</option>
+											<option value="4" @if(old('answeroption') == 4) selected @endif>Option 4</option>
+											<option value="5" @if(old('answeroption') == 5) selected @endif>Option 5</option>
+										</select>
+							        </div>
+							        
+
+							    </div>
+							    <div class="col-md-12">
+						 
+							        <div class="form-group">
+							            <button style="cursor:pointer" type="submit" class="btn btn-success glyphicon glyphicon-floppy-save pull-right"> Save</button>
+							        </div>
+							    </div>
+						    </form>
 						</div>
-					        <div class="form-group input-group col-md-10">
-					            <span class="input-group-addon" id="sizing-addon1">Question Text <i class=""></i></span>
-					            <input type="text" class="form-control"  placeholder="Question Text, optional" id="qtext" name="qtext" value="{!!old('qtext')!!}">
-					        </div>
-					 
-					        <div class="form-group input-group col-md-3">
-					            <span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
-					            <select required="" class="form-control" name="year" id="year">
-					            	<option value="" disabled selected>Select year</option>
-					            	@foreach ($years as $year)
-					            		<option value="{{$year}}" @if($year == ('year')) selected @endif >{{$year}}</option>
-					            	@endforeach
-								</select>
-					        </div>
-					        <div class="form-group input-group col-md-5">
-					            <span class="input-group-addon" id="sizing-addon1">Image <i class=""></i></span>
-					           <input class="form-control" data-preview="#preview" name="questionimage" type="file" id="questionimage">
-
-					           
-					        </div>
-					        <div class="form-group input-group col-md-5">
-					        	<img class="col-sm-6" id="preview"  src="" ></img>
+						<hr>
+						<div class="row">
+							<div class="col-md-12">
+					    		<button style="cursor:pointer"  class="btn btn-info pull-right glyphicon glyphicon-arrow-left" onclick="goBack1()"> Cancel</button>
 					    	</div>
-					        <hr>
-					        <label class="text text-info">Choose Diffculty and Category</label>
-					        <div class="form-group input-group">
-								<input required name="difficulty" type="radio" id="test1" value="0" @if(old('difficulty') == 0) checked @endif/>
-								<label class = "text text-success" for="test1">&nbsp;Easy</label>&nbsp;&nbsp;
-								<input name="difficulty" type="radio" id="test2" value="1" @if(old('difficulty') == 1) checked @endif/>
-								<label class = "text text-warning" for="test2">&nbsp;Medium</label>&nbsp;&nbsp;
-								<input name="difficulty" type="radio" id="test3" value="2" @if(old('difficulty') == 2) checked @endif/>
-								<label class = "text text-danger" for="test3">&nbsp;Hard</label>
-							</div>
-							<div class="form-group input-group">
-								<input required name="category" type="radio" id="test4" value="1" @if(old('category') == 1) checked @endif/>
-								<label class = "text text-success" for="test4">&nbsp;Aptitude</label>&nbsp;&nbsp;
-								<input name="category" type="radio" id="test5" value="2"@if(old('category') == 2) checked @endif/>
-								<label class = "text text-warning" for="test5">&nbsp;Electricals</label>&nbsp;&nbsp;
-								<input name="category" type="radio" id="test6" value="3"@if(old('category') == 3) checked @endif/>
-								<label class = "text text-danger" for="test6">&nbsp;Programming</label>
-							</div>
-					        <hr>
-					        <label class="text text-info">Provide Options along with the correct one</label>
-
-					        <div class="form-group input-group col-md-6">
-					            <span class="input-group-addon" id="sizing-addon1">Option 1 <i class=""></i></span>
-					            <input type="text" class="form-control" id="option1" name="option1" required="" placeholder="option1" aria-describedby="sizing-addon1" value="{!!old('option1')!!}">
-					        </div>
-					       <div class="form-group input-group col-md-6">
-					            <span class="input-group-addon" id="sizing-addon1">Option 2 <i class=""></i></span>
-					            <input type="text" class="form-control" id="option2" name="option2" required="" placeholder="option2" aria-describedby="sizing-addon1" value="{!!old('option2')!!}">
-					        </div>
-					       <div class="form-group input-group col-md-6">
-					            <span class="input-group-addon" id="sizing-addon1">Option 3 <i class=""></i></span>
-					            <input type="text" class="form-control" id="option3" name="option3" required="" placeholder="option3" aria-describedby="sizing-addon1" value="{!!old('option3')!!}">
-					        </div>
-					        <div class="form-group input-group col-md-6">
-					            <span class="input-group-addon" id="sizing-addon1">Option 4 <i class=""></i></span>
-					            <input type="text" class="form-control" id="option4" name="option4" placeholder="option4, optional" aria-describedby="sizing-addon1" value="{!!old('option4')!!}">
-					        </div>
-					        <div class="form-group input-group col-md-6">
-					            <span class="input-group-addon" id="sizing-addon1">Option 5 <i class=""></i></span>
-					            <input type="text" class="form-control" id="option5" name="option5" placeholder="option5, optional" aria-describedby="sizing-addon1" value="{!!old('option5')!!}">
-					        </div>
-
-					        <div class="form-group input-group col-md-6">
-					            <select required="" class="form-control" name="answeroption" id="answeroption">
-									<option value="" disabled selected>Choose correct option</option>
-									<option value="1" @if(old('answeroption') == 1) selected @endif>Option 1</option>
-									<option value="2" @if(old('answeroption') == 2) selected @endif>Option 2</option>
-									<option value="3" @if(old('answeroption') == 3) selected @endif >Option 3</option>
-									<option value="4" @if(old('answeroption') == 4) selected @endif>Option 4</option>
-									<option value="5" @if(old('answeroption') == 5) selected @endif>Option 5</option>
-								</select>
-					        </div>
-					        <hr>
-					 
-					        <div class="form-group">
-					            <button style="cursor:pointer" type="submit" class="btn btn-success glyphicon glyphicon-floppy-save pull-right"> Save</button>
-					        </div>
-					    </form>
-					    <button style="cursor:pointer"  class="btn btn-info pull-left glyphicon glyphicon-arrow-left" onclick="goBack1()"> Go back</button>
+					    </div>
 			  			
 			  		</div>
 			  	</div>
@@ -158,7 +165,7 @@
 			@elseif(($qid>0))
 			<div class="panel panel-default">
 			  <div class="panel-heading">
-			    <h3 class="panel-title">Question Control Panel</h3>
+			    <h3 class="panel-title">Edit Question id: <span class="text text-info">{{$fetchQues->quid}}</span></h3>
 			  </div>
 			  <div class="panel-body">
 			  	<div class="row">
@@ -167,12 +174,13 @@
 					        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 					        <input type="hidden" name="type" value="updateques">
 					        <input type="hidden" name="qid" value="{{$qid}}">
-							<p class="suggestive">Edit Question id {{$fetchQues->quid}}</p>
+							<!-- <p class="suggestive">Edit Question id {{$fetchQues->quid}}</p> -->
 							<div class="row">
 						</div>
-					        <div class="form-group input-group col-md-10">
+					        <div class="form-group input-group col-md-6">
 					            <span class="input-group-addon" id="sizing-addon1">Question Text <i class=""></i></span>
-					            <input type="text" class="form-control"  placeholder="Question Text, optional" id="qtext" name="qtext" value="{{$fetchQues->question_text}}">
+					            <!-- <input type="text" class="form-control"  placeholder="Question Text, optional" id="qtext" name="qtext" value="{{$fetchQues->question_text}}"> -->
+					            <textarea class="form-control" placeholder="Question Text, optional" id="qtext" name="qtext" rows="4" cols="10">{{$fetchQues->question_text}}</textarea>
 					        </div>
 					 
 					        <div class="form-group input-group col-md-3">
@@ -185,7 +193,7 @@
 								</select>
 					        </div>
 					        <div class="form-group input-group col-md-5">
-					            <span class="input-group-addon" id="sizing-addon1">Image <i class=""></i></span>
+					            <span class="input-group-addon" id="sizing-addon1">Upload new image <i class=""></i></span>
 					           <input class="form-control" data-preview="#preview" name="questionimage" type="file" id="questionimage">
 
 					           
