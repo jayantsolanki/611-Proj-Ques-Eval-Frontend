@@ -11,6 +11,7 @@ use App\Login;
 use App\DatabaseCatalogue;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use File;
 
 class QuestionController extends Controller{
 
@@ -30,7 +31,7 @@ class QuestionController extends Controller{
 			        ];
 			        $messages = [   
 			            'qid.integer' =>  'Question Id must be integer',
-			            'qid.min' =>  'Question id must be above 0'
+			            'qid.min' =>  'Question Id must be above 0'
 			        ];
 			        $validator = Validator::make($data->all(), $rules, $messages);
 			        // return (string)$validator->fails();
@@ -38,12 +39,15 @@ class QuestionController extends Controller{
 			            return redirect()->route('quesViewer')->withErrors($validator)->with('inactiveUsers', $inactiveUsers);
 			        }
 			        $fetchQues = QuestionMaster::where('id', $data -> qid)->first();
+			        // $fetchQuesHist = QuestionMaster::where('quid', $fetchQues -> quid)->get();
+			        $fetchQuesHist = QuestionMaster::where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
 			        // return $fetchQues;
 					if(sizeof($fetchQues)==0)
-						return redirect()->route('quesViewer')->with('error',"IPlease enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
+						return redirect()->route('quesViewer')->with('error',"Please enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
 					else
 					{
-						$count = QuestionMaster::where('year',$data -> year)->count();
+						// $count = QuestionMaster::where('year',$data -> year)->count();
+						$count = QuestionMaster::where('year',$data -> year)->where('active', '=', 1)->count(); //added active question only
 						if($fetchQues->quid == '1')
 	 						$previous = 0;
 			 			else
@@ -52,7 +56,7 @@ class QuestionController extends Controller{
 			 				$next = 0;
 			 			else
 			 				$next = $fetchQues->quid + 1;
-						return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', $fetchQues->year)->with('category', $fetchQues->category_id)->with('difficulty', $fetchQues->pre_tag)->with('fetchQues',$fetchQues)->with('years',$years)->with("count",$count)->with('previous',$previous)->with('next',$next)->with('inactiveUsers', $inactiveUsers);
+						return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', $fetchQues->year)->with('category', $fetchQues->category_id)->with('difficulty', $fetchQues->pre_tag)->with('fetchQues',$fetchQues)->with('years',$years)->with("count",$count)->with('previous',$previous)->with('next',$next)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
 					}
 
 	 			}
@@ -79,7 +83,8 @@ class QuestionController extends Controller{
 		        if ($validator->fails()) {
 		            return redirect()->route('quesViewer')->withErrors($validator)->with('inactiveUsers', $inactiveUsers);
 		        }
-	 			$count = QuestionMaster::where('year',$data -> year)->count();
+	 			// $count = QuestionMaster::where('year',$data -> year)->count();
+	 			$count = QuestionMaster::where('year',$data -> year)->where('active', '=', 1)->count(); //added active question only
 	 			// return $data->all();
 	 			$category = $data -> category;
 	 			$difficulty = $data -> difficulty;
@@ -101,12 +106,13 @@ class QuestionController extends Controller{
 	 			if($data->new=="next")
 				{
 					$fetchQues = QuestionMaster::where('year', $data -> year)->where('quid', '>', $data -> current)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->first();
+					
 				}
 				elseif ($data->new=="filter") {
 					// return $data -> category;
 					$fetchQues = QuestionMaster::where('year', $data -> year)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->first();
 					if(sizeof($fetchQues)==0)
-						return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers);
+						return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', null);
 				}
 				elseif ($data->new=="goto") {
 					$fetchQues = QuestionMaster::where('year', $data -> year)->where('quid',$data -> current)->first();
@@ -124,7 +130,8 @@ class QuestionController extends Controller{
 		 				$next = 0;
 		 			else
 		 				$next = $fetchQues->quid + 1;
-					return view('questions.viewQuest')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
+		 			$fetchQuesHist = QuestionMaster::where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
+					return view('questions.viewQuest')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
 				}
 
 				else//if no results than switch to default
@@ -143,12 +150,15 @@ class QuestionController extends Controller{
 				}
 	 		}
 	 		// if no request then do this
-	 		$count = QuestionMaster::where('year',$years[sizeof($years)-1])->count();
+	 		// $count = QuestionMaster::where('year',$years[sizeof($years)-1])->count();
+	 		$count = QuestionMaster::where('year',$years[sizeof($years)-1])->where('active', '=', 1)->count(); //added active question only
  			$fetchQues = QuestionMaster::where('year',$years[sizeof($years)-1])->first();
  			if(sizeof($fetchQues)== 0)//if no question present for that year
 			{
 				$fetchQues = QuestionMaster::where('year',$years[sizeof($years)-2])->first();
-				$count = QuestionMaster::where('year',$years[sizeof($years)-2])->count();
+				// $count = QuestionMaster::where('year',$years[sizeof($years)-2])->count();
+	 			$count = QuestionMaster::where('year',$years[sizeof($years)-2])->where('active', '=', 1)->count(); //added active question only
+
 			}
  			// return $fetchQues;
  			if($fetchQues->quid == '1')
@@ -159,26 +169,29 @@ class QuestionController extends Controller{
  				$next = 0;
  			else
  				$next = $fetchQues->quid + 1;
- 			return view('questions.viewQuest')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $fetchQues->year)->with('category', 4)->with('difficulty', 3)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
+ 			$fetchQuesHist = QuestionMaster::where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
+ 			return view('questions.viewQuest')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $fetchQues->year)->with('category', 4)->with('difficulty', 3)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
  		}
  			
- 		else
- 			return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers);
+ 		else{
+ 			// $fetchQuesHist = QuestionMaster::where('year', $data -> year)->where('quid', $fetchQues -> quid)->get();
+ 			return view('questions.viewQuest')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
+ 		}
  	}
 
  	/*****************For editing the question or creating new ones********************/
  	public function quesEditor(Request $data){
- 		$inactiveUsers = Login::where('active',0)->count();
+ 		$inactiveUsers = Login::where('active',0)->count();//for the red notification add the admin bar
  		$years = DatabaseCatalogue::get()->pluck('year');
  		if(sizeof($data->all())>0)
 	 		{		 			
-		        if($data->type=='editques'){
+		        if($data->type=='editques'){//prefillup the form
 		        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 		        	// return $fetchQues;
 		        	return view('questions.addQuest')->with('qid',$fetchQues->id)->with('fetchQues',$fetchQues)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 
 		        }
-		        if($data->type=='updateques'){
+		        if($data->type=='updateques'){ //update question with new info
 		        	$rules = [
 			 				'qtext' => 'max:1024',
 			 				'option1' => 'required|max:255',
@@ -191,7 +204,10 @@ class QuestionController extends Controller{
 				            'category' => 'required|integer|min:1|digits_between:1,4',
 				            'difficulty' => 'required|integer|min:0|digits_between:0,3',
 				            'year' => 'required|integer|min:2014|max:2025',
-				            'type' => 'required|in:newques,editques,updateques'
+				            'type' => 'required|in:newques,editques,updateques',
+				            'addimage' => 'integer|max:1',
+				            'active' => 'integer|max:1',
+				            'editfield' => 'integer|max:1'
 				        ];
 			        $messages = [   
 				        	'qtext.max' =>  'Question Text should not be larger than 1024 characters',
@@ -205,7 +221,10 @@ class QuestionController extends Controller{
 				            'category.integer' =>  'Category must be integer',
 				            'difficulty.integer' =>  'Difficulty level must be integer',
 				            'year.integer'        =>  'Year must be integer',
-				            'type' =>  'Must be either newques or updateques or editques'
+				            'type' =>  'Must be either newques or updateques or editques',
+				            'addimage' => 'Must be valid integer',
+				            'active' => 'Must valid integer',
+				            'editfield' => 'Must valid integer'
 				        ];
 			        $validator = Validator::make($data->all(), $rules, $messages);
 			        // return (string)$validator->fails();
@@ -231,7 +250,7 @@ class QuestionController extends Controller{
 				        }
 			            return redirect()->route('quesEditor')->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 			        }
-		        	// storing the new question
+		        	
 			        if($data['option4']==''){//checking if the options are valid and agreeing with the answer option
 			        	if($data['option5']==''){
 			        		if($data['answeroption']>3){
@@ -251,36 +270,107 @@ class QuestionController extends Controller{
 		        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 		        		}
 			        }
-			        DB::transaction(function($data) use ($data){
-			        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
-			            if($data['qtext']!='')
-			            	$fetchQues -> question_text =  $data['qtext'];
-			            $fetchQues -> option1 =  $data['option1'];
-			            $fetchQues -> option2 =  $data['option2'];
-			            $fetchQues -> option3 =  $data['option3'];
-			            if($data['option4']!='')
-			            	$fetchQues -> option4 =  $data['option4'];
-			            if($data['option5']!='')
-			            	$fetchQues -> option5 =  $data['option5'];
-			            if ($data->hasFile('questionimage')) {
-			            	$filename = $this->getFileName($data->questionimage);
- 							$data->questionimage->move(base_path('public/img/qwdara/'.$fetchQues -> year), $filename);
-			            	$fetchQues -> question_img =  $filename;
-			            }
-			            $fetchQues -> answer_option1 =  $data['answeroption'];
-			            $fetchQues -> year =  $data['year'];
-			            $fetchQues -> pre_tag =  $data['difficulty'];
-			            $fetchQues -> difficulty_level =  $data['difficulty'];
-			            $fetchQues -> category_id =  $data['category'];
-			            // $fetchQues -> is_practice_question =  0;
-			            $fetchQues -> user_id =  Auth::user()->user_id;
-			            $fetchQues ->save();
+			        if($data['editfield']=='1'){//edit the question description and create new revision history
+			        	//if($data['active']=='1'){
+			        		DB::transaction(function($data) use ($data){
+			        		$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
+	 						$count = QuestionMaster::where('quid', $data['quid'])->where('year', $fetchQues->year)->count(); //find revision count
 
-			        });//end of transaction
-			        return redirect()->route('quesEditor')->with("updatesuccess", $data -> qid)->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				            $newQues = new QuestionMaster;
+				           	$newQues -> quid =  $data['quid']; //copy old question as new revision
+				            $newQues -> year =  $data['year'];
+				            if($data['qtext']!='')
+				            	$newQues -> question_text =  $data['qtext'];            
+				            $newQues -> question_type =  0;
+				            $newQues -> option1 =  $data['option1'];
+				            $newQues -> option2 =  $data['option2'];
+				            $newQues -> option3 =  $data['option3'];
+				            if($data['option4']!='')
+				            	$newQues -> option4 =  $data['option4'];
+				            if($data['option5']!='')
+				            	$newQues -> option5 =  $data['option5'];
+				            if ($data->hasFile('questionimage') and $data['addimage']!='1') {
+				            	$filename = $this->getFileName($data->questionimage);
+	 							$data->questionimage->move(base_path('public/img/qwdara/'.$data -> year), $filename);
+				            	$newQues -> question_img =  $filename;
+				            }
+				            if($data['addimage']=='1') // remove image entry, dont delete the actual image
+				            {
+				            	$newQues -> question_img =  Null;
+				            }
+				            else
+				            	$newQues -> question_img = $fetchQues->question_img; //copy command should be here
+
+				            $newQues -> answer_option1 =  $data['answeroption'];
+				            // $newQues -> pre_tag =  $data['difficulty'];
+				            $newQues -> difficulty_level =  $data['difficulty'];//current tag
+				            $newQues -> pre_tag =  $data['difficulty']; // //pre tag similar to current, since this question is not analyzed
+				            $newQues -> category_id =  $data['category'];
+				            $newQues -> user_id =  Auth::user()->user_id;
+				            if($data['active']=='1')
+				            	$newQues -> active =  $data['active']; // this revised question is active, else default is 0 for inactive
+				            else
+				            	$newQues -> active =  0; // this revised question is active, else default is 0 for inactive
+				            $newQues -> revision_count =  $count; // revision count
+				            $newQues ->save();
+				            $data->qid = $newQues->id;
+
+				        });//end of transaction
+			        		return redirect()->route('quesEditor')->with("revisesuccess", $data->qid)->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+
+			        	//}
+
+			        }
+			        else//just mark the question as active
+			        { // just mark it as active or inactive
+				        DB::transaction(function($data) use ($data){
+				        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
+				        	if($data['active']=='1')
+				            	$fetchQues -> active =  $data['active']; // this revised question is active, else default is 0 for inactive
+				            $fetchQues ->save();
+				     //        if($data['qtext']!='')
+				     //        	$fetchQues -> question_text =  $data['qtext'];
+				     //        $fetchQues -> option1 =  $data['option1'];
+				     //        $fetchQues -> option2 =  $data['option2'];
+				     //        $fetchQues -> option3 =  $data['option3'];
+				     //        if($data['option4']!='')
+				     //        	$fetchQues -> option4 =  $data['option4'];
+				     //        if($data['option5']!='')
+				     //        	$fetchQues -> option5 =  $data['option5'];
+				     //        if ($data->hasFile('questionimage') and $data['addimage']!='1') {
+				     //        	$filename = $this->getFileName($data->questionimage);
+	 							// $data->questionimage->move(base_path('public/img/qwdara/'.$fetchQues -> year), $filename);
+				     //        	$fetchQues -> question_img =  $filename;
+				     //        }
+				     //        if($data['addimage']=='1') // remove image
+				     //        {
+				     //        	$image_path = $fetchQues -> question_img;
+				     //        	$fetchQues -> question_img =  Null;
+				     //        }
+				     //        $fetchQues -> answer_option1 =  $data['answeroption'];
+				     //        $fetchQues -> year =  $data['year'];
+				     //        $fetchQues -> pre_tag =  $data['difficulty'];
+				     //        $fetchQues -> difficulty_level =  $data['difficulty'];
+				     //        $fetchQues -> category_id =  $data['category'];
+				     //        // $fetchQues -> is_practice_question =  0;
+				     //        $fetchQues -> user_id =  Auth::user()->user_id;
+				     //        $fetchQues ->save();
+
+				            // for deleting the image
+				         //    if($data['addimage']=='1') // remove image file, i put this in last, coz i wanted the query to be executted successfully
+				         //    {
+					        //     $image_path = public_path().'/img/qwdara/'.$fetchQues -> year.'/'.$image_path; 
+					        //     // unlink($image_path);
+					        //     File::delete($image_path);
+					            
+					        // }
+					        
+				        });//end of transaction
+				        return redirect()->route('quesEditor')->with("updatesuccess", $data -> qid)->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				    }
 
 
-		        }
+		        }//end of update question
 		        elseif($data->type=='newques'){
 		        	$rules = [
 		 				'qtext' => 'max:1024',

@@ -119,7 +119,7 @@
 					<button style="cursor:pointer" type="submit" class="btn btn-info">See Question</button>
 				</div>
 				<span style="font-size: 18px;">Year <b>{{$defaultyear}}</b> has <b>{{$count}}</b> Questions with Question Id ranging <b>1</b> to <b>{{$count}}</b></span>
-		    	<a style="cursor:pointer" onclick="editQues('{{$fetchQues->id}}', 'editques', '{{csrf_token()}}')"  class="text text-small btn btn-danger glyphicon glyphicon-pencil pull-right"> Edit</a>
+		    	<a style="cursor:pointer" onclick="editQues('{{$fetchQues->id}}', 'editques', '{{csrf_token()}}')"  class="text text-small btn btn-danger btn pull-right">Edit <i class="glyphicon glyphicon-pencil"></i></a>
 
 			</form>
 			
@@ -134,10 +134,55 @@
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				    <h3 class="panel-title">
-				    	Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Current Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b> @else NA @endif&nbsp;&nbsp;Predicted Tagging: @if($fetchQues->post_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp;Manual Tagging: @if($fetchQues->pre_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;
+				    	Question Id: <b class="text text-info">{{$fetchQues->quid}}</b>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Current Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b> @else NA @endif&nbsp;&nbsp;Predicted Tagging: @if($fetchQues->post_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp;Manual Tagging: @if($fetchQues->pre_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;Rev#: <b class="text text-warning">{{$fetchQues->revision_count}}</b>&nbsp;&nbsp;<span class="pull-right"><a class="label label-info" data-toggle="modal" data-target="#myModal">View History <i class ="glyphicon glyphicon-list-alt"></i></a></span>
 				    </h3>
 				  </div>
 				  <div class="panel-body">
+				  	<!-- Modal -->
+					<div id="myModal" class="modal fade" role="dialog">
+					  <div class="modal-dialog">
+
+					    <!-- Modal content-->
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal">&times;</button>
+					        <h4 class="modal-title">Revision history</h4>
+					      </div>
+					      <div class="modal-body">
+					      	@if($fetchQuesHist == null)
+					      	<p class="label label-danger">No revision for this question</p>
+					      	@else
+					        <table class="table">
+							  <thead>
+							    <tr>
+							      <th scope="col">Revision#</th>
+							      <th scope="col">Question Id</th>
+							      <th scope="col">Author</th>
+							      <th scope="col">Time</th>
+							      <th scope="col">Active</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  	@foreach($fetchQuesHist as $hist)
+							    <tr>
+							      <th scope="row">{{$hist->revision_count}}</th>
+							      <td><a target=blank href="{{route('quesViewer')}}/?qid={{$hist->id}}">View Question</a></td>
+							      <td>{{$hist->user_id}}</td>
+							      <td>{{$hist->updated_at}}</td>
+							      <td>@if($hist->active==1) Yes @else No @endif</td>
+							    </tr>
+							    @endforeach
+							  </tbody>
+							</table>
+							@endif
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					      </div>
+					    </div>
+
+					  </div>
+					</div>
 				  	<div class="ques row">
 						<div class="pull-left">
 							<form name="prevQuest" class ="form-inline" method="POST" action="{{ route('quesViewer') }}">
@@ -237,6 +282,10 @@
 		  	document.write(data) 
 		  	$('#qe').addClass('active');
 		  	$('#qv').removeClass('active');
+		  	$("#editForm :input").prop("disabled", true);
+		  	$("#editfield").prop("disabled", false);
+		  	$("#active").prop("disabled", false);
+		  	$("#_token").prop("disabled", false);
 	      }
 		});
 	}
