@@ -361,6 +361,7 @@
 <script type="text/javascript">
 	$(document).ready( function() {
 		$('#st').addClass('active');
+		$('#analysismenu').addClass('active');
 		$('[data-toggle="tooltip"]').tooltip(); 
 		@if(isset($Stats))
 		google.charts.load('current', {'packages':['bar']});

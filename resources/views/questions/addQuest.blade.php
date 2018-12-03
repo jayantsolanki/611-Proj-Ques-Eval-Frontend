@@ -168,7 +168,8 @@
 			  </div>
 			</div>
 			@elseif(($qid>0))
-			<div class="panel panel-default">
+			<!-- <div class="panel panel-default"> -->
+			<div class="panel @if($fetchQues->active==1) panel-success @else panel-default @endif">
 			  <div class="panel-heading">
 			    <h3 class="panel-title">
 			    	Question id: <span class="text text-info">{{$fetchQues->quid}}</span><span>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Current Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b> @else NA @endif&nbsp;&nbsp;Predicted Tagging: @if($fetchQues->post_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp;Manual Tagging: @if($fetchQues->pre_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;</span>Rev#: <b class="text text-warning">{{$fetchQues->revision_count}}</b>&nbsp;&nbsp;<span class="pull-right"><a class="label label-info" data-toggle="modal" data-target="#myModal">View History <i class ="glyphicon glyphicon-list-alt"></i></a></span>
@@ -380,6 +381,7 @@
 <script type="text/javascript">
 	$(document).ready( function() {
 		$('#qe').addClass('active');
+		$('#question').addClass('active');
 		// $(':input').attr('disabled')
 		$("#editForm :input").prop("disabled", true);
 		$("#editfield").prop("disabled", false);
@@ -409,62 +411,63 @@
 	    // alert('The image could not be loaded.');
 	    document.getElementById("imgpic").src="/img/qwdara/default-image.png";
 	}
-	function updateQues()//defunct, image uploading not working
-	{
-		formData = {
-			qid: $('#qid').val(),
-			type: $('#type').val(),
-			qtext: $('#qtext').val(),
-			year: $('#year').val(),
-			questionimage: $('#questionimage').val(),
-			option1: $('#option1').val(),
-			option2: $('#option2').val(),
-			option3: $('#option3').val(),
-			option4: $('#option4').val(),
-			option5: $('#option5').val(),
-			answeroption: $('#answeroption').val(),
-			difficulty: $('#test1').val(),
-			category: $('#test2').val()
+	// function updateQues()//defunct, image uploading not working
+	// {
+	// 	formData = {
+	// 		qid: $('#qid').val(),
+	// 		type: $('#type').val(),
+	// 		qtext: $('#qtext').val(),
+	// 		year: $('#year').val(),
+	// 		questionimage: $('#questionimage').val(),
+	// 		option1: $('#option1').val(),
+	// 		option2: $('#option2').val(),
+	// 		option3: $('#option3').val(),
+	// 		option4: $('#option4').val(),
+	// 		option5: $('#option5').val(),
+	// 		answeroption: $('#answeroption').val(),
+	// 		difficulty: $('#test1').val(),
+	// 		category: $('#test2').val()
 			
-		}
-		alert($("#updatequesform")[0])
-		// alert(formData.questionimage)
-		$.ajax({
-		  url: '{{ route('quesEditor') }}',
-		  // method: 'POST',
-		  data:$("#updatequesform")[0],
-		  headers: {
-	         'X-CSRF-Token': $('#_token').val()
-	      },
-		  dataType:'json',
-	    async:false,
-	    type:'post',
-	    processData: false,
-	    contentType: false,
-		  success: function(data){
-		  	alert(data)
-		  	// console.log(data)
-		  	// $('#qe').addClass('active');
-		  	// $('#qv').removeClass('active');
-	      }
-		});
-	}
-	function commitQues(qid, action, token)
-	{
-		$.ajax({
-		  url: '{{ route('quesEditor') }}',
-		  method: 'POST',
-		  data:
-		  	{_token: token,
-		  	 qid: qid,
-		  	 type:action
-		  	},
-		  success: function(data){
-		  	document.write(data) 
-		  	$('#qe').addClass('active');
-		  	$('#qv').removeClass('active');
-	      }
-		});
-	}
+	// 	}
+	// 	alert($("#updatequesform")[0])
+	// 	// alert(formData.questionimage)
+	// 	$.ajax({
+	// 	  url: '{{ route('quesEditor') }}',
+	// 	  // method: 'POST',
+	// 	  data:$("#updatequesform")[0],
+	// 	  headers: {
+	//          'X-CSRF-Token': $('#_token').val()
+	//       },
+	// 	  dataType:'json',
+	//     async:false,
+	//     type:'post',
+	//     processData: false,
+	//     contentType: false,
+	// 	  success: function(data){
+	// 	  	alert(data)
+	// 	  	// console.log(data)
+	// 	  	// $('#qe').addClass('active');
+	// 	  	// $('#qv').removeClass('active');
+	//       }
+	// 	});
+	// }
+	// function commitQues(qid, action, token)
+	// {
+	// 	$.ajax({
+	// 	  url: '{{ route('quesEditor') }}',
+	// 	  method: 'POST',
+	// 	  data:
+	// 	  	{_token: token,
+	// 	  	 qid: qid,
+	// 	  	 type:action
+	// 	  	},
+	// 	  success: function(data){
+	// 	  	document.write(data) 
+	// 	  	$('#question').addClass('active');
+	// 	  	$('#qe').addClass('active');
+	// 	  	$('#qv').removeClass('active');
+	//       }
+	// 	});
+	// }
 </script>
 @endsection

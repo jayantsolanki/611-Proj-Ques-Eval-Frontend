@@ -272,6 +272,7 @@ echo $ip;
 <script type="text/javascript">
 	$(document).ready( function() {
 		$('#tv').addClass('active');
+		$('#analysismenu').addClass('active');
 		setInterval(checkProgress,1000);
 	});
 	$("#analysis").submit(function(event){

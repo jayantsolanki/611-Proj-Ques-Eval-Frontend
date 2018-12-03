@@ -81,6 +81,7 @@
 @section('scripts')
 <script type="text/javascript">
 	$(document).ready( function() {
+		$('#viewprofile').addClass('active');
 		$('#profile').addClass('active');
 	});
 </script>

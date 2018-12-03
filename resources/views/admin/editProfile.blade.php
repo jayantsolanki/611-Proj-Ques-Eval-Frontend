@@ -125,6 +125,7 @@
 <script type="text/javascript">
 	$(document).ready( function() {
 		$('#editprofile').addClass('active');
+		$('#profile').addClass('active');
 	});
 	function goBack() {
 	    window.history.back();
