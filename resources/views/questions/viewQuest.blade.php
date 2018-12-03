@@ -152,25 +152,38 @@
 					      	@if($fetchQuesHist == null)
 					      	<p class="label label-danger">No revision for this question</p>
 					      	@else
-					        <table class="table">
-							  <thead>
+					        <table class="table table-hover">
+							  <thead class="">
 							    <tr>
 							      <th scope="col">Revision#</th>
-							      <th scope="col">Question Id</th>
 							      <th scope="col">Author</th>
 							      <th scope="col">Time</th>
 							      <th scope="col">Active</th>
+							      <th scope="col">Question Id</th>
 							    </tr>
 							  </thead>
 							  <tbody>
 							  	@foreach($fetchQuesHist as $hist)
-							    <tr>
-							      <th scope="row">{{$hist->revision_count}}</th>
-							      <td><a target=blank href="{{route('quesViewer')}}/?qid={{$hist->id}}">View Question</a></td>
-							      <td>{{$hist->user_id}}</td>
-							      <td>{{$hist->updated_at}}</td>
-							      <td>@if($hist->active==1) Yes @else No @endif</td>
-							    </tr>
+							  	@if($hist->id == $fetchQues->id)
+							    	<tr class="bg-success">
+							    @else
+							    	<tr>
+					    		@endif
+								      <th scope="row">{{$hist->revision_count}}</th>
+								      
+								      <!-- <td><a target=blank href="{{route('quesViewer')}}/?qid={{$hist->id}}">View Question</a></td> -->
+								      <td><a href="mailto:{{$hist->user->email}}">{{$hist->user->name}}</a></td>
+								      <td>{{$hist->updated_at}}</td>
+								      <td>@if($hist->active==1) Yes @else No @endif</td>
+								      <td>
+								      	<form class ="form-inline" method="POST" action="{{ route('quesEditor') }}">
+											<input type="hidden" name="_token" value="{{ csrf_token() }}">
+											<input type="hidden" name="qid" value="{{$hist->id}}">
+											<input type="hidden" name="type" value="editques">
+										    <button style="cursor:pointer" type="submit" class="btn">Edit Question</button>
+										</form>
+								      </td>
+								    </tr>
 							    @endforeach
 							  </tbody>
 							</table>

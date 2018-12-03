@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+// use App\QuestionMaster;
 
 class UserDetails extends Model
 {
@@ -19,4 +20,9 @@ class UserDetails extends Model
 	 * @var array
 	 */
 	protected $hidden = ['securityQuestion', 'securityAnswer'];
+
+	public function info()
+	{
+	    return $this->hasMany('App\QuestionMaster');
+	}
 }

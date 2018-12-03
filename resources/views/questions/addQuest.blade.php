@@ -171,10 +171,68 @@
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 			    <h3 class="panel-title">
-			    	Edit Question id: <span class="text text-info">{{$fetchQues->quid}}</span><span>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Current Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b> @else NA @endif&nbsp;&nbsp;Predicted Tagging: @if($fetchQues->post_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp;Manual Tagging: @if($fetchQues->pre_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;</span><span class="pull-right"><a onclick="javascript:alert(1)">View History</a></span>
+			    	Question id: <span class="text text-info">{{$fetchQues->quid}}</span><span>&nbsp;&nbsp;Category: <b class="text text-info">@if($fetchQues->category_id == 1) Aptitude @elseif($fetchQues->category_id == 2) Electricals @elseif($fetchQues->category_id == 3) Programming @endif</b>&nbsp;&nbsp;Current Difficulty Level: @if($fetchQues->pre_tag == 0) <b class="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1)<b class="text text-warning"> Medium </b>@elseif($fetchQues->pre_tag == 2)<b class="text text-danger"> Hard </b> @else NA @endif&nbsp;&nbsp;Predicted Tagging: @if($fetchQues->post_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->post_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp;Manual Tagging: @if($fetchQues->pre_tag == 0) <b class ="text text-success">Easy</b> @elseif($fetchQues->pre_tag == 1) <b class ="text text-warning">Medium</b> @elseif($fetchQues->pre_tag == 2) <b class ="text text-danger">Hard</b> @else NA @endif &nbsp;&nbsp; Year: <b class="text text-warning">{{$fetchQues->year}}</b>&nbsp;&nbsp;</span>Rev#: <b class="text text-warning">{{$fetchQues->revision_count}}</b>&nbsp;&nbsp;<span class="pull-right"><a class="label label-info" data-toggle="modal" data-target="#myModal">View History <i class ="glyphicon glyphicon-list-alt"></i></a></span>
 			    </h3>
 			  </div>
 			  <div class="panel-body">
+			  	<!-- Modal -->
+				<div id="myModal" class="modal fade" role="dialog">
+				  <div class="modal-dialog">
+
+				    <!-- Modal content-->
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal">&times;</button>
+				        <h4 class="modal-title">Revision history</h4>
+				      </div>
+				      <div class="modal-body">
+				      	@if($fetchQuesHist == null)
+				      	<p class="label label-danger">No revision for this question</p>
+				      	@else
+				        <table class="table table-hover">
+						  <thead class="">
+						    <tr>
+						      <th scope="col">Revision#</th>
+						      <th scope="col">Author</th>
+						      <th scope="col">Time</th>
+						      <th scope="col">Active</th>
+						      <th scope="col">Question Id</th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						  	@foreach($fetchQuesHist as $hist)
+						  	@if($hist->id == $fetchQues->id)
+						    	<tr class="bg-success">
+						    @else
+						    	<tr>
+				    		@endif
+							      <th scope="row">{{$hist->revision_count}}</th>
+							      
+							      <!-- <td><a target=blank href="{{route('quesViewer')}}/?qid={{$hist->id}}">View Question</a></td> -->
+							      <td><a href="mailto:{{$hist->user->email}}">{{$hist->user->name}}</a></td>
+							      <td>{{$hist->updated_at}}</td>
+							      <td>@if($hist->active==1) Yes @else No @endif</td>
+							      <td>
+							      	<form class ="form-inline" method="POST" action="{{ route('quesEditor') }}">
+										<input type="hidden" name="_token" value="{{ csrf_token() }}">
+										<input type="hidden" name="qid" value="{{$hist->id}}">
+										<input type="hidden" name="type" value="editques">
+									    <button style="cursor:pointer" type="submit" class="btn">Edit Question</button>
+									</form>
+							      </td>
+							    </tr>
+						    @endforeach
+						  </tbody>
+						</table>
+						@endif
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+
+				  </div>
+				</div>
 			  	<div class="row">
 			  		<div class = "col-md-12">
 			  			<div class="row">
@@ -200,7 +258,7 @@
 							        <div class="form-group">
 							            <span class="pull-right">
 											<input type="checkbox" name="editfield" id="editfield" value="1">
-											<label class = "label label-danger" for="editfield">&nbsp;Edit Question</label>
+											<label class = "label label-danger" for="editfield">&nbsp;Create Revision</label>
 										&nbsp;
 										&nbsp;
 											<input type="checkbox" name="active" id="active" value="1">
@@ -325,6 +383,7 @@
 		// $(':input').attr('disabled')
 		$("#editForm :input").prop("disabled", true);
 		$("#editfield").prop("disabled", false);
+		$("#active").prop("disabled", false);
 	});
 	$('#addimage').click(function() {
 	    $('#questionimage').prop('disabled',this.checked)
@@ -335,8 +394,10 @@
 	    $("#editfield").prop("disabled", false);
 	});
 	$('#active').click(function() {
-	    $("#editForm :button").prop("disabled", false);
-	    $("#_token").prop("disabled", false);
+	    // $("#editForm :button").prop("disabled", false);
+	    $("#editForm :input").prop("disabled", !this.checked);
+	    // $("#_token").prop("disabled", false);
+	    // $("#type").prop("disabled", false);
 	});
 	function goBack1() {
 	    window.history.back();

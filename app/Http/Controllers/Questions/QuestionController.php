@@ -40,7 +40,7 @@ class QuestionController extends Controller{
 			        }
 			        $fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 			        // $fetchQuesHist = QuestionMaster::where('quid', $fetchQues -> quid)->get();
-			        $fetchQuesHist = QuestionMaster::where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
+			        $fetchQuesHist = QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
 			        // return $fetchQues;
 					if(sizeof($fetchQues)==0)
 						return redirect()->route('quesViewer')->with('error',"Please enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
@@ -130,7 +130,7 @@ class QuestionController extends Controller{
 		 				$next = 0;
 		 			else
 		 				$next = $fetchQues->quid + 1;
-		 			$fetchQuesHist = QuestionMaster::where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
+		 			$fetchQuesHist = QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
 					return view('questions.viewQuest')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
 				}
 
@@ -169,7 +169,7 @@ class QuestionController extends Controller{
  				$next = 0;
  			else
  				$next = $fetchQues->quid + 1;
- 			$fetchQuesHist = QuestionMaster::where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
+ 			$fetchQuesHist = QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
  			return view('questions.viewQuest')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $fetchQues->year)->with('category', 4)->with('difficulty', 3)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
  		}
  			
@@ -188,7 +188,8 @@ class QuestionController extends Controller{
 		        if($data->type=='editques'){//prefillup the form
 		        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 		        	// return $fetchQues;
-		        	return view('questions.addQuest')->with('qid',$fetchQues->id)->with('fetchQues',$fetchQues)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+		        	$fetchQuesHist = QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
+		        	return view('questions.addQuest')->with('qid',$fetchQues->id)->with('fetchQues',$fetchQues)->with('inactiveUsers', $inactiveUsers)->with('years', $years)->with('fetchQuesHist',$fetchQuesHist);
 
 		        }
 		        if($data->type=='updateques'){ //update question with new info
@@ -308,9 +309,13 @@ class QuestionController extends Controller{
 				            $newQues -> category_id =  $data['category'];
 				            $newQues -> user_id =  Auth::user()->user_id;
 				            if($data['active']=='1')
+				            {
 				            	$newQues -> active =  $data['active']; // this revised question is active, else default is 0 for inactive
+				            	//mark other questions with same id inactive
+				            	QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->update(['active'=> 0]);
+				            }
 				            else
-				            	$newQues -> active =  0; // this revised question is active, else default is 0 for inactive
+				            	$newQues -> active =  0; // this revised question is active, else 0 for inactive
 				            $newQues -> revision_count =  $count; // revision count
 				            $newQues ->save();
 				            $data->qid = $newQues->id;
@@ -326,7 +331,11 @@ class QuestionController extends Controller{
 				        DB::transaction(function($data) use ($data){
 				        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 				        	if($data['active']=='1')
+				        	{
 				            	$fetchQues -> active =  $data['active']; // this revised question is active, else default is 0 for inactive
+				            	//mark other questions with same id inactive
+				            	QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->update(['active'=> 0]);
+				        	}
 				            $fetchQues ->save();
 				     //        if($data['qtext']!='')
 				     //        	$fetchQues -> question_text =  $data['qtext'];

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+// use App\UserDetails;
 
 class QuestionMaster extends Model
 {
@@ -19,4 +20,9 @@ class QuestionMaster extends Model
 	 * @var array
 	 */
 	protected $hidden = array();
+
+	public function user()
+	{
+	    return $this->belongsTo('App\UserDetails');
+	}
 }
