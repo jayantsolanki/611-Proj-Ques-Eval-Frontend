@@ -111,9 +111,10 @@
 				        <div class=" input-group col-md-2">
 				        	<span class="input-group-addon" id="sizing-addon1">Selected for Test<i class=""></i></span>
 				            <select required="" class="form-control" name="isSelected" id="isSelected">
-								<option value="" disabled selected>Select Yes or No</option>
-								<option value="0" @if($isSelected == 0) selected @endif>No</option>
-								<option value="1" @if($isSelected == 1) selected @endif>Yes</option>
+								<option value="" disabled selected>Select</option>
+								<option value="All" @if($isSelected == 'All') selected @endif>All</option>
+								<option value="0" @if($isSelected == '0') selected @endif>No</option>
+								<option value="1" @if($isSelected == '1') selected @endif>Yes</option>
 							</select>
 				        </div>
 				        <div class=" input-group col-md-1 pull-right">
@@ -124,22 +125,6 @@
 		            
 		    </form>
 		    <br/>
-		    <!-- <span>Year <b>{{$defaultyear}}</b> has <b>{{$count}}</b> Questions with Question Id ranging <b>1</b> to <b>{{$count}}</b></span> -->
-		<!--     <form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('quesSet') }}">
-				<div class="input-group col-md-offset-0">
-					<input type="hidden" name="_token" value="{{ csrf_token() }}">
-					<input type="hidden" name="year" value="{{ $defaultyear }}">
-					<input type="hidden" name="difficulty" value="{{ $difficulty }}">
-					<input type="hidden" name="category" value="{{ $category }}">
-					<input type="number" class="form-control" name="current" value="1">
-
-					<input type="hidden" name="new" value="goto">
-				</div>
-				<div class=" input-group  col-md-2">
-					<button style="cursor:pointer" type="submit" class="btn btn-info">Starting Question Id</button>
-				</div>
-			</form> -->
-			
 		    @endif
 		</div>
 		<hr>
@@ -152,32 +137,76 @@
 				  <div class="panel-heading">
 				    <h3 class="panel-title">
 				    	Select Questions for Selection Test
-				    	<span class="pull-right">Total Questions: <b>{{$count}}</b></span>
+				    	<span class="pull-right">Total Questions found: <b>{{$count}}</b></span>
 				    </h3>
 				  </div>
 				  <div class="panel-body">
 					<div class="row">
-						<div class=col-md-12>
+						<!-- begin accordion -->
+						<div class="col-md-12">
 							{{ $fetchQues->appends(['year' => $defaultyear, 'category' => $category, 'difficulty' => $difficulty, 'resultCount' => $resultCount, 'isSelected' => $isSelected])->links() }}
-							<table class="table table-striped">
-							 <thead>
-							 <tr>
-							    <th>ID</th>
-							    <th>Question Text</th>
-							    <th>Is Selected</th>
-							 </tr>
-							 </thead>
-							 <tbody>
-							    @foreach($fetchQues as $ques)
-							    <tr>
-							       <td>{{ $ques->id }}</td>
-							       <td>{{ $ques->question_text }}</td>
-							       <td>@if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') No @else Yes @endif</td>
-							    </tr>
-							    @endforeach
-							 </tbody>
-							</table>
+							<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+								@foreach($fetchQues as $ques)
+								  <div id="panel{{$ques->id}}" class="panel @if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') panel-danger @else panel-success @endif">
+								    <div class="panel-heading" role="tab" id="heading{{$ques->id}}">
+								      <h4 class="panel-title">
+								        <span class="badge">
+								        	<b>Include in next Exam:</b> 
+								        	<label>
+								        		<input type="radio" name="optradio{{$ques->id}}" id="optradio{{$ques->id}}" @if($ques->for_selectionTest==1) checked @endif onchange="saveSelected('{{$ques->id}}', 1, '{{csrf_token()}}')"> Yes
+								        	</label>
+								        	&nbsp;&nbsp;
+								        	<label>
+								        		<input type="radio"  name="optradio{{$ques->id}}" id="optradio{{$ques->id}}" @if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') checked @endif onchange="saveSelected('{{$ques->id}}', 0, '{{csrf_token()}}')"> No
+								        	</label>
+								        </span>
+								        &nbsp;&nbsp;
+								        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{$ques->id}}" aria-expanded="false" aria-controls="collapse{{$ques->id}}">
+								          <b>View Question Id {{$ques->quid }}</b>
+								        </a>
+								        <label id="panel{{$ques->id}}" class="badge pull-right"></label>
+								      </h4>
+								    </div>
+								    <div id="collapse{{$ques->id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{$ques->id}}">
+								      <div class="panel-body">
+								      	<div class="quesbody row">
+									    	<div class="card card-info col-md-5"  role="alert" style="border-right:1px solid #AAAAAA;height:100%">
+									    		@if($ques->question_text == null)
+									    		<samp class="text text-left"><code>No description:</code><br>This question only has an image</samp>
+									    		@else <samp><code>Description:</code><br>{{$ques->question_text}}</samp>
+									    		@endif
+											    <div class="list-group">
+												  <a href="#" class="list-group-item @if($ques->answer_option1 == 1) list-group-item-success @endif">Option 1: &nbsp;&nbsp;&nbsp;{{ $ques->option1 }}</a>
+												  <a href="#" class="list-group-item @if($ques->answer_option1 == 2) list-group-item-success @endif">Option 2: &nbsp;&nbsp;&nbsp;{{ $ques->option2 }}</a>
+												  <a href="#" class="list-group-item @if($ques->answer_option1 == 3) list-group-item-success @endif">Option 3: &nbsp;&nbsp;&nbsp;{{ $ques->option3 }}</a>
+												  <a href="#" class="list-group-item @if($ques->answer_option1 == 4) list-group-item-success @endif">Option 4: &nbsp;&nbsp;&nbsp;{{ $ques->option4 }}</a>
+												  <a href="#" class="list-group-item @if($ques->answer_option1 == 5) list-group-item-success @endif">Option 5: &nbsp;&nbsp;&nbsp;{{ $ques->option5 }}</a>
+												  <p class="label label-success">Correct Option: &nbsp;&nbsp;&nbsp;{{ $ques->answer_option1 }}</p>
+												</div>
+											</div>
+											<div align="middle" class="card col-md-7">
+										    	@if($ques->question_img == null)
+										    	<img width= "50%" height="50%" id="imgpic" class="picimg" class="picimg" src="/img/qwdara/noimage.png"/>@else <img width= "50%" height="50%" id="imgpic" class="picimg" src="/img/qwdara/{{$ques->year}}/{{$ques->question_img}}" width= "50%" height="50%" onError="this.onerror=null;this.src='/img/qwdara/default-image.png';"/>@endif
+										    </div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<hr>
+												<form target="_blank" class ="form-inline" method="POST" action="{{ route('quesEditor') }}">
+												<input type="hidden" name="_token" value="{{ csrf_token() }}">
+												<input type="hidden" name="qid" value="{{$ques->id}}">
+												<input type="hidden" name="type" value="editques">
+											    <button class="pull-right btn btn-danger" style="cursor:pointer" type="submit">Edit Question</button>
+											</form>
+											</div>
+										</div>
+								      </div>
+								    </div>
+								  </div>
+								@endforeach
+							</div>
 						</div>
+						<!-- end of accordion -->
 					</div>
 				  </div>
 				</div>
@@ -196,39 +225,46 @@
 		$('#qs').addClass('active');
 		$('#question').addClass('active');
 	});
-
-	function submitprev() {
-	   document.prevQuest.submit(); 
-	}
-    function submitnext() {   
-    	document.nextQuest.submit(); 
-    } 
     function myFunction() {
 	    // alert('The image could not be loaded.');
 	    document.getElementById("imgpic").src="/img/qwdara/default-image.png";
 	}
 
-	function editQues(qid, action, token)
+	function saveSelected(qid, action, token)
 	{
+		// alert('#panel'+qid)
+		$('#panel'+qid).removeClass('panel-danger');
+		$('#panel'+qid).addClass('panel-warning');
+		$('label#panel'+qid).text('Saving..');
 		$.ajax({
-		  url: '{{ route('quesEditor') }}',
+		  url: '{{ route('quesSelSave') }}',
 		  method: 'POST',
 		  data:
 		  	{_token: token,
 		  	 qid: qid,
-		  	 type:action
+		  	 action:action
 		  	},
 		  success: function(data){
-		  	document.write(data) 
-		  	$('#qe').addClass('active');
-		  	$('#question').addClass('active');
-		  	$('#qv').removeClass('active');
-		  	$("#editForm :input").prop("disabled", true);
-		  	$("#editfield").prop("disabled", false);
-		  	$("#active").prop("disabled", false);
-		  	$("#_token").prop("disabled", false);
+		  	data = JSON.parse(data)
+		  	if(data.data =='Success')
+		  	{
+			  	$('#panel'+qid).removeClass('panel-warning');
+			  	$('#panel'+qid).removeClass('panel-info');
+			  	if(action==0)
+					$('#panel'+qid).addClass('panel-danger');
+				else
+					$('#panel'+qid).addClass('panel-success');
+				$('label#panel'+qid).text('Saved');
+			}
+			if(data.data =='Error')
+			{
+				$('label#panel'+qid).text('Error! Please try again');
+				$('#panel'+qid).removeClass('panel-warning');
+				$('#panel'+qid).addClass('panel-info');
+			}
 	      }
 		});
+	
 	}
 </script> 
 @endsection

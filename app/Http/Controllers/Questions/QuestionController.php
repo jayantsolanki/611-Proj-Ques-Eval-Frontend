@@ -512,149 +512,6 @@ class QuestionController extends Controller{
  		$inactiveUsers = Login::where('active',0)->count();
  		if(sizeof($years)>0)
  		{
- 			if(false)
-	 		// if(sizeof($data->all())>0)
-	 		{	
-	 			// return $data->all() ;
-	 			if(!isset($data->new)){//just return the question from id equals qid
-	 				$rules = [
-			            'qid' => 'integer|min:1'
-			        ];
-			        $messages = [   
-			            'qid.integer' =>  'Question Id must be integer',
-			            'qid.min' =>  'Question Id must be above 0'
-			        ];
-			        $validator = Validator::make($data->all(), $rules, $messages);
-			        // return (string)$validator->fails();
-			        if ($validator->fails()) {
-			            return redirect()->route('setCreate')->withErrors($validator)->with('inactiveUsers', $inactiveUsers);
-			        }
-			        $fetchQues = QuestionMaster::where('id', $data -> qid)->first();
-			        // $fetchQuesHist = QuestionMaster::where('quid', $fetchQues -> quid)->get();
-			        $fetchQuesHist = QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
-			        // return $fetchQues;
-					if(sizeof($fetchQues)==0)
-						return redirect()->route('setCreate')->with('error',"Please enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
-					else
-					{
-						// $count = QuestionMaster::where('year',$data -> year)->count();
-						$count = QuestionMaster::where('year',$fetchQues -> year)->where('active', '=', 1)->count(); //added active question only
-						if($fetchQues->quid == '1')
-	 						$previous = 0;
-			 			else
-			 				$previous = $fetchQues->quid - 1;
-			 			if($fetchQues->quid == $count)
-			 				$next = 0;
-			 			else
-			 				$next = $fetchQues->quid + 1;
-			 			// return $count;
-						return view('questions.setCreate')->with('userDetails', Auth::user())->with('defaultyear', $fetchQues->year)->with('category', $fetchQues->category_id)->with('difficulty', $fetchQues->pre_tag)->with('isSelected',0)->with('resultCount',10)->with('fetchQues',$fetchQues)->with('years',$years)->with("count",$count)->with('previous',$previous)->with('next',$next)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
-					}
-
-	 			}
-		        $rules = [
-		            'category' => 'integer|min:1|digits_between:1,4',
-		            'difficulty' => 'integer|min:0|digits_between:0,3',
-		            'year' => 'integer|min:2014|max:2025',
-		            'new' => 'in:next,previous,filter,goto',
-		            'current' => 'integer|min:1|max:3000|digits_between:1,3000',
-		            'isSelected' => 'integer|min:0|max:1',
-		            'resultCount' => 'integer|min:10|max:100'
-		        ];
-		        $messages = [   
-		            'category.integer' =>  'Category must be integer',
-		            'difficulty.integer' =>  'Difficulty level must be integer',
-		            'year.integer'        =>  'Year must be integer',
-		            'new' =>  'Must be either previous, next, goto or filter',
-		            'current.integer' =>  'Question id must be integer',
-		            'current.max' =>  'Question id must be between the range given',
-		            'current.min' =>  'Question id must be above 0',
-		            'current.digits_between' =>  'Question id must be between the range given',
-		            'isSelected' => 'isSelected should be 0 or 1',
-		            'resultCount' => 'Result count should be between 10 to 100'
-
-		        ];
-		        $validator = Validator::make($data->all(), $rules, $messages);
-		        // return (string)$validator->fails();
-		        if ($validator->fails()) {
-		            return redirect()->route('setCreate')->withErrors($validator)->with('inactiveUsers', $inactiveUsers);
-		        }
-	 			// $count = QuestionMaster::where('year',$data -> year)->count();
-	 			$count = QuestionMaster::where('year',$data -> year)->where('active', '=', 1)->count(); //added active question only
-	 			// return $data->all();
-	 			$category = $data -> category;
-	 			$difficulty = $data -> difficulty;
-	 			$year = $data -> year; // no use of these three
-	 			if($data -> year == 'All')//include all years
-	 			{
-	 				$data -> year = $years;
-	 			}
-	 			else{
-	 				$data -> category = [$data -> year];
-	 			}
-	 			if($data -> category == '4')//include all categories
-	 			{
-	 				$data -> category = ['1','2','3'];
-	 			}
-	 			else{
-	 				$data -> category = [$data -> category];
-	 			}
-	 			if($data -> difficulty == '3')//include all categories
-	 			{
-	 				$data -> difficulty = ['0','1','2'];
-	 			}
-	 			else
-	 			{
-	 				$data -> difficulty = [$data -> difficulty];
-	 			}
-	 			if($data->new=="next")
-				{
-					$fetchQues = QuestionMaster::where('year', $data -> year)->where('quid', '>', $data -> current)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->first();
-					
-				}
-				elseif ($data->new=="filter") {
-					// return $data -> category;
-					$fetchQues = QuestionMaster::where('year', $data -> year)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->first();
-					if(sizeof($fetchQues)==0)
-						return view('questions.setCreate')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('isSelected',0)->with('resultCount',10)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', null);
-				}
-				elseif ($data->new=="goto") {
-					$fetchQues = QuestionMaster::where('year', $data -> year)->where('quid',$data -> current)->where('active', '=', 1)->first();
-				}
-				else
-					$fetchQues = QuestionMaster::where('year', $data -> year)->where('quid', '<', $data -> current)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->orderBy('quid', 'desc')->first();
-				// return $fetchQues;
-				if(sizeof($fetchQues)>0)
-				{
-					if($fetchQues->quid == '1')
-	 					$previous = 0;
-		 			else
-		 				$previous = $fetchQues->quid - 1;
-		 			if($fetchQues->quid == $count)
-		 				$next = 0;
-		 			else
-		 				$next = $fetchQues->quid + 1;
-		 			$fetchQuesHist = QuestionMaster::with('user')->where('year', $fetchQues -> year)->where('quid', $fetchQues -> quid)->get();
-					return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('isSelected',0)->with('resultCount',10)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', $fetchQuesHist);
-				}
-
-				else//if no results than switch to default
-				{
-					return redirect()->route('setCreate')->with('error',"Please enter an ID that falls within the specified range")->with('inactiveUsers', $inactiveUsers);
-					// $fetchQues = QuestionMaster::where('year', $data -> year)->where('quid', '=', $data -> current)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->first();
-					// if($fetchQues->quid == '1')
-	 			// 		$previous = 0;
-		 		// 	else
-		 		// 		$previous = $fetchQues->quid - 1;
-		 		// 	if($fetchQues->quid == $count)
-		 		// 		$next = 0;
-		 		// 	else
-		 		// 		$next = $fetchQues->quid + 1;
-					// return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('fetchQues',$fetchQues)->with('previous',$previous)->with('next',$next)->with("count",$count);
-				}
-	 		}
-	 		// if no request then do this
-	 		// fetch all question with paging
 	 		if(sizeof($data->all())>0){
 	 			// return $data->all();
 	 			$rules = [
@@ -662,7 +519,7 @@ class QuestionController extends Controller{
 		            'difficulty' => 'integer|min:0|digits_between:0,3',
 		            'year' => 'in:All,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025',
 		            'new' => 'in:next,previous,filter,goto',
-		            'isSelected' => 'integer|min:0|max:1',
+		            'isSelected' => 'in:All,0,1',
 		            'resultCount' => 'integer|min:10|max:100'
 		        ];
 		        $messages = [   
@@ -670,7 +527,7 @@ class QuestionController extends Controller{
 		            'difficulty.integer' =>  'Difficulty level must be integer',
 		            'year.integer'        =>  'Year must be integer',
 		            'new' =>  'Must be either previous, next, goto or filter',
-		            'isSelected' => 'isSelected should be 0 or 1',
+		            'isSelected' => 'isSelected should be All or 0 or 1',
 		            'resultCount' => 'Result count should be between 10 to 100'
 
 		        ];
@@ -683,6 +540,14 @@ class QuestionController extends Controller{
 		        $category = $data -> category;
 	 			$difficulty = $data -> difficulty;
 	 			$year = $data -> year;
+	 			$isSelected = $data -> isSelected;
+	 			if($data -> isSelected == 'All')//include all yes or no
+	 			{
+	 				$data -> isSelected = [0,1];
+	 			}
+	 			else{
+	 				$data -> isSelected = [$data -> isSelected];
+	 			}
 	 			if($data -> year == 'All')//include all years
 	 			{
 	 				$year = $years;
@@ -705,22 +570,49 @@ class QuestionController extends Controller{
 	 			{
 	 				$data -> difficulty = [$data -> difficulty];
 	 			}
-	 			$count = QuestionMaster::whereIn('year', $year)->where('for_selectionTest', '=', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->count(); //added active question only
+	 			$count = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->count(); //added active question only
  				// $fetchQues = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->paginate(10);
- 				$fetchQues = QuestionMaster::whereIn('year', $year)->where('for_selectionTest', '=', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->paginate($data -> resultCount);
+ 				$fetchQues = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->paginate($data -> resultCount);
  				// return $fetchQues;
  				// return $data->all();
- 				return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('isSelected',$data -> isSelected)->with('resultCount',$data -> resultCount)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
+ 				return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('isSelected',$isSelected)->with('resultCount',$data -> resultCount)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
 	 		}
 	 		$count = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->count(); //added active question only
 	 		$fetchQues = QuestionMaster::whereIn('year', $years)->whereIn('for_selectionTest', [0,1])->whereIn('category_id',[1,2,3])->whereIn('pre_tag',[0,1,2])->where('active', '=', 1)->paginate(10);
 
- 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', 'All')->with('category', 4)->with('difficulty', 3)->with('isSelected',0)->with('resultCount',10)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
+ 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', 'All')->with('category', 4)->with('difficulty', 3)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
  		}
  			
  		else{//no database present 
- 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('isSelected',0)->with('resultCount',10)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', null);
+ 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', null);
  		}
+ 	}
+
+ 	public function quesSelSave(Request $data){
+ 		if(sizeof($data->all())>0){
+ 			$rules = [
+	            'action' => 'integer|min:0|max:1',
+	            'qid' => 'integer|min:1'
+	        ];
+	        $messages = [   
+	            'action' =>  'Action must be integer',
+	            'qid' =>  'DQuestion id must be integer'
+
+	        ];
+	        $validator = Validator::make($data->all(), $rules, $messages);
+	        // return (string)$validator->fails();
+	        if ($validator->fails()) {
+	        	// return 'fail';
+	            return json_encode(['data' =>'Error']);
+	        }
+	        QuestionMaster::where('id', $data -> qid)->update(['for_selectionTest'=> $data->action]);
+	        return json_encode(['data' =>'Success']);
+ 		}
+ 	}
+
+ 	protected function getSummary()
+ 	{
+ 		
  	}
 
  	protected function getFileName($file)
