@@ -19,7 +19,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Question Manager <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li id="qe"><a href="{{route('quesEditor')}}">Question Editor</a></li>
-                <li id="qs"><a href="{{route('quesEditor')}}">Question Set</a></li>
+                <li id="qs"><a href="{{route('quesSet')}}">Question Set</a></li>
                 <li id="qexp"><a href="{{route('quesEditor')}}">Experimental Questions</a></li>
               </ul>
             </li>

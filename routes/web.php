@@ -128,6 +128,11 @@ Route::any('question/quesEditor',[
 	'uses' => 'Questions\QuestionController@quesEditor'
 ]);
 
+Route::any('question/quesSet',[
+	'as' => 'quesSet',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@setManage'
+]);
 
 
 /*****************Question Analysis Controller*************/

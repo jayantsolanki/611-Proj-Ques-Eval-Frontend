@@ -172,7 +172,7 @@
 								      <th scope="row">{{$hist->revision_count}}</th>
 								      
 								      <!-- <td><a target=blank href="{{route('quesViewer')}}/?qid={{$hist->id}}">View Question</a></td> -->
-								      <td><a href="mailto:{{$hist->user->email}}">{{$hist->user->name}}</a></td>
+								      <td>@if($hist->user!=null)<a href="mailto:{{$hist->user->email}}">{{$hist->user->name}}</a>@else No info @endif</td>
 								      <td>{{$hist->updated_at}}</td>
 								      <td>@if($hist->active==1) Yes @else No @endif</td>
 								      <td>
