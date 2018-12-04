@@ -68,62 +68,64 @@
 		        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 		        <input type="hidden" name="new" value="filter">
 				<div class="row">
-			        <div class="input-group col-md-2 corr">
-			        	<span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
-			            <select required="" class="form-control" name="year" id="year">
-			            	<option value="" disabled selected>Select year</option>
-			            	<option value="All"  @if($defaultyear=='All') selected @endif>All</option>
-			            	@foreach ($years as $year)
-			            		<option value="{{$year}}" @if($year == $defaultyear) selected @endif>{{$year}}</option>
-			            	@endforeach
-						</select>
-			        </div>
-			        <div class=" input-group col-md-2">
-			        	<span class="input-group-addon" id="sizing-addon1">Category <i class=""></i></span>
-			            <select required="" class="form-control" name="category" id="category">
-							<option value="" disabled selected>Select Category</option>
-							<option value="1" @if($category == 1) selected @endif>Aptitude</option>
-							<option value="2" @if($category == 2) selected @endif>Electricals</option>
-							<option value="3"@if($category == 3) selected @endif >Programming</option>
-							<option value="4" @if($category == 4) selected @endif>All</option>
-						</select>
-			        </div>
-			        <div class=" input-group col-md-2">
-			        	<span class="input-group-addon" id="sizing-addon1">Difficulty<i class=""></i></span>
-			            <select required="" class="form-control" name="difficulty" id="difficulty">
-							<option value="" disabled selected>Select Difficulty level</option>
-							<option value="0" @if($difficulty == 0) selected @endif>Easy</option>
-							<option value="1" @if($difficulty == 1) selected @endif>Medium</option>
-							<option value="2"@if($difficulty == 2) selected @endif >Hard</option>
-							<option value="3" @if($difficulty == 3) selected @endif>All</option>
-						</select>
-			        </div>
-			        <div class=" input-group col-md-2">
-			        	<span class="input-group-addon" id="sizing-addon1">Result Size<i class=""></i></span>
-			        	<select required="" class="form-control" name="resultCount" id="resultCount">
-			        		<option value="" disabled selected>#</option>
-			        		@for ($i=10; $i<=100; $i=$i+10)
-								<option value="{{$i}}" @if($resultCount == $i) selected @endif>{{$i}}</option>
-							@endfor
-						</select>
-			        </div>
-			        <div class=" input-group col-md-2">
-			        	<span class="input-group-addon" id="sizing-addon1">Selected for Test<i class=""></i></span>
-			            <select required="" class="form-control" name="isSelected" id="isSelected">
-							<option value="" disabled selected>Select Yes or No</option>
-							<option value="0" @if($isSelected == 0) selected @endif>No</option>
-							<option value="1" @if($isSelected == 1) selected @endif>Yes</option>
-						</select>
-			        </div>
-			        <div class=" input-group col-md-1">
-			            <button style="cursor:pointer" type="submit" class="btn btn-info">Search <span class="glyphicon glyphicon-search"></span></button>
-			        </div>
+					<div class="col-md-12">
+				        <div class="input-group col-md-2">
+				        	<span class="input-group-addon" id="sizing-addon1">Year <i class=""></i></span>
+				            <select required="" class="form-control" name="year" id="year">
+				            	<option value="" disabled selected>Select year</option>
+				            	<option value="All"  @if($defaultyear=='All') selected @endif>All</option>
+				            	@foreach ($years as $year)
+				            		<option value="{{$year}}" @if($year == $defaultyear) selected @endif>{{$year}}</option>
+				            	@endforeach
+							</select>
+				        </div>
+				        <div class=" input-group col-md-2">
+				        	<span class="input-group-addon" id="sizing-addon1">Category <i class=""></i></span>
+				            <select required="" class="form-control" name="category" id="category">
+								<option value="" disabled selected>Select Category</option>
+								<option value="1" @if($category == 1) selected @endif>Aptitude</option>
+								<option value="2" @if($category == 2) selected @endif>Electricals</option>
+								<option value="3"@if($category == 3) selected @endif >Programming</option>
+								<option value="4" @if($category == 4) selected @endif>All</option>
+							</select>
+				        </div>
+				        <div class=" input-group col-md-2">
+				        	<span class="input-group-addon" id="sizing-addon1">Difficulty<i class=""></i></span>
+				            <select required="" class="form-control" name="difficulty" id="difficulty">
+								<option value="" disabled selected>Select Difficulty level</option>
+								<option value="0" @if($difficulty == 0) selected @endif>Easy</option>
+								<option value="1" @if($difficulty == 1) selected @endif>Medium</option>
+								<option value="2"@if($difficulty == 2) selected @endif >Hard</option>
+								<option value="3" @if($difficulty == 3) selected @endif>All</option>
+							</select>
+				        </div>
+				        <div class=" input-group col-md-2">
+				        	<span class="input-group-addon" id="sizing-addon1">Result Size<i class=""></i></span>
+				        	<select required="" class="form-control" name="resultCount" id="resultCount">
+				        		<option value="" disabled selected>#</option>
+				        		@for ($i=10; $i<=100; $i=$i+10)
+									<option value="{{$i}}" @if($resultCount == $i) selected @endif>{{$i}}</option>
+								@endfor
+							</select>
+				        </div>
+				        <div class=" input-group col-md-2">
+				        	<span class="input-group-addon" id="sizing-addon1">Selected for Test<i class=""></i></span>
+				            <select required="" class="form-control" name="isSelected" id="isSelected">
+								<option value="" disabled selected>Select Yes or No</option>
+								<option value="0" @if($isSelected == 0) selected @endif>No</option>
+								<option value="1" @if($isSelected == 1) selected @endif>Yes</option>
+							</select>
+				        </div>
+				        <div class=" input-group col-md-1 pull-right">
+				            <button style="cursor:pointer" type="submit" class="btn btn-primary"> Search <span class="glyphicon glyphicon-search"></span></button>
+				        </div>
+				    </div>
 			    </div> 
 		            
 		    </form>
 		    <br/>
 		    <!-- <span>Year <b>{{$defaultyear}}</b> has <b>{{$count}}</b> Questions with Question Id ranging <b>1</b> to <b>{{$count}}</b></span> -->
-		    <form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('quesSet') }}">
+		<!--     <form name="gotoQuest" class ="form-inline" method="POST" action="{{ route('quesSet') }}">
 				<div class="input-group col-md-offset-0">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<input type="hidden" name="year" value="{{ $defaultyear }}">
@@ -136,7 +138,7 @@
 				<div class=" input-group  col-md-2">
 					<button style="cursor:pointer" type="submit" class="btn btn-info">Starting Question Id</button>
 				</div>
-			</form>
+			</form> -->
 			
 		    @endif
 		</div>
@@ -148,19 +150,21 @@
 				@else
 				<div class="panel panel-default">
 				  <div class="panel-heading">
-				    <h3 class="panel-title"> Select Questions for Selection Test
+				    <h3 class="panel-title">
+				    	Select Questions for Selection Test
+				    	<span class="pull-right">Total Questions: <b>{{$count}}</b></span>
 				    </h3>
 				  </div>
 				  <div class="panel-body">
 					<div class="row">
 						<div class=col-md-12>
-							{{ $fetchQues->appends(['sort' => 'votes'])->links() }}
+							{{ $fetchQues->appends(['year' => $defaultyear, 'category' => $category, 'difficulty' => $difficulty, 'resultCount' => $resultCount, 'isSelected' => $isSelected])->links() }}
 							<table class="table table-striped">
 							 <thead>
 							 <tr>
 							    <th>ID</th>
 							    <th>Question Text</th>
-							    <th>Author</th>
+							    <th>Is Selected</th>
 							 </tr>
 							 </thead>
 							 <tbody>
@@ -168,7 +172,7 @@
 							    <tr>
 							       <td>{{ $ques->id }}</td>
 							       <td>{{ $ques->question_text }}</td>
-							       <td>{{ $ques->user_id }}</td>
+							       <td>@if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') No @else Yes @endif</td>
 							    </tr>
 							    @endforeach
 							 </tbody>
