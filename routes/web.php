@@ -140,6 +140,12 @@ Route::any('question/quesSelSave',[
 	'uses' => 'Questions\QuestionController@quesSelSave'
 ]);
 
+Route::any('question/quesSelrefresh',[
+	'as' => 'quesSelrefresh',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@refresh'
+]);
+
 
 /*****************Question Analysis Controller*************/
 

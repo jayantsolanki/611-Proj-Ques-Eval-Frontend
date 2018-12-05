@@ -570,21 +570,30 @@ class QuestionController extends Controller{
 	 			{
 	 				$data -> difficulty = [$data -> difficulty];
 	 			}
-	 			$count = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->count(); //added active question only
+	 			$count = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('difficulty_level',$data -> difficulty)->where('active', '=', 1)->count(); //added active question only
  				// $fetchQues = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->paginate(10);
- 				$fetchQues = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('pre_tag',$data -> difficulty)->where('active', '=', 1)->paginate($data -> resultCount);
+ 				$fetchQues = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('difficulty_level',$data -> difficulty)->where('active', '=', 1)->paginate($data -> resultCount);
  				// return $fetchQues;
  				// return $data->all();
- 				return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('isSelected',$isSelected)->with('resultCount',$data -> resultCount)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
+ 				$summary = $this->getSummary();
+				$apti = $summary[0];
+				$elec = $summary[1];
+				$prog = $summary[2];
+				$summary = array('apti' => $apti, 'elec' => $elec, 'prog' => $prog);
+ 				return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('isSelected',$isSelected)->with('resultCount',$data -> resultCount)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('summary',$summary);
 	 		}
 	 		$count = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->count(); //added active question only
-	 		$fetchQues = QuestionMaster::whereIn('year', $years)->whereIn('for_selectionTest', [0,1])->whereIn('category_id',[1,2,3])->whereIn('pre_tag',[0,1,2])->where('active', '=', 1)->paginate(10);
-
- 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', 'All')->with('category', 4)->with('difficulty', 3)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers);
+	 		$fetchQues = QuestionMaster::whereIn('year', $years)->whereIn('for_selectionTest', [0,1])->whereIn('category_id',[1,2,3])->whereIn('difficulty_level',[0,1,2])->where('active', '=', 1)->paginate(10);
+	 		$summary = $this->getSummary();
+			$apti = $summary[0];
+			$elec = $summary[1];
+			$prog = $summary[2];
+			$summary = array('apti' => $apti, 'elec' => $elec, 'prog' => $prog);
+ 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', 'All')->with('category', 4)->with('difficulty', 3)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('summary',$summary);
  		}
  			
  		else{//no database present 
- 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', null);
+ 			return view('questions.setCreate')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', null)->with('summary',null);
  		}
  	}
 
@@ -610,9 +619,96 @@ class QuestionController extends Controller{
  		}
  	}
 
+ 	public function refresh(Request $data){
+
+ 		$summary = $this->getSummary();
+		$apti = $summary[0];
+		$elec = $summary[1];
+		$prog = $summary[2];
+		$summary = array('apti' => $apti, 'elec' => $elec, 'prog' => $prog);
+		return view('questions.helper.summary')->with('summary',$summary);
+ 	}
+
  	protected function getSummary()
  	{
- 		
+ 		// $Totalcount = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', [1])->where('active', '=', 1)->count();
+
+ 		$QuesStatsDiffEasy = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 1)->where('difficulty_level',0)->where('active', '=', 1)->count();//apti, tag easy
+		$QuesStatsDiffMed = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 1)->where('difficulty_level',1)->where('active', '=', 1)->count();//apti, tag medium
+		$QuesStatsDiffHard = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 1)->where('difficulty_level',2)->where('active', '=', 1)->count(); //apti, tag hard
+		///////////
+		/////////////
+		$apti = [];
+		$payload = array(
+			'difficulty_level'=>'easy',
+			'tag'=> $QuesStatsDiffEasy
+
+		);
+		array_push($apti, $payload);
+		$payload = array(
+			'difficulty_level'=>'medium',
+			'tag'=> $QuesStatsDiffMed
+
+		);
+		array_push($apti, $payload);
+		$payload = array(
+			'difficulty_level'=>'hard',
+			'tag'=> $QuesStatsDiffHard
+
+		);
+		array_push($apti, $payload);
+		///////////////////////////////////////////////////////////
+		$QuesStatsDiffEasy = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 2)->where('difficulty_level',0)->where('active', '=', 1)->count();//elec, tag easy
+		$QuesStatsDiffMed = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 2)->where('difficulty_level',1)->where('active', '=', 1)->count();//elec,  tag medium
+		$QuesStatsDiffHard = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 2)->where('difficulty_level',2)->where('active', '=', 1)->count(); //elec, tag hard
+		/////////////
+		$elec = [];
+		$payload = array(
+			'difficulty_level'=>'easy',
+			'tag'=> $QuesStatsDiffEasy
+
+		);
+		array_push($elec, $payload);
+		$payload = array(
+			'difficulty_level'=>'medium',
+			'tag'=> $QuesStatsDiffMed
+
+		);
+		array_push($elec, $payload);
+		$payload = array(
+			'difficulty_level'=>'hard',
+			'tag'=> $QuesStatsDiffHard
+
+		);
+		array_push($elec, $payload);
+		///////////////////////////////////////////////////////////
+		$QuesStatsDiffEasy = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 3)->where('difficulty_level',0)->where('active', '=', 1)->count();//programming, tag easy
+		$QuesStatsDiffMed = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 3)->where('difficulty_level',1)->where('active', '=', 1)->count();//programming, tag medium
+		$QuesStatsDiffHard = QuestionMaster::whereIn('for_selectionTest', [1])->where('category_id', 3)->where('difficulty_level',2)->where('active', '=', 1)->count(); //programming, tag hard
+
+		/////////////
+		$prog = [];
+		$payload = array(
+			'difficulty_level'=>'easy',
+			'tag'=> $QuesStatsDiffEasy
+
+		);
+		array_push($prog, $payload);
+		$payload = array(
+			'difficulty_level'=>'medium',
+			'tag'=> $QuesStatsDiffMed
+
+		);
+		array_push($prog, $payload);
+		$payload = array(
+			'difficulty_level'=>'hard',
+			'tag'=> $QuesStatsDiffHard
+
+		);
+		array_push($prog, $payload);
+		// $prog = json_encode($prog);
+
+		return array($apti, $elec, $prog);
  	}
 
  	protected function getFileName($file)

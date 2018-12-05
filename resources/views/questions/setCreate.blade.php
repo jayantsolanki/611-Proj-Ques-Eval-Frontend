@@ -136,15 +136,25 @@
 				<div class="panel panel-default">
 				  <div class="panel-heading">
 				    <h3 class="panel-title">
-				    	Select Questions for Selection Test
+				    	Select Questions for Exam
+				    	&nbsp;&nbsp;Category: <b class="text text-info">@if($category == 4) All @elseif($category == 1) Aptitude @elseif($category == 2) Electricals @elseif($category == 3) Programming @endif</b>
+				    	&nbsp;&nbsp;
+				    	Category: <b class="text text-info">@if($difficulty == 3) All @elseif($difficulty == 0) Easy @elseif($difficulty == 1) Medium @elseif($difficulty == 2) Hard @endif</b>
 				    	<span class="pull-right">Total Questions found: <b>{{$count}}</b></span>
 				    </h3>
 				  </div>
 				  <div class="panel-body">
+				  	<div class="row">
+				  		<div class="col-md-6">
+				  			{{ $fetchQues->appends(['year' => $defaultyear, 'category' => $category, 'difficulty' => $difficulty, 'resultCount' => $resultCount, 'isSelected' => $isSelected])->links() }}
+				  		</div>
+				  		<div id="summary" class="col-md-6">
+				  			@include('questions.helper.summary')
+				  		</div>
+				  	</div>
 					<div class="row">
 						<!-- begin accordion -->
 						<div class="col-md-12">
-							{{ $fetchQues->appends(['year' => $defaultyear, 'category' => $category, 'difficulty' => $difficulty, 'resultCount' => $resultCount, 'isSelected' => $isSelected])->links() }}
 							<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 								@foreach($fetchQues as $ques)
 								  <div id="panel{{$ques->id}}" class="panel @if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') panel-danger @else panel-success @endif">
@@ -162,7 +172,9 @@
 								        </span>
 								        &nbsp;&nbsp;
 								        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{$ques->id}}" aria-expanded="false" aria-controls="collapse{{$ques->id}}">
+								          
 								          <b>View Question Id {{$ques->quid }}</b>
+								          <span class="glyphicon glyphicon-arrow-down pull-right"></span>
 								        </a>
 								        <label id="panel{{$ques->id}}" class="badge pull-right"></label>
 								      </h4>
@@ -255,6 +267,11 @@
 				else
 					$('#panel'+qid).addClass('panel-success');
 				$('label#panel'+qid).text('Saved');
+
+				$('#summary').fadeOut();
+				$('#summary').load('{{ route('quesSelrefresh') }}', function() {
+					$('#summary').fadeIn();
+				});
 			}
 			if(data.data =='Error')
 			{

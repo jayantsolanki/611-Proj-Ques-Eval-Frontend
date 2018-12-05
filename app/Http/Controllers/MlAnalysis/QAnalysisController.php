@@ -294,134 +294,134 @@ class QAnalysisController extends Controller{
 private function retrieveStats($year, $TotalQues){
 
  		$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 1)->where('pre_tag',0)->count();//apti, pre tag easy
-			$QuesStatsPreMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('pre_tag',1)->count();//apti, pre tag medium
-			$QuesStatsPreHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('pre_tag',2)->count(); //apti, pre tag hard
-			///////////
-			$QuesStatsPostEasy = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',0)->count();//apti, post_tag tag easy
-			$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',1)->count();//apti, post_tag tag med
-			$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',2)->count();//apti, post_tag tag hard
-			/////////////
-			$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',0)->count();//apti, difficulty tag easy
-			$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',1)->count();//apti, difficulty tag med
-			$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',2)->count();//apti, difficulty tag hard
-			/////////////
-			$apti = [];
-			$payload = array(
-				'difficulty_level'=>'easy',
-				'pre_tag'=> $QuesStatsPreEasy,
-				'post_tag'=> $QuesStatsPostEasy,
-				'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
-				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
+		$QuesStatsPreMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('pre_tag',1)->count();//apti, pre tag medium
+		$QuesStatsPreHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('pre_tag',2)->count(); //apti, pre tag hard
+		///////////
+		$QuesStatsPostEasy = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',0)->count();//apti, post_tag tag easy
+		$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',1)->count();//apti, post_tag tag med
+		$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('post_tag',2)->count();//apti, post_tag tag hard
+		/////////////
+		$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',0)->count();//apti, difficulty tag easy
+		$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',1)->count();//apti, difficulty tag med
+		$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 1)->where('difficulty_level',2)->count();//apti, difficulty tag hard
+		/////////////
+		$apti = [];
+		$payload = array(
+			'difficulty_level'=>'easy',
+			'pre_tag'=> $QuesStatsPreEasy,
+			'post_tag'=> $QuesStatsPostEasy,
+			'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
+			'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
 
-			);
-			array_push($apti, $payload);
-			$payload = array(
-				'difficulty_level'=>'medium',
-				'pre_tag'=> $QuesStatsPreMed,
-				'post_tag'=> $QuesStatsPostMed,
-				'diff' => $TotalQues*4/30-$QuesStatsPostMed,
-				'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
+		);
+		array_push($apti, $payload);
+		$payload = array(
+			'difficulty_level'=>'medium',
+			'pre_tag'=> $QuesStatsPreMed,
+			'post_tag'=> $QuesStatsPostMed,
+			'diff' => $TotalQues*4/30-$QuesStatsPostMed,
+			'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
 
-			);
-			array_push($apti, $payload);
-			$payload = array(
-				'difficulty_level'=>'hard',
-				'pre_tag'=> $QuesStatsPreHard,
-				'post_tag'=> $QuesStatsPostHard,
-				'diff' => $TotalQues*3/30-$QuesStatsPostHard,
-				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
+		);
+		array_push($apti, $payload);
+		$payload = array(
+			'difficulty_level'=>'hard',
+			'pre_tag'=> $QuesStatsPreHard,
+			'post_tag'=> $QuesStatsPostHard,
+			'diff' => $TotalQues*3/30-$QuesStatsPostHard,
+			'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
 
-			);
-			array_push($apti, $payload);
-			// $apti = json_encode($apti);
-			// return $a/pti;
-			///////////////////////////////////////////////////////////
-			$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('pre_tag',0)->count();//electricals, pre tag easy
-			$QuesStatsPreMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('pre_tag',1)->count();//electricals, pre tag medium
-			$QuesStatsPreHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('pre_tag',2)->count(); //electricals, pre tag hard
-			///////////
-			$QuesStatsPostEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',0)->count();//electricals, post_tag tag easy
-			$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',1)->count();//electricals, post_tag tag med
-			$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',2)->count();//electricals, post_tag tag hard
-			/////////////
-			$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',0)->count();//apti, difficulty tag easy
-			$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',1)->count();//apti, difficulty tag med
-			$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',2)->count();//apti, difficulty tag hard
-			/////////////
-			$elec = [];
-			$payload = array(
-				'difficulty_level'=>'easy',
-				'pre_tag'=> $QuesStatsPreEasy,
-				'post_tag'=> $QuesStatsPostEasy,
-				'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
-				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
+		);
+		array_push($apti, $payload);
+		// $apti = json_encode($apti);
+		// return $a/pti;
+		///////////////////////////////////////////////////////////
+		$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('pre_tag',0)->count();//electricals, pre tag easy
+		$QuesStatsPreMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('pre_tag',1)->count();//electricals, pre tag medium
+		$QuesStatsPreHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('pre_tag',2)->count(); //electricals, pre tag hard
+		///////////
+		$QuesStatsPostEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',0)->count();//electricals, post_tag tag easy
+		$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',1)->count();//electricals, post_tag tag med
+		$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('post_tag',2)->count();//electricals, post_tag tag hard
+		/////////////
+		$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',0)->count();//apti, difficulty tag easy
+		$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',1)->count();//apti, difficulty tag med
+		$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 2)->where('difficulty_level',2)->count();//apti, difficulty tag hard
+		/////////////
+		$elec = [];
+		$payload = array(
+			'difficulty_level'=>'easy',
+			'pre_tag'=> $QuesStatsPreEasy,
+			'post_tag'=> $QuesStatsPostEasy,
+			'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
+			'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
 
-			);
-			array_push($elec, $payload);
-			$payload = array(
-				'difficulty_level'=>'medium',
-				'pre_tag'=> $QuesStatsPreMed,
-				'post_tag'=> $QuesStatsPostMed,
-				'diff' => $TotalQues*4/30-$QuesStatsPostMed,
-				'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
+		);
+		array_push($elec, $payload);
+		$payload = array(
+			'difficulty_level'=>'medium',
+			'pre_tag'=> $QuesStatsPreMed,
+			'post_tag'=> $QuesStatsPostMed,
+			'diff' => $TotalQues*4/30-$QuesStatsPostMed,
+			'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
 
-			);
-			array_push($elec, $payload);
-			$payload = array(
-				'difficulty_level'=>'hard',
-				'pre_tag'=> $QuesStatsPreHard,
-				'post_tag'=> $QuesStatsPostHard,
-				'diff' => $TotalQues*3/30-$QuesStatsPostHard,
-				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
+		);
+		array_push($elec, $payload);
+		$payload = array(
+			'difficulty_level'=>'hard',
+			'pre_tag'=> $QuesStatsPreHard,
+			'post_tag'=> $QuesStatsPostHard,
+			'diff' => $TotalQues*3/30-$QuesStatsPostHard,
+			'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
 
-			);
-			array_push($elec, $payload);
-			// $elec = json_encode($elec);
-			// return $elec;
-			///////////////////////////////////////////////////////////
-			$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('pre_tag',0)->count();//programming, pre tag easy
-			$QuesStatsPreMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('pre_tag',1)->count();//programming, pre tag medium
-			$QuesStatsPreHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('pre_tag',2)->count(); //programming, pre tag hard
-			///////////
-			$QuesStatsPostEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',0)->count();//programming, post_tag tag easy
-			$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',1)->count();//programming, post_tag tag med
-			$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',2)->count();//programming, post_tag tag hard
-			/////////////
-			$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',0)->count();//apti, difficulty-level tag easy
-			$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',1)->count();//apti, difficulty tag med
-			$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',2)->count();//apti, difficulty tag hard
-			/////////////
-			$prog = [];
-			$payload = array(
-				'difficulty_level'=>'easy',
-				'pre_tag'=> $QuesStatsPreEasy,
-				'post_tag'=> $QuesStatsPostEasy,
-				'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
-				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
+		);
+		array_push($elec, $payload);
+		// $elec = json_encode($elec);
+		// return $elec;
+		///////////////////////////////////////////////////////////
+		$QuesStatsPreEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('pre_tag',0)->count();//programming, pre tag easy
+		$QuesStatsPreMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('pre_tag',1)->count();//programming, pre tag medium
+		$QuesStatsPreHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('pre_tag',2)->count(); //programming, pre tag hard
+		///////////
+		$QuesStatsPostEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',0)->count();//programming, post_tag tag easy
+		$QuesStatsPostMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',1)->count();//programming, post_tag tag med
+		$QuesStatsPostHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('post_tag',2)->count();//programming, post_tag tag hard
+		/////////////
+		$QuesStatsDiffEasy = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',0)->count();//apti, difficulty-level tag easy
+		$QuesStatsDiffMed = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',1)->count();//apti, difficulty tag med
+		$QuesStatsDiffHard = QuestionMaster::where('year',$year)->where('category_id', 3)->where('difficulty_level',2)->count();//apti, difficulty tag hard
+		/////////////
+		$prog = [];
+		$payload = array(
+			'difficulty_level'=>'easy',
+			'pre_tag'=> $QuesStatsPreEasy,
+			'post_tag'=> $QuesStatsPostEasy,
+			'diff' => $TotalQues*3/30-$QuesStatsPostEasy,
+			'currentdiff' => $TotalQues*3/30-$QuesStatsDiffEasy
 
-			);
-			array_push($prog, $payload);
-			$payload = array(
-				'difficulty_level'=>'medium',
-				'pre_tag'=> $QuesStatsPreMed,
-				'post_tag'=> $QuesStatsPostMed,
-				'diff' => $TotalQues*4/30-$QuesStatsPostMed,
-				'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
+		);
+		array_push($prog, $payload);
+		$payload = array(
+			'difficulty_level'=>'medium',
+			'pre_tag'=> $QuesStatsPreMed,
+			'post_tag'=> $QuesStatsPostMed,
+			'diff' => $TotalQues*4/30-$QuesStatsPostMed,
+			'currentdiff' => $TotalQues*4/30-$QuesStatsDiffMed
 
-			);
-			array_push($prog, $payload);
-			$payload = array(
-				'difficulty_level'=>'hard',
-				'pre_tag'=> $QuesStatsPreHard,
-				'post_tag'=> $QuesStatsPostHard,
-				'diff' => $TotalQues*3/30-$QuesStatsPostHard,
-				'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
+		);
+		array_push($prog, $payload);
+		$payload = array(
+			'difficulty_level'=>'hard',
+			'pre_tag'=> $QuesStatsPreHard,
+			'post_tag'=> $QuesStatsPostHard,
+			'diff' => $TotalQues*3/30-$QuesStatsPostHard,
+			'currentdiff' => $TotalQues*3/30-$QuesStatsDiffHard
 
-			);
-			array_push($prog, $payload);
-			// $prog = json_encode($prog);
+		);
+		array_push($prog, $payload);
+		// $prog = json_encode($prog);
 
-			return array($apti, $elec, $prog);
+		return array($apti, $elec, $prog);
 
  	}
 }
