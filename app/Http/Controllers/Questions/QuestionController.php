@@ -280,7 +280,9 @@ class QuestionController extends Controller{
 			        }
 			        if($data['editfield']=='1'){//edit the question description and create new revision history
 			        	//if($data['active']=='1'){
-			        		DB::transaction(function($data) use ($data){
+			        		DB::transaction(function($dt) use ($data){
+			        		//patch php 7.2
+				        	$data = $dt;
 			        		$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 	 						$count = QuestionMaster::where('quid', $data['quid'])->where('year', $fetchQues->year)->count(); //find revision count
 
@@ -337,7 +339,9 @@ class QuestionController extends Controller{
 			        }
 			        else//just mark the question as active
 			        { // just mark it as active or inactive
-				        DB::transaction(function($data) use ($data){
+				        DB::transaction(function($dt) use ($data){
+				        	//patch php 7.2
+				        	$data = $dt;
 				        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
 				        	if($data['active']=='1')
 				        	{
@@ -462,7 +466,9 @@ class QuestionController extends Controller{
 	        			return redirect()->route('quesEditor')->with("error", "Please choose valid answer option")->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
 	        		}
 		        }
-		        DB::transaction(function($data) use ($data){
+		        DB::transaction(function($dt) use ($data){
+		        	//patch php 7.2
+		        	$data = $dt;
 		        	$fetchlastId = QuestionMaster::where('year', $data -> year)->orderBy('quid', 'desc')->first();
 
 		            $newQues = new QuestionMaster;
