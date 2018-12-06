@@ -262,8 +262,12 @@
 											<label class = "label label-danger" for="editfield">&nbsp;Create Revision</label>
 										&nbsp;
 										&nbsp;
+											@if($fetchQues->active==0)
 											<input type="checkbox" name="active" id="active" value="1">
 											<label class = "label label-success" for="active">&nbsp;Mark this question as active</label>
+											@else
+											<label class = "label label-success">&nbsp;This question is active</label>
+											@endif
 										</span>
 							            <!-- <a style="cursor:pointer" class="btn btn-success glyphicon glyphicon-floppy-save pull-right" onclick="updateQues(1,2,3)"> Update</a> -->
 							        </div>
@@ -398,6 +402,8 @@
 	$('#active').click(function() {
 	    // $("#editForm :button").prop("disabled", false);
 	    $("#editForm :input").prop("disabled", !this.checked);
+	    $("#editfield").prop("disabled", false);
+	    $("#active").prop("disabled", false);
 	    // $("#_token").prop("disabled", false);
 	    // $("#type").prop("disabled", false);
 	});

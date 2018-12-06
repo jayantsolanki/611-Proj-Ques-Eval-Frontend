@@ -214,7 +214,7 @@ class QuestionController extends Controller{
 				            'year' => 'required|integer|min:2014|max:2025',
 				            'type' => 'required|in:newques,editques,updateques',
 				            'addimage' => 'integer|max:1',
-				            'active' => 'integer|max:1',
+				            'active' => 'in:1',
 				            'editfield' => 'integer|max:1'
 				        ];
 			        $messages = [   

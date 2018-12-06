@@ -58,7 +58,8 @@
 			    <h3 class="panel-title">Overview</h3>
 			  </div>
 			  <div class="panel-body">
-			  	@if(sizeof($dashboard) == 0)
+			
+			  	@if(empty($dashboard))
 				  	<div class="row">
 				  		<div class = "col-md-12">
 				  			<label class="alert alert-info col-md-12">No information found for any year, @if(Auth::user()->role==2) please run <a title="run analysis" href="{{route('showTasks')}}">analysis</a> @else Please contact admin to run analysis @endif</label>  			
