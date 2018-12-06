@@ -283,5 +283,51 @@
 		});
 	
 	}
+	function setCreate(token)
+	{
+		// alert(1)
+		$('#setMessage').removeClass('label-info');
+		$('#setMessage').removeClass('label-success');
+		$('#setMessage').removeClass('label-danger');
+		$('#setMessage').addClass('label-warning');
+
+		$('.setStatus').removeClass('label-success');
+		$('.setStatus').removeClass('label-danger');
+		$('.setStatus').removeClass('hidden');
+		$('.setStatus').addClass('text-warning');
+		$('span.setStatus').text('60 sets are being created, please wait!');
+		
+		$.ajax({
+		  url: '{{ route('setCreate') }}',
+		  method: 'POST',
+		  data:
+		  	{_token: token
+		  	},
+		  success: function(data){
+		  	data = JSON.parse(data)
+		  	if(data.data =='Success')
+		  	{
+		  		$('#setMessage').removeClass('label-warning');
+		  		$('#setMessage').addClass('label-success');
+
+		  		$('.setStatus').removeClass('text-warning');
+		  		$('.setStatus').addClass('text-success');
+		  		$('span.setStatus').text('60 sets created successfully!');
+		  		$('i.setStatus').addClass('hidden');
+			}
+			if(data.data =='Error')
+			{
+				$('#setMessage').removeClass('label-warning');
+		  		$('#setMessage').addClass('label-danger');
+
+				$('.setStatus').removeClass('text-warning');
+		  		$('.setStatus').addClass('text-danger');
+		  		$('span.setStatus').text('Some error occurred, please try again');
+		  		$('i.setStatus').addClass('hidden');
+			}
+	      }
+		});
+	
+	}
 </script> 
 @endsection

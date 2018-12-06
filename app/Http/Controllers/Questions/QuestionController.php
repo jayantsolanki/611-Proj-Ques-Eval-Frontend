@@ -12,6 +12,8 @@ use App\DatabaseCatalogue;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use File;
+use App\TestSetMaster;
+use App\TestSetQuestionMap;
 
 class QuestionController extends Controller{
 
@@ -709,6 +711,156 @@ class QuestionController extends Controller{
 		// $prog = json_encode($prog);
 
 		return array($apti, $elec, $prog);
+ 	}
+
+ 	protected function setCreate()
+ 	{
+ 		$QuesFetch = QuestionMaster::whereIn('for_selectionTest', [1])->where('active', '=', 1)->get();//
+ 		$QuesFetchArray = array('apti'=>array('easy'=>[], 'medium'=>[],'hard'=>[]), 'elec'=>array('easy'=>[], 'medium'=>[],'hard'=>[]), 'prog'=>array('easy'=>[], 'medium'=>[],'hard'=>[]));
+ 		$QuesApti = array('easy'=>[],'medium'=>[],'hard'=>[]);
+ 		$QuesElec = array('easy'=>[],'medium'=>[],'hard'=>[]);
+ 		$QuesProg = array('easy'=>[],'medium'=>[],'hard'=>[]);
+ 		foreach ($QuesFetch as $Ques) {
+ 			if($Ques->category_id==1)//apti
+ 			{
+ 				if ($Ques->difficulty_level==0)//easy
+ 				{
+ 					array_push($QuesApti['easy'],$Ques->id);
+
+ 				}
+ 				elseif ($Ques->difficulty_level==1) //medium
+ 				{
+ 					array_push($QuesApti['medium'],$Ques->id);
+
+ 				}
+ 				elseif ($Ques->difficulty_level==2) //hard
+ 				{
+ 					array_push($QuesApti['hard'],$Ques->id);
+
+ 				}
+
+ 			}
+ 			if($Ques->category_id==2)//elec
+ 			{
+ 				if ($Ques->difficulty_level==0)//easy
+ 				{
+ 					array_push($QuesElec['easy'],$Ques->id);
+
+ 				}
+ 				elseif ($Ques->difficulty_level==1) //medium
+ 				{
+ 					array_push($QuesElec['medium'],$Ques->id);
+
+ 				}
+ 				elseif ($Ques->difficulty_level==2) //hard
+ 				{
+ 					array_push($QuesElec['hard'],$Ques->id);
+
+ 				}
+ 				
+ 			}
+ 			if($Ques->category_id==3)//prog
+ 			{
+ 				if ($Ques->difficulty_level==0)//easy
+ 				{
+ 					array_push($QuesProg['easy'],$Ques->id);
+
+ 				}
+ 				elseif ($Ques->difficulty_level==1) //medium
+ 				{
+ 					array_push($QuesProg['medium'],$Ques->id);
+
+ 				}
+ 				elseif ($Ques->difficulty_level==2) //hard
+ 				{
+ 					array_push($QuesProg['hard'],$Ques->id);
+
+ 				}
+ 				
+ 			}
+ 		}
+ 		 	// shuffle
+ 		shuffle($QuesApti['easy']);
+ 		shuffle($QuesApti['medium']);
+ 		shuffle($QuesApti['hard']);
+
+ 		shuffle($QuesElec['easy']);
+ 		shuffle($QuesElec['medium']);
+ 		shuffle($QuesElec['hard']);
+
+ 		shuffle($QuesProg['easy']);
+ 		shuffle($QuesProg['medium']);
+ 		shuffle($QuesProg['hard']);
+
+ 		// start creating set
+ 		$aptieasy=0;
+ 		$eleceasy=0;
+ 		$progeasy=0;
+		$aptimedium=0;
+		$elecmedium=0;
+		$progmedium=0;
+		$aptihard=0;
+		$elechard=0;
+		$proghard=0;
+		$i = 1;
+		TestSetMaster::truncate(); // emptying the table
+		TestSetQuestionMap::truncate();
+ 		for (;$i<=60;$i++)
+ 		{
+ 			$setname = "UNIQUE SET ".$i;
+ 			TestSetMaster::insert(['set_name'=> $setname]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['easy'][$aptieasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['easy'][$aptieasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['easy'][$aptieasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['medium'][$aptimedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['medium'][$aptimedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['medium'][$aptimedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['medium'][$aptimedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['hard'][$aptihard++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['hard'][$aptihard++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesApti['hard'][$aptihard++], 'ques_type' => 0]);
+
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['easy'][$eleceasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['easy'][$eleceasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['easy'][$eleceasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['medium'][$elecmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['medium'][$elecmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['medium'][$elecmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['medium'][$elecmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['hard'][$elechard++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['hard'][$elechard++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesElec['hard'][$elechard++], 'ques_type' => 0]);
+
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['easy'][$progeasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['easy'][$progeasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['easy'][$progeasy++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['medium'][$progmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['medium'][$progmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['medium'][$progmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['medium'][$progmedium++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['hard'][$proghard++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['hard'][$proghard++], 'ques_type' => 0]);
+ 			TestSetQuestionMap::insert(['set_id' => $i, 'ques_id' => $QuesProg['hard'][$proghard++], 'ques_type' => 0]);
+
+ 			// for ($j=1;$j<=10;$j++)//apti
+ 			// {
+
+ 			// }
+ 			// for ($j=1;$j<=10;$j++)//elec
+ 			// {
+
+ 			// }
+ 			// for ($j=1;$j<=10;$j++)//prog
+ 			// {
+
+ 			// }
+ 		}
+ 		if($i==61)
+ 			return json_encode(['data' =>'Success']);
+ 		else
+ 			return json_encode(['data' =>'Error']);
+
+
  	}
 
  	protected function getFileName($file)

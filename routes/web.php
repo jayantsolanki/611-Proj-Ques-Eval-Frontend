@@ -146,6 +146,11 @@ Route::any('question/quesSelrefresh',[
 	'uses' => 'Questions\QuestionController@refresh'
 ]);
 
+Route::any('question/setCreate',[
+	'as' => 'setCreate',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@setCreate'
+]);
 
 /*****************Question Analysis Controller*************/
 
