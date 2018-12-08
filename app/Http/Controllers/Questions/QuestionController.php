@@ -859,6 +859,103 @@ class QuestionController extends Controller{
  		}
  	}
 
+ 	public function setManageAdvance(Request $data){
+
+ 		//fetching database catalogues
+ 		$years = DatabaseCatalogue::get()->pluck('year');
+ 		$inactiveUsers = Login::where('active',0)->count();
+ 		if(sizeof($years)>0)
+ 		{
+	 		if(sizeof($data->all())>0){
+	 			// return $data->all();
+	 			
+	 			$rules = [
+		            'category' => 'integer|min:1|digits_between:1,4',
+		            'difficulty' => 'integer|min:0|digits_between:0,3',
+		            'year' => 'in:All,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025',
+		            'new' => 'in:next,previous,filter,goto',
+		            'isSelected' => 'in:All,0,1',
+		            'resultCount' => 'integer|min:10|max:100'
+		        ];
+		        $messages = [   
+		            'category.integer' =>  'Category must be integer',
+		            'difficulty.integer' =>  'Difficulty level must be integer',
+		            'year.integer'        =>  'Year must be integer',
+		            'new' =>  'Must be either previous, next, goto or filter',
+		            'isSelected' => 'isSelected should be All or 0 or 1',
+		            'resultCount' => 'Result count should be between 10 to 100'
+
+		        ];
+		        $validator = Validator::make($data->all(), $rules, $messages);
+		        // return (string)$validator->fails();
+		        if ($validator->fails()) {
+		        	// return 'fail';
+		            return redirect()->route('quesSetAdvance')->withErrors($validator)->with('inactiveUsers', $inactiveUsers);
+		        }
+		        if($data->new=='filter')
+		        	Session::put('seed', time()); //seed
+		        $category = $data -> category;
+	 			$difficulty = $data -> difficulty;
+	 			$year = $data -> year;
+	 			$isSelected = $data -> isSelected;
+	 			if($data -> isSelected == 'All')//include all yes or no
+	 			{
+	 				$data -> isSelected = [0,1];
+	 			}
+	 			else{
+	 				$data -> isSelected = [$data -> isSelected];
+	 			}
+	 			if($data -> year == 'All')//include all years
+	 			{
+	 				$year = $years;
+	 			}
+	 			else{
+	 				$year = [$data -> year];
+	 			}
+	 			if($data -> category == '4')//include all categories
+	 			{
+	 				$data -> category = ['1','2','3'];
+	 			}
+	 			else{
+	 				$data -> category = [$data -> category];
+	 			}
+	 			if($data -> difficulty == '3')//include all categories
+	 			{
+	 				$data -> difficulty = ['0','1','2'];
+	 			}
+	 			else
+	 			{
+	 				$data -> difficulty = [$data -> difficulty];
+	 			}
+	 			$count = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('difficulty_level',$data -> difficulty)->where('active', '=', 1)->count(); //added active question only
+ 				// $fetchQues = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->paginate(10);
+ 				$fetchQues = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('difficulty_level',$data -> difficulty)->where('active', '=', 1)->inRandomOrder(Session::get('seed'))->paginate($data -> resultCount);
+ 				// return $fetchQues;
+ 				// return $data->all();
+ 				$summary = $this->getSummary();
+				$apti = $summary[0];
+				$elec = $summary[1];
+				$prog = $summary[2];
+				$summary = array('apti' => $apti, 'elec' => $elec, 'prog' => $prog);
+ 				return view('questions.setCreateAdvance')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('isSelected',$isSelected)->with('resultCount',$data -> resultCount)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('summary',$summary);
+	 		}
+	 		
+	 		$count = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->count(); //added active question only
+	 		$fetchQues = QuestionMaster::whereIn('year', $years)->whereIn('for_selectionTest', [0,1])->whereIn('category_id',[1,2,3])->whereIn('difficulty_level',[0,1,2])->where('active', '=', 1)->inRandomOrder(Session::get('seed'))->paginate(10);
+	 		$summary = $this->getSummary();
+			$apti = $summary[0];
+			$elec = $summary[1];
+			$prog = $summary[2];
+			$summary = array('apti' => $apti, 'elec' => $elec, 'prog' => $prog);
+ 			return view('questions.setCreateAdvance')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', 'All')->with('category', 4)->with('difficulty', 3)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('summary',$summary);
+ 		}
+ 			
+ 		else{//no database present 
+ 			return view('questions.setCreateAdvance')->with('userDetails', Auth::user())->with('defaultyear', null)->with('category', null)->with('difficulty', null)->with('isSelected','All')->with('resultCount',10)->with('fetchQues',null)->with('inactiveUsers', $inactiveUsers)->with('fetchQuesHist', null)->with('summary',null);
+ 		}
+ 	}
+
+
  	public function quesSelSave(Request $data){
  		if(sizeof($data->all())>0){
  			$rules = [
