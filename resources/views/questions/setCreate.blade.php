@@ -118,7 +118,7 @@
 							</select>
 				        </div>
 				        <div class=" input-group col-md-1 pull-right">
-				            <button style="cursor:pointer" type="submit" class="btn btn-primary"> Search <span class="glyphicon glyphicon-search"></span></button>
+				            <button style="cursor:pointer" type="submit" class="btn btn-primary"> Shuffle <span class="glyphicon glyphicon-random"></span></button>
 				        </div>
 				    </div>
 			    </div> 
@@ -160,17 +160,6 @@
 								  <div id="panel{{$ques->id}}" class="panel @if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') panel-danger @else panel-success @endif">
 								    <div class="panel-heading" role="tab" id="heading{{$ques->id}}">
 								      <h4 class="panel-title">
-								        <span class="badge">
-								        	<b>Include in next Exam:</b> 
-								        	<label>
-								        		<input type="radio" name="optradio{{$ques->id}}" id="optradio{{$ques->id}}" @if($ques->for_selectionTest==1) checked @endif onchange="saveSelected('{{$ques->id}}', 1, '{{csrf_token()}}')"> Yes
-								        	</label>
-								        	&nbsp;&nbsp;
-								        	<label>
-								        		<input type="radio"  name="optradio{{$ques->id}}" id="optradio{{$ques->id}}" @if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') checked @endif onchange="saveSelected('{{$ques->id}}', 0, '{{csrf_token()}}')"> No
-								        	</label>
-								        </span>
-								        &nbsp;&nbsp;
 								        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{$ques->id}}" aria-expanded="false" aria-controls="collapse{{$ques->id}}">
 								          
 								          <b>View Question Id {{$ques->quid }}</b>
@@ -201,6 +190,19 @@
 										    	<img width= "50%" height="50%" id="imgpic" class="picimg" class="picimg" src="/img/qwdara/noimage.png"/>@else <img width= "50%" height="50%" id="imgpic" class="picimg" src="/img/qwdara/{{$ques->year}}/{{$ques->question_img}}" width= "50%" height="50%" onError="this.onerror=null;this.src='/img/qwdara/default-image.png';"/>@endif
 										    </div>
 										</div>
+										<span class="badge pull-right"> <!-- option -->
+										        	<b>Include in next Exam:</b> 
+										        	<label>
+										        		<input type="radio" name="optradio{{$ques->id}}" id="optradio{{$ques->id}}" @if($ques->for_selectionTest==1) checked @endif onchange="saveSelected('{{$ques->id}}', 1, '{{csrf_token()}}')"> Yes
+										        	</label>
+										        	&nbsp;&nbsp;
+										        	<label>
+										        		<input type="radio"  name="optradio{{$ques->id}}" id="optradio{{$ques->id}}" @if($ques->for_selectionTest==null or $ques->for_selectionTest==0 or $ques->for_selectionTest=='') checked @endif onchange="saveSelected('{{$ques->id}}', 0, '{{csrf_token()}}')"> No
+										        	</label>
+
+										        	&nbsp;&nbsp;
+										        	<a onclick="skipQuestion('{{$ques->id}}')" class="btn btn-warning"> Skip </a>
+										        </span>
 										<div class="row">
 											<div class="col-md-12">
 												<hr>
@@ -216,6 +218,7 @@
 													<input type="hidden" name="type" value="expQuest">
 												    <button class="pull-left btn btn-info" style="cursor:pointer" type="submit">Create Experimental Question set</button>
 												</form>
+
 											</div>
 										</div>
 								      </div>
@@ -247,7 +250,11 @@
 	    // alert('The image could not be loaded.');
 	    document.getElementById("imgpic").src="/img/qwdara/default-image.png";
 	}
-
+	function skipQuestion(qid)
+	{
+		$('#panel'+qid).fadeOut();
+		// $('#panel'+qid).addClass('hidden');
+	}
 	function saveSelected(qid, action, token)
 	{
 		// alert('#panel'+qid)
@@ -278,6 +285,8 @@
 				$('#summary').load('{{ route('quesSelrefresh') }}', function() {
 					$('#summary').fadeIn();
 				});
+				$('#panel'+qid).fadeOut();
+				// $('#panel'+qid).addClass('hidden');
 			}
 			if(data.data =='Error')
 			{

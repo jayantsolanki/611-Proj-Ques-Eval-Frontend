@@ -15,6 +15,7 @@ use File;
 use App\TestSetMaster;
 use App\TestSetQuestionMap;
 use App\ExpQuesMap;
+use Session;
 
 class QuestionController extends Controller{
 
@@ -758,7 +759,7 @@ class QuestionController extends Controller{
 		        }//end of experimental questions
 	        
  		}
- 		return view('questions.addQuest')->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+ 		return view('questions.expQuest')->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
  	}
 
  	/******************For managing question for Selection Test inclusion***************/
@@ -771,6 +772,7 @@ class QuestionController extends Controller{
  		{
 	 		if(sizeof($data->all())>0){
 	 			// return $data->all();
+	 			
 	 			$rules = [
 		            'category' => 'integer|min:1|digits_between:1,4',
 		            'difficulty' => 'integer|min:0|digits_between:0,3',
@@ -794,6 +796,8 @@ class QuestionController extends Controller{
 		        	// return 'fail';
 		            return redirect()->route('quesSet')->withErrors($validator)->with('inactiveUsers', $inactiveUsers);
 		        }
+		        if($data->new=='filter')
+		        	Session::put('seed', time()); //seed
 		        $category = $data -> category;
 	 			$difficulty = $data -> difficulty;
 	 			$year = $data -> year;
@@ -829,7 +833,7 @@ class QuestionController extends Controller{
 	 			}
 	 			$count = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('difficulty_level',$data -> difficulty)->where('active', '=', 1)->count(); //added active question only
  				// $fetchQues = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->paginate(10);
- 				$fetchQues = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('difficulty_level',$data -> difficulty)->where('active', '=', 1)->paginate($data -> resultCount);
+ 				$fetchQues = QuestionMaster::whereIn('year', $year)->whereIn('for_selectionTest', $data -> isSelected)->whereIn('category_id',$data -> category)->whereIn('difficulty_level',$data -> difficulty)->where('active', '=', 1)->inRandomOrder(Session::get('seed'))->paginate($data -> resultCount);
  				// return $fetchQues;
  				// return $data->all();
  				$summary = $this->getSummary();
@@ -839,8 +843,9 @@ class QuestionController extends Controller{
 				$summary = array('apti' => $apti, 'elec' => $elec, 'prog' => $prog);
  				return view('questions.setCreate')->with('userDetails', Auth::user())->with('years', $years)->with('defaultyear', $data -> year)->with('category', $category)->with('difficulty', $difficulty)->with('isSelected',$isSelected)->with('resultCount',$data -> resultCount)->with('fetchQues',$fetchQues)->with("count",$count)->with('inactiveUsers', $inactiveUsers)->with('summary',$summary);
 	 		}
+	 		
 	 		$count = QuestionMaster::whereIn('year',$years)->where('active', '=', 1)->count(); //added active question only
-	 		$fetchQues = QuestionMaster::whereIn('year', $years)->whereIn('for_selectionTest', [0,1])->whereIn('category_id',[1,2,3])->whereIn('difficulty_level',[0,1,2])->where('active', '=', 1)->paginate(10);
+	 		$fetchQues = QuestionMaster::whereIn('year', $years)->whereIn('for_selectionTest', [0,1])->whereIn('category_id',[1,2,3])->whereIn('difficulty_level',[0,1,2])->where('active', '=', 1)->inRandomOrder(Session::get('seed'))->paginate(10);
 	 		$summary = $this->getSummary();
 			$apti = $summary[0];
 			$elec = $summary[1];
