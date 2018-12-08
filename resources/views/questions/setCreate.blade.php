@@ -205,11 +205,17 @@
 											<div class="col-md-12">
 												<hr>
 												<form target="_blank" class ="form-inline" method="POST" action="{{ route('quesEditor') }}">
-												<input type="hidden" name="_token" value="{{ csrf_token() }}">
-												<input type="hidden" name="qid" value="{{$ques->id}}">
-												<input type="hidden" name="type" value="editques">
-											    <button class="pull-right btn btn-danger" style="cursor:pointer" type="submit">Edit Question</button>
-											</form>
+													<input type="hidden" name="_token" value="{{ csrf_token() }}">
+													<input type="hidden" name="qid" value="{{$ques->id}}">
+													<input type="hidden" name="type" value="editques">
+												    <button class="pull-right btn btn-danger" style="cursor:pointer" type="submit">Edit Question</button>
+												</form>
+												<form target="_blank" class ="form-inline" method="POST" action="{{ route('expQuest') }}">
+													<input type="hidden" name="_token" value="{{ csrf_token() }}">
+													<input type="hidden" name="qid" value="{{$ques->id}}">
+													<input type="hidden" name="type" value="expQuest">
+												    <button class="pull-left btn btn-info" style="cursor:pointer" type="submit">Create Experimental Question set</button>
+												</form>
 											</div>
 										</div>
 								      </div>

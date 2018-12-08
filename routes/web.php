@@ -152,6 +152,12 @@ Route::any('question/setCreate',[
 	'uses' => 'Questions\QuestionController@setCreate'
 ]);
 
+Route::any('question/expQuest',[
+	'as' => 'expQuest',
+	'middleware' => 'auth',
+	'uses' => 'Questions\QuestionController@expQuest'
+]);
+
 /*****************Question Analysis Controller*************/
 
 Route::any('analysis/createFeatures',[

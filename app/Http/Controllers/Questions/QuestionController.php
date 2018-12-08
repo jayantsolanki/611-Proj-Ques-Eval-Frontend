@@ -14,6 +14,7 @@ use DB;
 use File;
 use App\TestSetMaster;
 use App\TestSetQuestionMap;
+use App\ExpQuesMap;
 
 class QuestionController extends Controller{
 
@@ -504,6 +505,257 @@ class QuestionController extends Controller{
 
 
 	        }
+	        
+ 		}
+ 		return view('questions.addQuest')->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+ 	}
+
+ 	/*****************For creating new Experimental questions********************/
+ 	public function expQuest(Request $data){
+ 		$inactiveUsers = Login::where('active',0)->count();//for the red notification add the admin bar
+ 		$years = DatabaseCatalogue::get()->pluck('year');
+ 		if(sizeof($data->all())>0)
+	 		{		 			
+		        if($data->type=='expQuest'){//prefillup the form
+		        	$fetchQues = QuestionMaster::where('id', $data -> qid)->first();
+		        	// return $fetchQues;
+		        	return view('questions.expQuest')->with('qid',$fetchQues->id)->with('fetchQues',$fetchQues)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+
+		        }
+		        if($data->type=='createQues'){ //update question with new info, creates revision
+		        	
+		        	$rules = [
+			 				'qtext1' => 'max:1024',
+			 				'option11' => 'required|max:255',
+			 				'option12' => 'required|max:255',
+			 				'option13' => 'required|max:255',
+			 				'option14' => 'max:255',
+			 				'option15' => 'max:255',
+			 				'answeroption1' => 'required|min:1|max:5',
+		 					'questionimage1' => 'image|mimes:jpeg,bmp,png|max:2048',//max size 2MB
+				            'category1' => 'required|integer|min:1|digits_between:1,4',
+				            'difficulty1' => 'required|integer|min:0|digits_between:0,3',
+				            'year1' => 'required|integer|min:2014|max:2025',
+				            'type' => 'required|in:createQues',
+				            'addimage1' => 'integer|max:1',
+				            'qtext2' => 'max:1024',
+			 				'option21' => 'required|max:255',
+			 				'option22' => 'required|max:255',
+			 				'option23' => 'required|max:255',
+			 				'option24' => 'max:255',
+			 				'option25' => 'max:255',
+			 				'answeroption2' => 'required|min:1|max:5',
+		 					'questionimage2' => 'image|mimes:jpeg,bmp,png|max:2048',//max size 2MB
+				            'category2' => 'required|integer|min:1|digits_between:1,4',
+				            'difficulty2' => 'required|integer|min:0|digits_between:0,3',
+				            'year2' => 'required|integer|min:2014|max:2025',
+				            'addimage2' => 'integer|max:1'
+				        ];
+			        $messages = [   
+				        	'qtext1.max' =>  'Question Text should not be larger than 1024 characters',
+				        	'option11.max' =>  'Option 1 should not be larger than 255 characters',
+				        	'option12.max' =>  'Option 2 should not be larger than 255 characters',
+				        	'option13.max' =>  'Option 3 should not be larger than 255 characters',
+				        	'option14.max' =>  'Option 4 should not be larger than 255 characters',
+				        	'option15.max' =>  'Option 5 should not be larger than 255 characters',
+				        	'answeroption1.max' =>  'Answer option should not be larger than 5',
+				        	'answeroption1.min' =>  'Answer option should not be less than 1',
+				            'category1.integer' =>  'Category must be integer',
+				            'difficulty1.integer' =>  'Difficulty level must be integer',
+				            'year1.integer'        =>  'Year must be integer',
+				            'addimage1' => 'Must be valid integer',
+				            'qtext2.max' =>  'Question Text should not be larger than 1024 characters',
+				        	'option21.max' =>  'Option 1 should not be larger than 255 characters',
+				        	'option22.max' =>  'Option 2 should not be larger than 255 characters',
+				        	'option23.max' =>  'Option 3 should not be larger than 255 characters',
+				        	'option24.max' =>  'Option 4 should not be larger than 255 characters',
+				        	'option25.max' =>  'Option 5 should not be larger than 255 characters',
+				        	'answeroption2.max' =>  'Answer option should not be larger than 5',
+				        	'answeroption2.min' =>  'Answer option should not be less than 1',
+				            'category2.integer' =>  'Category must be integer',
+				            'difficulty2.integer' =>  'Difficulty level must be integer',
+				            'year2.integer'        =>  'Year must be integer',
+				            'type' =>  'Must be createQues',
+				            'addimage2' => 'Must be valid integer'
+
+				        ];
+			        $validator = Validator::make($data->all(), $rules, $messages);
+			        // return (string)$validator->fails();
+			        if ($validator->fails()) {
+			        	if($data['option14']==''){//checking if the options are valid and agreeing with the answer option
+				        	if($data['option15']==''){
+				        		if($data['answeroption1']>3){
+				        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for first Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				        		}
+				        	}
+				        	else{
+				        		if($data['answeroption1']>3){
+				        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for first Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				        		}
+				        		return redirect()->route('expQuest')->with("error", "Option 5 cannot be filled before option 4 for first Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				        	}
+
+				        }
+				        else{
+				        	if($data['answeroption1']==5 && $data['option15']==''){
+			        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for first Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        		}
+				        }
+
+				        // Question 2
+				        if($data['option24']==''){//checking if the options are valid and agreeing with the answer option
+				        	if($data['option25']==''){
+				        		if($data['answeroption2']>3){
+				        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for second Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				        		}
+				        	}
+				        	else{
+				        		if($data['answeroption2']>3){
+				        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for second Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				        		}
+				        		return redirect()->route('expQuest')->with("error", "Option 5 cannot be filled before option 4 for second Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+				        	}
+
+				        }
+				        else{
+				        	if($data['answeroption2']==5 && $data['option25']==''){
+			        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for second Question")->withErrors($validator)->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        		}
+				        }
+			            return redirect()->route('expQuest')->withErrors($validator)->withInput($data->all())->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        }
+		        	
+			        if($data['option14']==''){//checking if the options are valid and agreeing with the answer option
+			        	if($data['option15']==''){
+			        		if($data['answeroption1']>3){
+			        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for first Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        		}
+			        	}
+			        	else{
+			        		if($data['answeroption1']>3){
+			        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for first Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        		}
+			        		return redirect()->route('expQuest')->with("error", "Option 5 cannot be filled before option 4 for first Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        	}
+
+			        }
+			        else{
+			        	if($data['answeroption1']==5 && $data['option15']==''){
+		        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for first Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+		        		}
+			        }
+			        //Question 2
+			        if($data['option24']==''){//checking if the options are valid and agreeing with the answer option
+			        	if($data['option25']==''){
+			        		if($data['answeroption2']>3){
+			        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for second Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        		}
+			        	}
+			        	else{
+			        		if($data['answeroption2']>3){
+			        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for second Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        		}
+			        		return redirect()->route('expQuest')->with("error", "Option 5 cannot be filled before option 4 for second Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+			        	}
+
+			        }
+			        else{
+			        	if($data['answeroption2']==5 && $data['option25']==''){
+		        			return redirect()->route('expQuest')->with("error", "Please choose valid answer option for second Question")->withInput($data->all())->with('qid',$data->qid)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+		        		}
+			        }
+			        	//if($data['active']=='1'){
+	        		DB::transaction(function($data) use ($data){
+	        			//first question
+		        		$fetchlastId = QuestionMaster::where('year', $data -> year1)->orderBy('quid', 'desc')->first();//fetch last id
+		        		$fetchQues = QuestionMaster::where('id', $data -> qid)->first();//old data
+			            $newQues = new QuestionMaster;
+			           	$newQues -> quid =  $fetchlastId['quid']+1; 
+			            $newQues -> year =  $data['year1'];
+			            if($data['qtext1']!='')
+			            	$newQues -> question_text =  $data['qtext1'];            
+			            $newQues -> question_type =  0;
+			            $newQues -> option1 =  $data['option11'];
+			            $newQues -> option2 =  $data['option12'];
+			            $newQues -> option3 =  $data['option13'];
+			            if($data['option14']!='')
+			            	$newQues -> option4 =  $data['option14'];
+			            if($data['option15']!='')
+			            	$newQues -> option5 =  $data['option15'];
+			            
+			            if($data['addimage1']=='1') // remove image entry, dont delete the actual image
+			            {
+			            	$newQues -> question_img =  Null;
+			            }
+			            else
+			            	$newQues -> question_img = $fetchQues->question_img; //copy command should be here
+
+			            if ($data->hasFile('questionimage1') and $data['addimage1']!='1') {
+			            	$filename = $this->getFileName($data->questionimage1);
+								$data->questionimage1->move(base_path('public/img/qwdara/'.$data -> year1), $filename);
+			            	$newQues -> question_img =  $filename;
+			            }
+
+			            $newQues -> answer_option1 =  $data['answeroption1'];
+			            // $newQues -> pre_tag =  $data['difficulty'];
+			            $newQues -> difficulty_level =  $data['difficulty1'];//current tag
+			            $newQues -> pre_tag =  $data['difficulty1']; // //pre tag similar to current, since this question is not analyzed
+			            $newQues -> category_id =  $data['category1'];
+			            $newQues -> user_id =  Auth::user()->user_id;
+			           
+		            	$newQues -> active =  1; // mark it active
+			            $newQues ->save();
+			            ExpQuesMap::insert(['ques_id'=> $data->qid, 'mapped_ques_id' => $newQues->id]);
+
+			            // second question
+			            $fetchlastId = QuestionMaster::where('year', $data -> year2)->orderBy('quid', 'desc')->first();//fetch last id
+		        		$fetchQues = QuestionMaster::where('id', $data -> qid)->first();//old data
+			            $newQues = new QuestionMaster;
+			           	$newQues -> quid =  $fetchlastId['quid']+1; 
+			            $newQues -> year =  $data['year2'];
+			            if($data['qtext2']!='')
+			            	$newQues -> question_text =  $data['qtext2'];            
+			            $newQues -> question_type =  0;
+			            $newQues -> option1 =  $data['option21'];
+			            $newQues -> option2 =  $data['option22'];
+			            $newQues -> option3 =  $data['option23'];
+			            if($data['option24']!='')
+			            	$newQues -> option4 =  $data['option24'];
+			            if($data['option25']!='')
+			            	$newQues -> option5 =  $data['option25'];
+			            
+			            if($data['addimage2']=='1') // remove image entry, dont delete the actual image
+			            {
+			            	$newQues -> question_img =  Null;
+			            }
+			            else
+			            	$newQues -> question_img = $fetchQues->question_img; //copy command should be here
+
+			            if ($data->hasFile('questionimage2') and $data['addimage2']!='1') {
+			            	$filename = $this->getFileName($data->questionimage1);
+								$data->questionimage1->move(base_path('public/img/qwdara/'.$data -> year2), $filename);
+			            	$newQues -> question_img =  $filename;
+			            }
+
+			            $newQues -> answer_option1 =  $data['answeroption2'];
+			            // $newQues -> pre_tag =  $data['difficulty'];
+			            $newQues -> difficulty_level =  $data['difficulty2'];//current tag
+			            $newQues -> pre_tag =  $data['difficulty2']; // //pre tag similar to current, since this question is not analyzed
+			            $newQues -> category_id =  $data['category2'];
+			            $newQues -> user_id =  Auth::user()->user_id;
+			           
+		            	$newQues -> active =  1; // mark it active
+			            $newQues ->save();
+
+			            ExpQuesMap::insert(['ques_id'=> $data->qid, 'mapped_ques_id' => $newQues->id]);
+
+			        });//end of transaction
+				$fetchExpQuestion = ExpQuesMap::where('ques_id', '=', $data->qid)->get();
+	        	return redirect()->route('expQuest')->with("createsuccess", $fetchExpQuestion)->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);
+	
+
+
+		        }//end of experimental questions
 	        
  		}
  		return view('questions.addQuest')->with('qid',0)->with('inactiveUsers', $inactiveUsers)->with('years', $years);

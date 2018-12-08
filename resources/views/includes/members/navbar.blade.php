@@ -19,7 +19,7 @@
               <ul class="dropdown-menu">
                 <li id="qe"><a href="{{route('quesEditor')}}">Question Editor</a></li>
                 <li id="qs"><a href="{{route('quesSet')}}">Question Set</a></li>
-                <li id="qexp"><a href="{{route('quesEditor')}}">Experimental Questions</a></li>
+                <!-- <li id="qexp"><a href="{{route('expQuest')}}">Experimental Questions</a></li> -->
               </ul>
             </li>
             <!-- <li id ="st"><a href="{{route('showStats')}}">Statistics</a></li> -->
